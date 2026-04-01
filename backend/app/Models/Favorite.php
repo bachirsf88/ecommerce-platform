@@ -14,6 +14,10 @@ class Favorite extends Model
         'product_id',
     ];
 
+    protected $casts = [
+        'product_id' => 'string',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

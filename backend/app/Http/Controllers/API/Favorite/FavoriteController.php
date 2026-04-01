@@ -27,13 +27,13 @@ class FavoriteController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'product_id' => ['required', 'integer'],
+            'product_id' => ['required', 'string'],
         ]);
 
         $favorite = $this->favoriteService->addFavorite($request->user(), $validated);
 
         if (! $favorite) {
-            return $this->errorResponse('Product not found.', null, 404);
+            return $this->errorResponse('Product not found or unavailable.', null, 404);
         }
 
         return $this->successResponse('Product added to favorites successfully.', $favorite, 201);

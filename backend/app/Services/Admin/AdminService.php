@@ -3,18 +3,24 @@
 namespace App\Services\Admin;
 
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 
 class AdminService
 {
-    public function getUsers(): Collection
+    public function __construct(
+        private readonly ProductRepositoryInterface $productRepository
+    ) {
+    }
+
+    public function getUsers(): EloquentCollection
     {
         return User::orderBy('id')->get();
     }
 
-    public function getSellers(): Collection
+    public function getSellers(): EloquentCollection
     {
         return User::where('role', User::ROLE_SELLER)
             ->orderBy('id')
@@ -38,15 +44,35 @@ class AdminService
 
     public function getProducts(): Collection
     {
-        return Product::with('seller')
-            ->latest()
-            ->get();
+        $products = $this->productRepository->getAll();
+        $sellerIds = $products
+            ->pluck('seller_id')
+            ->filter()
+            ->map(fn ($sellerId) => (int) $sellerId)
+            ->unique()
+            ->values();
+
+        $sellers = User::whereIn('id', $sellerIds)->get()->keyBy('id');
+
+        return $products->map(function ($product) use ($sellers) {
+            $product->seller = $sellers->get((int) $product->seller_id);
+
+            return $product;
+        })->values();
     }
 
     public function getOrders(): Collection
     {
-        return Order::with(['buyer', 'items.product', 'items.seller'])
+        return Order::with(['buyer', 'items.seller'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function (Order $order) {
+                $order->items->each(function ($item) {
+                    $product = $this->productRepository->findById($item->product_id);
+                    $item->setRelation('product', $product);
+                });
+
+                return $order;
+            });
     }
 }

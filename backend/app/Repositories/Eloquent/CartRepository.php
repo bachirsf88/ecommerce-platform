@@ -30,7 +30,7 @@ class CartRepository implements CartRepositoryInterface
 
     public function findCartItemById(int|string $id): ?CartItem
     {
-        return CartItem::with(['cart', 'product'])->find($id);
+        return CartItem::with('cart')->find($id);
     }
 
     public function findCartItemByCartAndProduct(Cart $cart, int|string $productId): ?CartItem
@@ -49,7 +49,7 @@ class CartRepository implements CartRepositoryInterface
     {
         $cartItem->update($data);
 
-        return $cartItem->fresh(['product']);
+        return $cartItem->fresh(['cart']);
     }
 
     public function deleteCartItem(CartItem $cartItem): bool
@@ -59,6 +59,6 @@ class CartRepository implements CartRepositoryInterface
 
     public function loadCartRelations(Cart $cart): Cart
     {
-        return $cart->load(['items.product']);
+        return $cart->load('items');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Services\Product;
 
-use App\Models\Product;
+use App\Models\Mongo\ProductDocument;
 use App\Models\User;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +19,7 @@ class ProductService
         return $this->productRepository->getAll();
     }
 
-    public function getProductById(int|string $id): ?Product
+    public function getProductById(int|string $id)
     {
         return $this->productRepository->findById($id);
     }
@@ -34,15 +34,20 @@ class ProductService
         return $this->productRepository->filter($filters);
     }
 
-    public function createProduct(array $data, User $seller): Product
+    public function createProduct(array $data)
     {
-        $data['seller_id'] = $seller->id;
-        $data['status'] = $data['status'] ?? Product::STATUS_ACTIVE;
+        return $this->productRepository->create($data);
+    }
+
+    public function createSellerProduct(array $data, User $seller)
+    {
+        $data['seller_id'] = (string) $seller->id;
+        $data['status'] = $data['status'] ?? ProductDocument::STATUS_ACTIVE;
 
         return $this->productRepository->create($data);
     }
 
-    public function updateProduct(Product $product, array $data, User $seller): ?Product
+    public function updateProduct($product, array $data, User $seller)
     {
         if (! $this->ownsProduct($product, $seller)) {
             return null;
@@ -51,7 +56,7 @@ class ProductService
         return $this->productRepository->update($product, $data);
     }
 
-    public function deleteProduct(Product $product, User $seller): bool
+    public function deleteProduct($product, User $seller): bool
     {
         if (! $this->ownsProduct($product, $seller)) {
             return false;
@@ -60,7 +65,7 @@ class ProductService
         return $this->productRepository->delete($product);
     }
 
-    private function ownsProduct(Product $product, User $seller): bool
+    private function ownsProduct($product, User $seller): bool
     {
         return (string) $product->seller_id === (string) $seller->id;
     }

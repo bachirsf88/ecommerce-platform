@@ -31,7 +31,7 @@ class CartController extends Controller
         $cart = $this->cartService->addToCart($request->user(), $request->validated());
 
         if (! $cart) {
-            return $this->errorResponse('Product not found.', null, 404);
+            return $this->errorResponse('Product not found or unavailable.', null, 404);
         }
 
         return $this->successResponse('Product added to cart successfully.', $cart);

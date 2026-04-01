@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Repositories\Eloquent;
+namespace App\Repositories\MongoDB;
 
-use App\Models\Product;
+use App\Models\Mongo\ProductDocument;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class ProductRepository implements ProductRepositoryInterface
+class ProductMongoRepository implements ProductRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Product::latest()->get();
+        return ProductDocument::latest()->get();
     }
 
-    public function findById(int|string $id)
+    public function findById(int|string $id): ?ProductDocument
     {
-        return Product::find($id);
+        return ProductDocument::find($id);
     }
 
     public function search(?string $keyword): Collection
     {
-        return Product::query()
+        return ProductDocument::query()
             ->when($keyword, function ($query, $keyword) {
                 $query->where('name', 'like', '%' . $keyword . '%')
                     ->orWhere('description', 'like', '%' . $keyword . '%')
@@ -32,7 +32,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function filter(array $filters): Collection
     {
-        return Product::query()
+        return ProductDocument::query()
             ->when($filters['category'] ?? null, function ($query, $category) {
                 $query->where('category', $category);
             })
@@ -40,21 +40,21 @@ class ProductRepository implements ProductRepositoryInterface
                 $query->where('status', $status);
             })
             ->when($filters['min_price'] ?? null, function ($query, $minPrice) {
-                $query->where('price', '>=', $minPrice);
+                $query->where('price', '>=', (float) $minPrice);
             })
             ->when($filters['max_price'] ?? null, function ($query, $maxPrice) {
-                $query->where('price', '<=', $maxPrice);
+                $query->where('price', '<=', (float) $maxPrice);
             })
             ->latest()
             ->get();
     }
 
-    public function create(array $data)
+    public function create(array $data): ProductDocument
     {
-        return Product::create($data);
+        return ProductDocument::create($data);
     }
 
-    public function update($product, array $data)
+    public function update($product, array $data): ProductDocument
     {
         $product->update($data);
 

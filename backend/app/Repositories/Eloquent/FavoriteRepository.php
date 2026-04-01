@@ -10,23 +10,21 @@ class FavoriteRepository implements FavoriteRepositoryInterface
 {
     public function getFavoritesByUserId(int|string $userId): Collection
     {
-        return Favorite::with('product')
-            ->where('user_id', $userId)
+        return Favorite::where('user_id', $userId)
             ->latest()
             ->get();
     }
 
     public function findFavoriteByUserAndProductId(int|string $userId, int|string $productId): ?Favorite
     {
-        return Favorite::with('product')
-            ->where('user_id', $userId)
+        return Favorite::where('user_id', $userId)
             ->where('product_id', $productId)
             ->first();
     }
 
     public function createFavorite(array $data): Favorite
     {
-        return Favorite::create($data)->load('product');
+        return Favorite::create($data);
     }
 
     public function deleteFavorite(Favorite $favorite): bool

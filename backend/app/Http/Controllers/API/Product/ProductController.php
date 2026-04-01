@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
-use App\Models\Product;
 use App\Services\Product\ProductService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
@@ -59,7 +58,7 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request): JsonResponse
     {
-        $product = $this->productService->createProduct(
+        $product = $this->productService->createSellerProduct(
             $request->validated(),
             $request->user()
         );
@@ -67,10 +66,16 @@ class ProductController extends Controller
         return $this->successResponse('Product created successfully.', $product, 201);
     }
 
-    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, string $product): JsonResponse
     {
+        $existingProduct = $this->productService->getProductById($product);
+
+        if (! $existingProduct) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
         $updatedProduct = $this->productService->updateProduct(
-            $product,
+            $existingProduct,
             $request->validated(),
             $request->user()
         );
@@ -82,9 +87,15 @@ class ProductController extends Controller
         return $this->successResponse('Product updated successfully.', $updatedProduct);
     }
 
-    public function destroy(Request $request, Product $product): JsonResponse
+    public function destroy(Request $request, string $product): JsonResponse
     {
-        $deleted = $this->productService->deleteProduct($product, $request->user());
+        $existingProduct = $this->productService->getProductById($product);
+
+        if (! $existingProduct) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
+        $deleted = $this->productService->deleteProduct($existingProduct, $request->user());
 
         if (! $deleted) {
             return $this->errorResponse('You can only delete your own products.', null, 403);

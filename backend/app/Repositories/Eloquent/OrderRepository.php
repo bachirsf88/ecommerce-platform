@@ -21,7 +21,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getOrdersByBuyerId(int|string $buyerId): Collection
     {
-        return Order::with(['items.product', 'items.seller'])
+        return Order::with(['items.seller'])
             ->where('buyer_id', $buyerId)
             ->latest()
             ->get();
@@ -29,19 +29,19 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findBuyerOrderById(int|string $buyerId, int|string $orderId): ?Order
     {
-        return Order::with(['items.product', 'items.seller'])
+        return Order::with(['items.seller'])
             ->where('buyer_id', $buyerId)
             ->find($orderId);
     }
 
     public function loadOrderRelations(Order $order): Order
     {
-        return $order->load(['items.product', 'items.seller']);
+        return $order->load(['items.seller']);
     }
 
     public function getOrdersBySellerId(int|string $sellerId): Collection
     {
-        return Order::with(['items.product', 'items.seller', 'buyer'])
+        return Order::with(['items.seller', 'buyer'])
             ->whereHas('items', function ($query) use ($sellerId) {
                 $query->where('seller_id', $sellerId);
             })
@@ -51,7 +51,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findSellerOrderById(int|string $sellerId, int|string $orderId): ?Order
     {
-        return Order::with(['items.product', 'items.seller', 'buyer'])
+        return Order::with(['items.seller', 'buyer'])
             ->whereHas('items', function ($query) use ($sellerId) {
                 $query->where('seller_id', $sellerId);
             })

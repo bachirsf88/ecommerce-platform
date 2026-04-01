@@ -4,15 +4,16 @@ namespace App\Services\Cart;
 
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product;
 use App\Models\User;
 use App\Repositories\Interfaces\CartRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class CartService
 {
     public function __construct(
-        private readonly CartRepositoryInterface $cartRepository
+        private readonly CartRepositoryInterface $cartRepository,
+        private readonly ProductRepositoryInterface $productRepository
     ) {
     }
 
@@ -25,23 +26,29 @@ class CartService
 
     public function addToCart(User $user, array $data): ?array
     {
-        $product = Product::find($data['product_id']);
+        $product = $this->productRepository->findById($data['product_id']);
 
         if (! $product) {
             return null;
         }
 
+        if (($product->status ?? null) !== 'active') {
+            return null;
+        }
+
         DB::transaction(function () use ($user, $data, $product) {
             $cart = $this->cartRepository->getOrCreateCartByUserId($user->id);
-            $cartItem = $this->cartRepository->findCartItemByCartAndProduct($cart, $product->id);
+            $productId = (string) $product->id;
+            $cartItem = $this->cartRepository->findCartItemByCartAndProduct($cart, $productId);
+            $unitPrice = (float) $product->price;
 
             if ($cartItem) {
                 $quantity = $cartItem->quantity + $data['quantity'];
 
                 $this->cartRepository->updateCartItem($cartItem, [
                     'quantity' => $quantity,
-                    'unit_price' => $product->price,
-                    'subtotal' => $quantity * $product->price,
+                    'unit_price' => $unitPrice,
+                    'subtotal' => $quantity * $unitPrice,
                 ]);
 
                 return;
@@ -49,10 +56,10 @@ class CartService
 
             $this->cartRepository->createCartItem([
                 'cart_id' => $cart->id,
-                'product_id' => $product->id,
+                'product_id' => $productId,
                 'quantity' => $data['quantity'],
-                'unit_price' => $product->price,
-                'subtotal' => $data['quantity'] * $product->price,
+                'unit_price' => $unitPrice,
+                'subtotal' => $data['quantity'] * $unitPrice,
             ]);
         });
 
@@ -102,10 +109,12 @@ class CartService
     private function formatCart(Cart $cart): array
     {
         $items = $cart->items->map(function (CartItem $item) {
+            $product = $this->productRepository->findById($item->product_id);
+
             return [
                 'id' => $item->id,
                 'product_id' => $item->product_id,
-                'product' => $item->product,
+                'product' => $product,
                 'quantity' => $item->quantity,
                 'unit_price' => (float) $item->unit_price,
                 'subtotal' => (float) $item->subtotal,

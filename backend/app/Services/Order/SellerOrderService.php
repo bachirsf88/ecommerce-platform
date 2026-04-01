@@ -5,6 +5,7 @@ namespace App\Services\Order;
 use App\Models\Order;
 use App\Models\User;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class SellerOrderService
@@ -18,7 +19,8 @@ class SellerOrderService
     ];
 
     public function __construct(
-        private readonly OrderRepositoryInterface $orderRepository
+        private readonly OrderRepositoryInterface $orderRepository,
+        private readonly ProductRepositoryInterface $productRepository
     ) {
     }
 
@@ -69,6 +71,11 @@ class SellerOrderService
         $sellerItems = $order->items
             ->where('seller_id', $seller->id)
             ->values();
+
+        $sellerItems->each(function ($item) {
+            $product = $this->productRepository->findById($item->product_id);
+            $item->setRelation('product', $product);
+        });
 
         $order->setRelation('items', $sellerItems);
         $order->setAttribute('seller_total', (float) $sellerItems->sum('subtotal'));

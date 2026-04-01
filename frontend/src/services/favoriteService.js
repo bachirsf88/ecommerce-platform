@@ -23,7 +23,7 @@ const readFavoriteProductIds = () => {
 const saveFavoriteProductIds = (productIds) => {
   localStorage.setItem(
     FAVORITE_PRODUCT_IDS_KEY,
-    JSON.stringify([...new Set(productIds.map((id) => Number(id)))])
+    JSON.stringify([...new Set(productIds.map((id) => String(id)))])
   );
 };
 
@@ -39,7 +39,7 @@ const favoriteService = {
 
   async addFavorite(productId) {
     const response = await api.post('/favorites', {
-      product_id: Number(productId),
+      product_id: String(productId),
     });
 
     this.addFavoriteProductId(productId);
@@ -69,7 +69,7 @@ const favoriteService = {
 
     if (!favoriteIdsRequest) {
       favoriteIdsRequest = this.getFavorites()
-        .then((favorites) => favorites.map((product) => Number(product.id)))
+        .then((favorites) => favorites.map((product) => String(product.id)))
         .finally(() => {
           favoriteIdsRequest = null;
         });
@@ -80,7 +80,7 @@ const favoriteService = {
 
   addFavoriteProductId(productId) {
     const currentIds = readFavoriteProductIds() ?? [];
-    saveFavoriteProductIds([...currentIds, Number(productId)]);
+    saveFavoriteProductIds([...currentIds, String(productId)]);
   },
 
   removeFavoriteProductId(productId) {

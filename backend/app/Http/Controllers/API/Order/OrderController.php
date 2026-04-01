@@ -23,7 +23,7 @@ class OrderController extends Controller
         $order = $this->orderService->checkout($request->user(), $request->validated());
 
         if (! $order) {
-            return $this->errorResponse('Cart is empty.', null, 400);
+            return $this->errorResponse('Cart is empty or contains unavailable products.', null, 400);
         }
 
         return $this->successResponse('Checkout completed successfully.', $order, 201);

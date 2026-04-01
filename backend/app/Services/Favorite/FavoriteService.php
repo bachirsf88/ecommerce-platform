@@ -2,14 +2,15 @@
 
 namespace App\Services\Favorite;
 
-use App\Models\Product;
 use App\Models\User;
 use App\Repositories\Interfaces\FavoriteRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
 
 class FavoriteService
 {
     public function __construct(
-        private readonly FavoriteRepositoryInterface $favoriteRepository
+        private readonly FavoriteRepositoryInterface $favoriteRepository,
+        private readonly ProductRepositoryInterface $productRepository
     ) {
     }
 
@@ -18,7 +19,11 @@ class FavoriteService
         $favorites = $this->favoriteRepository->getFavoritesByUserId($user->id);
 
         return $favorites
-            ->map(fn ($favorite) => $this->formatProduct($favorite->product))
+            ->map(function ($favorite) {
+                $product = $this->productRepository->findById($favorite->product_id);
+
+                return $this->formatProduct($product);
+            })
             ->filter()
             ->values()
             ->all();
@@ -26,28 +31,34 @@ class FavoriteService
 
     public function addFavorite(User $user, array $data): ?array
     {
-        $product = Product::find($data['product_id']);
+        $product = $this->productRepository->findById($data['product_id']);
 
         if (! $product) {
             return null;
         }
 
+        if (($product->status ?? null) !== 'active') {
+            return null;
+        }
+
+        $productId = (string) $product->id;
+
         $favorite = $this->favoriteRepository->findFavoriteByUserAndProductId(
             $user->id,
-            $product->id
+            $productId
         );
 
         if (! $favorite) {
             $favorite = $this->favoriteRepository->createFavorite([
                 'user_id' => $user->id,
-                'product_id' => $product->id,
+                'product_id' => $productId,
             ]);
         }
 
         return [
-            'product_id' => $product->id,
+            'product_id' => $productId,
             'is_favorite' => true,
-            'product' => $this->formatProduct($favorite->product ?? $product),
+            'product' => $this->formatProduct($product),
         ];
     }
 
@@ -65,12 +76,12 @@ class FavoriteService
         $this->favoriteRepository->deleteFavorite($favorite);
 
         return [
-            'product_id' => (int) $productId,
+            'product_id' => (string) $productId,
             'is_favorite' => false,
         ];
     }
 
-    private function formatProduct(?Product $product): ?array
+    private function formatProduct($product): ?array
     {
         if (! $product) {
             return null;
