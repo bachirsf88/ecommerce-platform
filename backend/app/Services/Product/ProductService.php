@@ -45,11 +45,11 @@ class ProductService
 
     public function createSellerProduct(array $data, User $seller, ?UploadedFile $imageFile = null)
     {
-        unset($data['image_file']);
+        unset($data['image_file'], $data['image'], $data['image_url']);
 
         $data['seller_id'] = (string) $seller->id;
         $data['status'] = $data['status'] ?? ProductDocument::STATUS_ACTIVE;
-        $data['image'] = $this->resolveProductImage($data, $imageFile);
+        $data['image'] = $this->resolvePersistedProductImage(null, $imageFile);
 
         return $this->productRepository->create($data);
     }
@@ -60,17 +60,27 @@ class ProductService
             return null;
         }
 
-        unset($data['image_file']);
+        unset($data['image_file'], $data['image'], $data['image_url']);
+
+        $previousImage = $product->image;
+        $nextImage = $previousImage;
 
         if ($imageFile) {
-            $this->deletePublicFile($product->image);
+            $nextImage = $this->resolvePersistedProductImage($previousImage, $imageFile);
+            $data['image'] = $nextImage;
         }
 
-        if ($imageFile || array_key_exists('image', $data)) {
-            $data['image'] = $this->resolveProductImage($data, $imageFile);
+        $updatedProduct = $this->productRepository->update($product, $data);
+
+        if (
+            $updatedProduct &&
+            $previousImage !== $nextImage &&
+            $this->normalizePublicPath($previousImage)
+        ) {
+            $this->deletePublicFile($previousImage);
         }
 
-        return $this->productRepository->update($product, $data);
+        return $updatedProduct;
     }
 
     public function deleteProduct($product, User $seller): bool
@@ -79,7 +89,13 @@ class ProductService
             return false;
         }
 
-        return $this->productRepository->delete($product);
+        $deleted = $this->productRepository->delete($product);
+
+        if ($deleted) {
+            $this->deletePublicFile($product->image);
+        }
+
+        return $deleted;
     }
 
     private function ownsProduct($product, User $seller): bool
@@ -87,14 +103,12 @@ class ProductService
         return (string) $product->seller_id === (string) $seller->id;
     }
 
-    private function resolveProductImage(array $data, ?UploadedFile $imageFile): ?string
+    private function resolvePersistedProductImage(?string $currentImage, ?UploadedFile $imageFile): ?string
     {
         if ($imageFile) {
-            return $this->publicFileUrl(
-                $this->storePublicFile($imageFile, 'products')
-            );
+            return $this->storePublicFile($imageFile, 'products');
         }
 
-        return $data['image'] ?? null;
+        return $currentImage;
     }
 }

@@ -8,6 +8,7 @@ function WorkspaceShell({
   accountEmail,
   accountStatus,
   primaryLinks,
+  sidebarSections = [],
   footerContent = null,
   topbarKicker,
   topbarTitle,
@@ -59,6 +60,30 @@ function WorkspaceShell({
               </NavLink>
             ))}
           </nav>
+
+          {sidebarSections.length > 0 ? (
+            <div className="workspace-sidebar-sections">
+              {sidebarSections.map((section) => (
+                <div key={section.label} className="workspace-sidebar-section">
+                  <p className="workspace-sidebar-section-label">{section.label}</p>
+                  <div className="workspace-sidebar-nav">
+                    {section.links.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.end}
+                        className={({ isActive }) =>
+                          `workspace-nav-link ${isActive ? 'workspace-nav-link-active' : ''}`
+                        }
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
 
           {footerContent ? (
             <div className="workspace-sidebar-footer">

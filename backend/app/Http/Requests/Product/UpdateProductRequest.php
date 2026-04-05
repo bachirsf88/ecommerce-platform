@@ -21,7 +21,6 @@ class UpdateProductRequest extends FormRequest
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
             'category' => ['sometimes', 'required', 'string', 'max:255'],
-            'image' => ['nullable', 'string'],
             'image_file' => ['nullable', 'image', 'max:6144'],
             'status' => ['sometimes', 'required', 'string', Rule::in([
                 Product::STATUS_ACTIVE,

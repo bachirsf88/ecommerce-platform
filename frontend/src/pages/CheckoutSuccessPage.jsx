@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 function CheckoutSuccessPage() {
   const location = useLocation();
@@ -18,7 +19,7 @@ function CheckoutSuccessPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 

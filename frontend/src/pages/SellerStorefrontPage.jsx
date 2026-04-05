@@ -4,7 +4,7 @@ import heroImage from '../assets/hero.png';
 import heroAltImage from '../assets/hero1.png';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
-import { resolveMediaUrl } from '../utils/media';
+import { resolveEntityImageUrl, resolveMediaUrl } from '../utils/media';
 
 const isRenderableImageSrc = (value) =>
   typeof value === 'string' && /^(https?:\/\/|data:|\/)/i.test(value.trim());
@@ -41,19 +41,35 @@ function resolveFallbackLocation(store) {
 }
 
 function resolveBannerImage(store, products) {
+  if (isRenderableImageSrc(store?.banner_image_url)) {
+    return store.banner_image_url;
+  }
+
   if (isRenderableImageSrc(store?.banner_url)) {
     return store.banner_url;
   }
 
-  return products.find((product) => isRenderableImageSrc(product?.image))?.image || heroImage;
+  return (
+    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image_url ||
+    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image ||
+    heroImage
+  );
 }
 
 function resolveAvatarImage(store, products) {
+  if (isRenderableImageSrc(store?.logo_image_url)) {
+    return store.logo_image_url;
+  }
+
   if (isRenderableImageSrc(store?.logo_url)) {
     return store.logo_url;
   }
 
-  return products.find((product) => isRenderableImageSrc(product?.image))?.image || heroAltImage;
+  return (
+    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image_url ||
+    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image ||
+    heroAltImage
+  );
 }
 
 function formatAverageRating(value) {
@@ -116,28 +132,22 @@ function ProductRatingSummary({ summary, loading = false }) {
 }
 
 function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
-  const imageSrc = isRenderableImageSrc(product?.image) ? product.image : heroImage;
+  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image) || heroImage;
 
   return (
     <article className="group">
       <Link to={product?.id ? `/products/${product.id}` : '/products'} className="block">
         <div className="overflow-hidden bg-[linear-gradient(160deg,rgba(243,237,231,0.98),rgba(228,219,209,0.9))] shadow-[0_10px_24px_rgba(2,2,2,0.05)]">
           <div className="aspect-[0.92] overflow-hidden bg-[rgba(249,246,242,0.9)]">
-            {isRenderableImageSrc(product?.image) ? (
+            {imageSrc !== heroImage ? (
               <img
-                src={resolveMediaUrl(imageSrc)}
+                src={imageSrc}
                 alt={product?.name || 'Product'}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
               />
-            ) : product?.image ? (
-              <div className="flex h-full w-full items-center justify-center p-5">
-                <p className="max-w-[12rem] text-center text-xs leading-6 text-[rgba(2,2,2,0.52)]">
-                  {product.image}
-                </p>
-              </div>
             ) : (
               <img
-                src={resolveMediaUrl(imageSrc)}
+                src={imageSrc}
                 alt={product?.name || 'Product'}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
               />

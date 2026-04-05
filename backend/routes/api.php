@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Admin\AdminController;
+use App\Http\Controllers\API\Account\AccountController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Cart\CartController;
 use App\Http\Controllers\API\Favorite\FavoriteController;
@@ -64,24 +65,30 @@ Route::prefix('stores')->group(function () {
     Route::get('/{id}', [StoreController::class, 'show']);
 });
 
-Route::prefix('cart')->middleware(['auth:sanctum', 'role:buyer'])->group(function () {
+Route::prefix('cart')->middleware(['auth:sanctum', 'role:buyer,seller'])->group(function () {
     Route::get('/', [CartController::class, 'index']);
     Route::post('/add', [CartController::class, 'add']);
     Route::put('/item/{id}', [CartController::class, 'updateItem']);
     Route::delete('/item/{id}', [CartController::class, 'removeItem']);
 });
 
-Route::prefix('favorites')->middleware(['auth:sanctum', 'role:buyer'])->group(function () {
+Route::prefix('favorites')->middleware(['auth:sanctum', 'role:buyer,seller'])->group(function () {
     Route::get('/', [FavoriteController::class, 'index']);
     Route::post('/', [FavoriteController::class, 'store']);
     Route::delete('/{productId}', [FavoriteController::class, 'destroy']);
 });
 
-Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:buyer,seller'])->group(function () {
     Route::post('/checkout', [OrderController::class, 'checkout']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::post('/reviews', [ReviewController::class, 'store']);
+});
+
+Route::prefix('account')->middleware(['auth:sanctum', 'role:buyer,seller'])->group(function () {
+    Route::get('/', [AccountController::class, 'show']);
+    Route::post('/profile', [AccountController::class, 'updateProfile']);
+    Route::put('/password', [AccountController::class, 'updatePassword']);
 });
 
 Route::prefix('seller/orders')->middleware(['auth:sanctum', 'role:seller'])->group(function () {

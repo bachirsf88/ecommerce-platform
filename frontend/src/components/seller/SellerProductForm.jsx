@@ -1,5 +1,5 @@
 import heroImage from '../../assets/hero.png';
-import { isRenderableImageSrc, resolveMediaUrl } from '../../utils/media';
+import { resolveMediaUrl } from '../../utils/media';
 
 function SellerProductForm({
   formData,
@@ -12,7 +12,7 @@ function SellerProductForm({
   onFileChange,
   onSubmit,
 }) {
-  const previewUrl = formData.image_preview || (isRenderableImageSrc(formData.image) ? formData.image : null);
+  const previewUrl = formData.image_preview || formData.image_url;
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
@@ -71,13 +71,6 @@ function SellerProductForm({
                 <option value="inactive">Inactive</option>
               </select>
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="image" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
-              Existing Image URL
-            </label>
-            <input id="image" name="image" type="text" value={formData.image} onChange={onChange} className="text-input" placeholder="/storage/products/example.jpg or https://..." />
           </div>
 
           <div>

@@ -51,7 +51,16 @@ class StoreService
         ?UploadedFile $logo = null,
         ?UploadedFile $banner = null
     ): array {
-        unset($data['logo'], $data['banner']);
+        unset(
+            $data['logo'],
+            $data['banner'],
+            $data['logo_path'],
+            $data['banner_path'],
+            $data['logo_url'],
+            $data['banner_url'],
+            $data['logo_image_url'],
+            $data['banner_image_url']
+        );
 
         $store = $seller->store()->firstOrCreate(
             ['seller_id' => $seller->id],
@@ -63,19 +72,32 @@ class StoreService
             ]
         );
 
+        $previousLogoPath = $store->logo_path;
+        $previousBannerPath = $store->banner_path;
+        $nextLogoPath = $previousLogoPath;
+        $nextBannerPath = $previousBannerPath;
+
         if ($logo) {
-            $this->deletePublicFile($store->logo_path);
-            $data['logo_path'] = $this->storePublicFile($logo, 'stores/logos');
+            $nextLogoPath = $this->storePublicFile($logo, 'stores/logos');
+            $data['logo_path'] = $nextLogoPath;
         }
 
         if ($banner) {
-            $this->deletePublicFile($store->banner_path);
-            $data['banner_path'] = $this->storePublicFile($banner, 'stores/banners');
+            $nextBannerPath = $this->storePublicFile($banner, 'stores/banners');
+            $data['banner_path'] = $nextBannerPath;
         }
 
         $data['contact_email'] = $data['contact_email'] ?? $seller->email;
 
         $store->update($data);
+
+        if ($logo && $previousLogoPath !== $nextLogoPath) {
+            $this->deletePublicFile($previousLogoPath);
+        }
+
+        if ($banner && $previousBannerPath !== $nextBannerPath) {
+            $this->deletePublicFile($previousBannerPath);
+        }
 
         return $this->transformSellerStore($store->fresh()->loadMissing('seller'));
     }
@@ -93,6 +115,8 @@ class StoreService
             'description' => $store->description,
             'contact_email' => $store->contact_email,
             'phone_number' => $store->phone_number,
+            'logo_image_url' => $store->logo_image_url,
+            'banner_image_url' => $store->banner_image_url,
             'logo_url' => $store->logo_url,
             'banner_url' => $store->banner_url,
             'seller' => [

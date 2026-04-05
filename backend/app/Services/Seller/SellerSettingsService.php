@@ -20,8 +20,9 @@ class SellerSettingsService
     {
         unset($data['profile_image']);
 
+        $previousProfileImagePath = $seller->profile_image_path;
+
         if ($profileImage) {
-            $this->deletePublicFile($seller->profile_image_path);
             $data['profile_image_path'] = $this->storePublicFile($profileImage, 'profiles');
         }
 
@@ -31,6 +32,10 @@ class SellerSettingsService
             'notification_preferences' => $data['notification_preferences'] ?? $seller->notification_preferences,
             'profile_image_path' => $data['profile_image_path'] ?? $seller->profile_image_path,
         ]);
+
+        if ($profileImage) {
+            $this->deletePublicFile($previousProfileImagePath);
+        }
 
         return $this->transformSeller($seller->fresh()->loadMissing('store'));
     }

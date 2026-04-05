@@ -11,7 +11,7 @@ function AddProductPage() {
     price: '',
     stock: '',
     category: '',
-    image: '',
+    image_url: '',
     image_file: null,
     image_preview: '',
     status: 'active',

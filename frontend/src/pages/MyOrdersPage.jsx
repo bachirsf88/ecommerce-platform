@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import orderService from '../services/orderService';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 function MyOrdersPage() {
   const { user, loading: authLoading } = useAuth();
@@ -39,7 +40,7 @@ function MyOrdersPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 
@@ -49,8 +50,8 @@ function MyOrdersPage() {
         <div className="surface-card-strong mb-8 px-6 py-8 sm:px-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span className="section-label">My Orders</span>
-              <h1 className="section-title mt-4">Your Orders</h1>
+              <span className="section-label">Personal Orders</span>
+              <h1 className="section-title mt-4">My Purchases</h1>
               <p className="subtle-copy mt-2 text-sm">
                 Follow each order from pending through delivery and open any order to see full details.
               </p>

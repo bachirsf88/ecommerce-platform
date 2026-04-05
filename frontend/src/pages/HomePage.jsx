@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import heroImage from '../assets/hero.png';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
+import { resolveEntityImageUrl } from '../utils/media';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 const fallbackCategories = [
   {
@@ -69,14 +71,18 @@ function MediaTile({
 }
 
 function ArrivalItem({ product }) {
+  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
+
   return (
     <Link to={product?.id ? `/products/${product.id}` : '/products'} className="group">
       <div className="overflow-hidden rounded-[1.1rem] bg-[linear-gradient(160deg,rgba(239,231,223,0.95),rgba(226,216,207,0.9))]">
         <div className="flex aspect-[0.9] items-center justify-center p-4">
-          {product?.image ? (
-            <p className="break-all text-center text-xs text-[rgba(2,2,2,0.52)]">
-              {product.image}
-            </p>
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={product?.name || 'Product'}
+              className="h-full w-full object-cover object-center"
+            />
           ) : (
             <img
               src={heroImage}
@@ -398,8 +404,8 @@ function HomePage() {
                 <div className="mt-4 grid gap-3">
                   {!isAuthenticated && <Link to="/login" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Login</Link>}
                   {!isAuthenticated && <Link to="/register" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Register</Link>}
-                  {user?.role === 'buyer' && <Link to="/favorites" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Favorites</Link>}
-                  {user?.role === 'buyer' && <Link to="/orders" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">My Orders</Link>}
+                  {canAccessBuyerFeatures(user) && <Link to="/favorites" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Favorites</Link>}
+                  {canAccessBuyerFeatures(user) && <Link to="/orders" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">My Orders</Link>}
                   {user?.role === 'seller' && <Link to="/seller/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Seller Space</Link>}
                   {user?.role === 'admin' && <Link to="/admin" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Admin Area</Link>}
                 </div>

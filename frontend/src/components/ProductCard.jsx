@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import heroImage from '../assets/hero.png';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
+import { resolveEntityImageUrl } from '../utils/media';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 function ProductCard({ product, onFavoriteChange }) {
   const navigate = useNavigate();
@@ -12,6 +15,8 @@ function ProductCard({ product, onFavoriteChange }) {
   const productCategory = product?.category || 'Uncategorized';
   const productPrice = product?.price ?? 'N/A';
   const productStock = product?.stock ?? 'N/A';
+  const productImageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
+  const buyerAccess = canAccessBuyerFeatures(user);
   const [cartLoading, setCartLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -27,7 +32,7 @@ function ProductCard({ product, onFavoriteChange }) {
       if (
         authLoading ||
         !isAuthenticated ||
-        user?.role !== 'buyer' ||
+        !buyerAccess ||
         !productId
       ) {
         setIsFavorite(false);
@@ -54,7 +59,7 @@ function ProductCard({ product, onFavoriteChange }) {
     return () => {
       isMounted = false;
     };
-  }, [authLoading, isAuthenticated, productId, user]);
+  }, [authLoading, buyerAccess, isAuthenticated, productId]);
 
   const handleAddToCart = async () => {
     if (!productId) {
@@ -72,8 +77,8 @@ function ProductCard({ product, onFavoriteChange }) {
       return;
     }
 
-    if (user?.role !== 'buyer') {
-      setCartError('Only buyers can add products to cart.');
+    if (!buyerAccess) {
+      setCartError('This account cannot use personal shopping actions.');
       setCartMessage('');
       return;
     }
@@ -112,8 +117,8 @@ function ProductCard({ product, onFavoriteChange }) {
       return;
     }
 
-    if (user?.role !== 'buyer') {
-      setFavoriteError('Only buyers can manage favorites.');
+    if (!buyerAccess) {
+      setFavoriteError('This account cannot use personal shopping actions.');
       setFavoriteMessage('');
       return;
     }
@@ -146,17 +151,18 @@ function ProductCard({ product, onFavoriteChange }) {
   return (
     <article className="surface-card flex h-full flex-col p-5">
       <div className="product-media mb-5 flex h-52 items-center justify-center overflow-hidden p-6">
-        {product?.image ? (
-          <p className="break-all px-4 text-center text-xs text-[rgba(2,2,2,0.48)]">
-            {product.image}
-          </p>
+        {productImageSrc ? (
+          <img
+            src={productImageSrc}
+            alt={productName}
+            className="h-full w-full object-cover"
+          />
         ) : (
-          <div className="text-center">
-            <p className="font-display text-3xl text-[var(--color-primary)]">No image</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[var(--color-secondary)]">
-              Product preview unavailable
-            </p>
-          </div>
+          <img
+            src={heroImage}
+            alt={productName}
+            className="h-full w-full object-cover"
+          />
         )}
       </div>
 
@@ -240,7 +246,7 @@ function ProductCard({ product, onFavoriteChange }) {
           <p className="text-sm text-[var(--color-danger-text)]">Product details are unavailable.</p>
         )}
 
-        {isAuthenticated && user?.role === 'buyer' && (
+        {isAuthenticated && buyerAccess && (
           <div className="grid gap-3 sm:grid-cols-2">
             <Link
               to="/favorites"

@@ -4,7 +4,7 @@ import heroImage from '../assets/hero.png';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
-import { isRenderableImageSrc, resolveMediaUrl } from '../utils/media';
+import { resolveEntityImageUrl } from '../utils/media';
 
 function SellerProductsPage() {
   const { user } = useAuth();
@@ -170,7 +170,7 @@ function SellerProductsPage() {
               <article key={product.id} className="surface-card overflow-hidden">
                 <div className="aspect-[1.08] bg-[rgba(241,235,229,0.74)]">
                   <img
-                    src={isRenderableImageSrc(product.image) ? resolveMediaUrl(product.image) : heroImage}
+                    src={resolveEntityImageUrl(product.image_url, product.image) || heroImage}
                     alt={product.name || 'Product'}
                     className="h-full w-full object-cover"
                   />

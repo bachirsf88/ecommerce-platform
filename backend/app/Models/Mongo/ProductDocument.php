@@ -3,6 +3,7 @@
 namespace App\Models\Mongo;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 use MongoDB\Laravel\Eloquent\Model;
 
 class ProductDocument extends Model
@@ -14,7 +15,7 @@ class ProductDocument extends Model
 
     protected $connection = 'mongodb';
     protected $table = 'products';
-    protected $appends = ['id'];
+    protected $appends = ['id', 'image_url'];
     protected $hidden = ['_id'];
 
     protected $fillable = [
@@ -38,5 +39,28 @@ class ProductDocument extends Model
         $id = $value ?? $this->getKey();
 
         return $id !== null ? (string) $id : null;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        $path = $this->image;
+
+        if (! $path) {
+            return null;
+        }
+
+        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
+            return $path;
+        }
+
+        $baseUrl = request()
+            ? rtrim(request()->getSchemeAndHttpHost(), '/')
+            : rtrim((string) config('app.url'), '/');
+
+        if (str_starts_with($path, '/storage/')) {
+            return $baseUrl . $path;
+        }
+
+        return $baseUrl . Storage::disk('public')->url($path);
     }
 }

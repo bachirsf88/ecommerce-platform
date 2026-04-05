@@ -7,9 +7,45 @@ use Illuminate\Support\Facades\Storage;
 
 trait HandlesPublicFiles
 {
+    protected function publicFileBaseUrl(): string
+    {
+        $request = request();
+
+        if ($request) {
+            return rtrim($request->getSchemeAndHttpHost(), '/');
+        }
+
+        return rtrim((string) config('app.url'), '/');
+    }
+
     protected function storePublicFile(UploadedFile $file, string $directory): string
     {
         return $file->store($directory, 'public');
+    }
+
+    protected function normalizeStoredFileInput(?string $path): ?string
+    {
+        if ($path === null) {
+            return null;
+        }
+
+        $trimmedPath = trim($path);
+
+        if ($trimmedPath === '') {
+            return null;
+        }
+
+        $relativePath = $this->normalizePublicPath($trimmedPath);
+
+        if ($relativePath !== null) {
+            return $relativePath;
+        }
+
+        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $trimmedPath) === 1) {
+            return null;
+        }
+
+        return ltrim($trimmedPath, '/');
     }
 
     protected function publicFileUrl(?string $path): ?string
@@ -18,11 +54,15 @@ trait HandlesPublicFiles
             return null;
         }
 
-        if (preg_match('/^(https?:\/\/|data:|\/storage\/)/i', $path) === 1) {
+        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
             return $path;
         }
 
-        return url(Storage::disk('public')->url($path));
+        if (str_starts_with($path, '/storage/')) {
+            return $this->publicFileBaseUrl() . $path;
+        }
+
+        return $this->publicFileBaseUrl() . Storage::disk('public')->url($path);
     }
 
     protected function deletePublicFile(?string $path): void
@@ -38,7 +78,7 @@ trait HandlesPublicFiles
         }
     }
 
-    private function normalizePublicPath(?string $path): ?string
+    protected function normalizePublicPath(?string $path): ?string
     {
         if (! $path) {
             return null;
@@ -48,6 +88,10 @@ trait HandlesPublicFiles
             $parsedPath = parse_url($path, PHP_URL_PATH);
 
             if (! is_string($parsedPath)) {
+                return null;
+            }
+
+            if (! str_starts_with($parsedPath, '/storage/')) {
                 return null;
             }
 

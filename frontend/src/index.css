@@ -398,6 +398,24 @@
     gap: 0.55rem;
   }
 
+  .workspace-sidebar-sections {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .workspace-sidebar-section {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .workspace-sidebar-section-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(112, 100, 92, 0.74);
+  }
+
   .workspace-nav-link {
     display: block;
     border-radius: 1.1rem;

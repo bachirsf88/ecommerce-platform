@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext';
 import favoriteService from '../services/favoriteService';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 function FavoritesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -25,7 +26,7 @@ function FavoritesPage() {
       }
     };
 
-    if (!authLoading && user?.role === 'buyer') {
+    if (!authLoading && canAccessBuyerFeatures(user)) {
       loadFavorites();
     }
   }, [authLoading, user]);
@@ -52,7 +53,7 @@ function FavoritesPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 
@@ -61,7 +62,7 @@ function FavoritesPage() {
       <div className="page-container">
         <div className="surface-card-strong mb-6 flex flex-wrap items-center justify-between gap-4 px-6 py-7">
           <div>
-            <span className="section-label">Buyer Favorites</span>
+            <span className="section-label">Personal Favorites</span>
             <h1 className="section-title mt-4">My Favorites</h1>
             <p className="subtle-copy mt-2 text-sm">
               View and manage products you saved for later.

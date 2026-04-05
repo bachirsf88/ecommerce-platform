@@ -3,30 +3,19 @@ import { useEffect, useState } from 'react';
 import heroImage from '../assets/hero.png';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
-
-const isRenderableImageSrc = (value) =>
-  typeof value === 'string' && /^(https?:\/\/|data:|\/)/i.test(value.trim());
+import { resolveEntityImageUrl } from '../utils/media';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 function CartProductImage({ item }) {
-  const imageValue = item.product?.image;
+  const imageSrc = resolveEntityImageUrl(item.product?.image_url, item.product?.image);
 
-  if (isRenderableImageSrc(imageValue)) {
+  if (imageSrc) {
     return (
       <img
-        src={imageValue}
+        src={imageSrc}
         alt={item.product?.name || 'Cart product'}
         className="h-full w-full object-cover object-center"
       />
-    );
-  }
-
-  if (imageValue) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(160deg,rgba(240,232,224,0.92),rgba(226,216,206,0.84))] p-4">
-        <p className="break-all text-center text-[10px] leading-4 text-[rgba(2,2,2,0.5)]">
-          {imageValue}
-        </p>
-      </div>
     );
   }
 
@@ -203,7 +192,7 @@ function CartPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 

@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AddProductPage from '../pages/AddProductPage';
+import AccountPage from '../pages/AccountPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminOrdersPage from '../pages/AdminOrdersPage';
 import AdminProductsPage from '../pages/AdminProductsPage';
@@ -53,13 +54,14 @@ function AppRoutes() {
         <Route path="/dashboard" element={<ProtectedExamplePage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['buyer']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['buyer', 'seller']} />}>
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/orders" element={<MyOrdersPage />} />
         <Route path="/orders/:id" element={<OrderDetailsPage />} />
+        <Route path="/account" element={<AccountPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={['seller']} />}>

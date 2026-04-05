@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import orderService from '../services/orderService';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 const steps = [
   { id: 1, title: 'Shipping', caption: 'Address details' },
@@ -81,7 +82,7 @@ function CheckoutPage() {
       }
     };
 
-    if (!authLoading && user?.role === 'buyer') {
+    if (!authLoading && canAccessBuyerFeatures(user)) {
       loadCart();
     }
   }, [authLoading, user]);
@@ -253,7 +254,7 @@ function CheckoutPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 

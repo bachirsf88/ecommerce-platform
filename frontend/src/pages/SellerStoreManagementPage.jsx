@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import storeService from '../services/storeService';
+import { resolveMediaUrl } from '../utils/media';
 
 function SellerStoreManagementPage() {
   const { fetchUser } = useAuth();
@@ -33,8 +34,8 @@ function SellerStoreManagementPage() {
           ...data,
           logo: null,
           banner: null,
-          logo_url: data?.logo_url || '',
-          banner_url: data?.banner_url || '',
+          logo_url: data?.logo_image_url || data?.logo_url || '',
+          banner_url: data?.banner_image_url || data?.banner_url || '',
         }));
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load store profile.');
@@ -78,8 +79,8 @@ function SellerStoreManagementPage() {
         ...updatedStore,
         logo: null,
         banner: null,
-        logo_url: updatedStore?.logo_url || previous.logo_url,
-        banner_url: updatedStore?.banner_url || previous.banner_url,
+        logo_url: updatedStore?.logo_image_url || updatedStore?.logo_url || previous.logo_url,
+        banner_url: updatedStore?.banner_image_url || updatedStore?.banner_url || previous.banner_url,
       }));
       setMessage('Store identity updated successfully.');
     } catch (err) {
@@ -189,13 +190,13 @@ function SellerStoreManagementPage() {
       <aside className="surface-card-strong overflow-hidden">
         <div className="aspect-[1.45] bg-[linear-gradient(160deg,rgba(241,235,229,0.88),rgba(224,211,201,0.86))]">
           {formData.banner_url ? (
-            <img src={formData.banner_url} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
+            <img src={resolveMediaUrl(formData.banner_url)} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
           ) : null}
         </div>
         <div className="p-6 sm:p-7">
           <div className="-mt-16 inline-flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.8rem] border border-white/70 bg-[rgba(255,253,249,0.92)] shadow-[0_18px_32px_rgba(2,2,2,0.08)]">
             {formData.logo_url ? (
-              <img src={formData.logo_url} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
+              <img src={resolveMediaUrl(formData.logo_url)} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
             ) : (
               <span className="font-display text-3xl text-[var(--color-primary)]">
                 {(formData.store_name || 'S').charAt(0)}

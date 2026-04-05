@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import orderService from '../services/orderService';
 import productService from '../services/productService';
 import reviewService from '../services/reviewService';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 const REVIEW_ELIGIBLE_STATUSES = ['delivered'];
 
@@ -243,7 +244,7 @@ function OrderDetailsPage() {
     );
   }
 
-  if (user?.role !== 'buyer') {
+  if (!canAccessBuyerFeatures(user)) {
     return <Navigate to="/" replace />;
   }
 

@@ -1,8 +1,74 @@
-import { NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { canAccessBuyerFeatures, isSeller } from '../utils/roles';
+
+function IconButton({ to, label, children }) {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+          isActive
+            ? 'border-[rgba(2,2,2,0.12)] bg-[rgba(2,2,2,0.06)] text-[var(--color-primary)]'
+            : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.76)] text-[rgba(88,78,72,0.84)] hover:border-[rgba(138,129,124,0.26)] hover:text-[var(--color-primary)]'
+        }`
+      }
+      aria-label={label}
+      title={label}
+    >
+      {children}
+    </NavLink>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 20.25s-6.75-4.35-9-8.17C1.36 9.22 3.04 5.5 6.9 5.5c2.07 0 3.31 1.18 4.1 2.31.79-1.13 2.03-2.31 4.1-2.31 3.86 0 5.54 3.72 3.9 6.58-2.25 3.82-9 8.17-9 8.17Z" />
+    </svg>
+  );
+}
+
+function CartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M2.75 4.75h2.4l1.83 8.02a1 1 0 0 0 .98.78h8.37a1 1 0 0 0 .97-.74l1.47-5.43H6.16" />
+      <circle cx="10.25" cy="18.25" r="1.4" />
+      <circle cx="17.1" cy="18.25" r="1.4" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="8.5" r="3.5" />
+      <path d="M5.5 19.5c1.74-3.05 4.04-4.58 6.5-4.58s4.76 1.53 6.5 4.58" />
+    </svg>
+  );
+}
 
 function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountMenuRef = useRef(null);
+  const shoppingAccess = canAccessBuyerFeatures(user);
+  const sellerUser = isSeller(user);
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (!accountMenuRef.current?.contains(event.target)) {
+        setAccountOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, []);
 
   const getLinkClassName = ({ isActive }) =>
     `text-[0.78rem] font-semibold uppercase tracking-[0.18em] transition-colors ${
@@ -27,7 +93,7 @@ function Navbar() {
               </div>
             </NavLink>
 
-            {isAuthenticated && (
+            {isAuthenticated ? (
               <div className="hidden text-right lg:block">
                 <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-secondary)]">
                   Signed In
@@ -36,64 +102,130 @@ function Navbar() {
                   {user?.name || 'Account'}
                 </p>
               </div>
-            )}
+            ) : null}
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 lg:justify-center">
-            <NavLink to="/" className={getLinkClassName}>
-              Home
-            </NavLink>
-            <NavLink to="/products" className={getLinkClassName}>
-              Products
-            </NavLink>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+            <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <NavLink to="/" className={getLinkClassName}>
+                Home
+              </NavLink>
+              <NavLink to="/products" className={getLinkClassName}>
+                Products
+              </NavLink>
+              {sellerUser ? (
+                <NavLink to="/seller/dashboard" className={getLinkClassName}>
+                  Seller Panel
+                </NavLink>
+              ) : null}
+              {user?.role === 'admin' ? (
+                <NavLink to="/admin" className={getLinkClassName}>
+                  Admin Panel
+                </NavLink>
+              ) : null}
+            </nav>
 
-            {!isAuthenticated && (
-              <>
-                <NavLink to="/login" className={getLinkClassName}>
+            {!isAuthenticated ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <Link to="/login" className="btn-base btn-outline">
                   Login
-                </NavLink>
-                <NavLink to="/register" className={getLinkClassName}>
+                </Link>
+                <Link to="/register" className="btn-base btn-primary">
                   Register
-                </NavLink>
-              </>
-            )}
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 self-start lg:self-auto">
+                {shoppingAccess ? (
+                  <>
+                    <IconButton to="/favorites" label="Favorites">
+                      <HeartIcon />
+                    </IconButton>
+                    <IconButton to="/cart" label="Cart">
+                      <CartIcon />
+                    </IconButton>
+                  </>
+                ) : null}
 
-            {user?.role === 'buyer' && (
-              <>
-                <NavLink to="/favorites" className={getLinkClassName}>
-                  Favorites
-                </NavLink>
-                <NavLink to="/cart" className={getLinkClassName}>
-                  Cart
-                </NavLink>
-                <NavLink to="/orders" className={getLinkClassName}>
-                  Orders
-                </NavLink>
-              </>
-            )}
+                <div className="relative" ref={accountMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setAccountOpen((previous) => !previous)}
+                    className={`flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+                      accountOpen
+                        ? 'border-[rgba(2,2,2,0.12)] bg-[rgba(2,2,2,0.06)] text-[var(--color-primary)]'
+                        : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.76)] text-[rgba(88,78,72,0.84)] hover:border-[rgba(138,129,124,0.26)] hover:text-[var(--color-primary)]'
+                    }`}
+                    aria-label="Account menu"
+                    aria-expanded={accountOpen}
+                  >
+                    <UserIcon />
+                  </button>
 
-            {user?.role === 'seller' && (
-              <NavLink to="/seller/dashboard" className={getLinkClassName}>
-                Seller Panel
-              </NavLink>
-            )}
+                  {accountOpen ? (
+                    <div className="absolute right-0 top-[calc(100%+0.75rem)] w-[17rem] rounded-[1.45rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.98)] p-3 shadow-[0_24px_40px_rgba(2,2,2,0.12)]">
+                      <div className="border-b border-[rgba(138,129,124,0.12)] px-3 pb-3">
+                        <p className="text-sm font-semibold text-[var(--color-primary)]">
+                          {user?.name || 'Account'}
+                        </p>
+                        <p className="mt-1 text-xs text-[rgba(88,78,72,0.74)]">
+                          {user?.email || 'No email'}
+                        </p>
+                      </div>
 
-            {user?.role === 'admin' && (
-              <NavLink to="/admin" className={getLinkClassName}>
-                Admin Panel
-              </NavLink>
-            )}
+                      <div className="grid gap-1 px-1 py-3">
+                        {shoppingAccess ? (
+                          <>
+                            <Link
+                              to="/account"
+                              onClick={() => setAccountOpen(false)}
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                            >
+                              Account / Profile
+                            </Link>
+                            <Link
+                              to="/orders"
+                              onClick={() => setAccountOpen(false)}
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                            >
+                              My Purchases
+                            </Link>
+                            <Link
+                              to="/account#password"
+                              onClick={() => setAccountOpen(false)}
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                            >
+                              Change Password
+                            </Link>
+                          </>
+                        ) : null}
 
-            {isAuthenticated && (
-              <button
-                type="button"
-                onClick={logout}
-                className="text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.9)] transition-colors hover:text-[var(--color-primary)]"
-              >
-                Logout
-              </button>
+                        {sellerUser ? (
+                          <Link
+                            to="/seller/dashboard"
+                            onClick={() => setAccountOpen(false)}
+                            className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                          >
+                            Seller Workspace
+                          </Link>
+                        ) : null}
+                      </div>
+
+                      <div className="border-t border-[rgba(138,129,124,0.12)] px-1 pt-3">
+                        <button
+                          type="button"
+                          onClick={logout}
+                          className="w-full rounded-[1rem] px-3 py-2 text-left text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             )}
-          </nav>
+          </div>
         </div>
       </div>
     </header>

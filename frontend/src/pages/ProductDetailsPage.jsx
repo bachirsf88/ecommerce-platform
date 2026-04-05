@@ -6,7 +6,8 @@ import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
-import { resolveMediaUrl } from '../utils/media';
+import { resolveEntityImageUrl, resolveMediaUrl } from '../utils/media';
+import { canAccessBuyerFeatures } from '../utils/roles';
 
 const GALLERY_POSITIONS = [
   'center 16%',
@@ -62,10 +63,12 @@ function RatingMarks({ rating, muted = false }) {
 }
 
 function ProductImage({ product, objectPosition = 'center center', compact = false }) {
-  if (isRenderableImageSrc(product?.image)) {
+  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
+
+  if (imageSrc) {
     return (
       <img
-        src={resolveMediaUrl(product.image)}
+        src={imageSrc}
         alt={product?.name || 'Product'}
         className="h-full w-full object-cover"
         style={{ objectPosition }}
@@ -264,7 +267,7 @@ function ProductDetailsPage() {
       if (
         authLoading ||
         !isAuthenticated ||
-        user?.role !== 'buyer' ||
+        !canAccessBuyerFeatures(user) ||
         !product?.id
       ) {
         setIsFavorite(false);
@@ -352,8 +355,8 @@ function ProductDetailsPage() {
       return;
     }
 
-    if (user?.role !== 'buyer') {
-      setCartError('Only buyers can add products to cart.');
+    if (!canAccessBuyerFeatures(user)) {
+      setCartError('This account cannot use personal shopping actions.');
       setCartMessage('');
       return;
     }
@@ -392,8 +395,8 @@ function ProductDetailsPage() {
       return;
     }
 
-    if (user?.role !== 'buyer') {
-      setFavoriteError('Only buyers can manage favorites.');
+    if (!canAccessBuyerFeatures(user)) {
+      setFavoriteError('This account cannot use personal shopping actions.');
       setFavoriteMessage('');
       return;
     }
@@ -630,7 +633,7 @@ function ProductDetailsPage() {
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full bg-[rgba(224,175,160,0.22)]">
                       <img
-                        src={resolveMediaUrl(sellerStore?.logo_url) || heroImage}
+                        src={resolveMediaUrl(sellerStore?.logo_image_url || sellerStore?.logo_url) || heroImage}
                         alt={sellerName}
                         className="h-full w-full object-cover"
                       />
@@ -660,7 +663,7 @@ function ProductDetailsPage() {
                   )}
                 </div>
 
-                {isAuthenticated && user?.role === 'buyer' && (
+                {isAuthenticated && canAccessBuyerFeatures(user) && (
                   <div className="flex flex-wrap gap-4 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)]">
                     <Link to="/cart">View Cart</Link>
                     <Link to="/favorites">Favorites</Link>

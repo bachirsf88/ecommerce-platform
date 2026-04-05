@@ -96,6 +96,7 @@ class FavoriteService
             'stock' => $product->stock,
             'category' => $product->category,
             'image' => $product->image,
+            'image_url' => $product->image_url,
             'status' => $product->status,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,

@@ -8,7 +8,6 @@ const normalizeProductPayload = (payload) => {
   formData.append('price', Number(payload.price));
   formData.append('stock', Number(payload.stock));
   formData.append('category', payload.category);
-  formData.append('image', payload.image?.trim() || '');
 
   if (payload.status) {
     formData.append('status', payload.status);

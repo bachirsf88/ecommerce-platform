@@ -29,6 +29,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone_number',
         'password',
         'role',
         'seller_status',
@@ -100,10 +101,18 @@ class User extends Authenticatable
             return null;
         }
 
-        if (preg_match('/^(https?:\/\/|data:|\/storage\/)/i', $path) === 1) {
+        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
             return $path;
         }
 
-        return url(Storage::disk('public')->url($path));
+        $baseUrl = request()
+            ? rtrim(request()->getSchemeAndHttpHost(), '/')
+            : rtrim((string) config('app.url'), '/');
+
+        if (str_starts_with($path, '/storage/')) {
+            return $baseUrl . $path;
+        }
+
+        return $baseUrl . Storage::disk('public')->url($path);
     }
 }

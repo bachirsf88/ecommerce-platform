@@ -25,6 +25,8 @@ class Store extends Model
     protected $appends = [
         'logo_url',
         'banner_url',
+        'logo_image_url',
+        'banner_image_url',
     ];
 
     public function seller()
@@ -42,16 +44,34 @@ class Store extends Model
         return $this->resolveMediaUrl($this->banner_path);
     }
 
+    public function getLogoImageUrlAttribute(): ?string
+    {
+        return $this->getLogoUrlAttribute();
+    }
+
+    public function getBannerImageUrlAttribute(): ?string
+    {
+        return $this->getBannerUrlAttribute();
+    }
+
     private function resolveMediaUrl(?string $path): ?string
     {
         if (! $path) {
             return null;
         }
 
-        if (preg_match('/^(https?:\/\/|data:|\/storage\/)/i', $path) === 1) {
+        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
             return $path;
         }
 
-        return url(Storage::disk('public')->url($path));
+        $baseUrl = request()
+            ? rtrim(request()->getSchemeAndHttpHost(), '/')
+            : rtrim((string) config('app.url'), '/');
+
+        if (str_starts_with($path, '/storage/')) {
+            return $baseUrl . $path;
+        }
+
+        return $baseUrl . Storage::disk('public')->url($path);
     }
 }
