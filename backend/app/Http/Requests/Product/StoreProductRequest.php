@@ -22,6 +22,7 @@ class StoreProductRequest extends FormRequest
             'stock' => ['required', 'integer', 'min:0'],
             'category' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'string'],
+            'image_file' => ['nullable', 'image', 'max:6144'],
             'status' => ['nullable', 'string', Rule::in([
                 Product::STATUS_ACTIVE,
                 Product::STATUS_INACTIVE,

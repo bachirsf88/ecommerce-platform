@@ -48,6 +48,7 @@ class ProductController extends Controller
     {
         $products = $this->productService->filterProducts($request->only([
             'category',
+            'seller_id',
             'status',
             'min_price',
             'max_price',
@@ -60,7 +61,8 @@ class ProductController extends Controller
     {
         $product = $this->productService->createSellerProduct(
             $request->validated(),
-            $request->user()
+            $request->user(),
+            $request->file('image_file')
         );
 
         return $this->successResponse('Product created successfully.', $product, 201);
@@ -77,7 +79,8 @@ class ProductController extends Controller
         $updatedProduct = $this->productService->updateProduct(
             $existingProduct,
             $request->validated(),
-            $request->user()
+            $request->user(),
+            $request->file('image_file')
         );
 
         if (! $updatedProduct) {

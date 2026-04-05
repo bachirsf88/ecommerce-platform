@@ -1,44 +1,54 @@
-import { Link, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
+
+const adminSections = [
+  {
+    to: '/admin/users',
+    label: 'Users',
+    title: 'User Management',
+    description: 'Review account types and marketplace access.',
+  },
+  {
+    to: '/admin/sellers',
+    label: 'Sellers',
+    title: 'Seller Review',
+    description: 'Approve sellers and monitor their current status.',
+  },
+  {
+    to: '/admin/products',
+    label: 'Products',
+    title: 'Catalog Oversight',
+    description: 'Inspect active listings and product health.',
+  },
+  {
+    to: '/admin/orders',
+    label: 'Orders',
+    title: 'Order Monitoring',
+    description: 'Track transactional activity across the platform.',
+  },
+];
 
 function AdminDashboardPage() {
-  const { user, loading: authLoading } = useAuth();
-
-  if (authLoading) {
-    return (
-      <div className="p-6">
-        <div className="border rounded bg-white p-6 shadow">Checking user...</div>
-      </div>
-    );
-  }
-
-  if (user?.role !== 'admin') {
-    return <Navigate to="/" replace />;
-  }
-
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="bg-white border rounded-xl shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-sm text-gray-600">
-            Manage users, sellers, products, and orders from one clean dashboard.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <section className="hero-card p-6 sm:p-8">
+        <span className="section-label">Admin Dashboard</span>
+        <h1 className="section-title mt-5">Marketplace overview</h1>
+        <p className="subtle-copy mt-4 max-w-2xl text-sm">
+          Start from the main sidebar, then work inside one section at a time. This dashboard now acts as a clean launch point instead of duplicating navigation everywhere.
+        </p>
+      </section>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Link to="/admin/users" className="bg-white border rounded-xl shadow-sm p-5">
-            View Users
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {adminSections.map((item) => (
+          <Link key={item.to} to={item.to} className="surface-card p-5">
+            <span className="status-pill">{item.label}</span>
+            <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+              {item.title}
+            </h2>
+            <p className="subtle-copy mt-4 text-sm">{item.description}</p>
           </Link>
-          <Link to="/admin/sellers" className="bg-white border rounded-xl shadow-sm p-5">
-            View Sellers
-          </Link>
-          <Link to="/admin/products" className="bg-white border rounded-xl shadow-sm p-5">
-            View Products
-          </Link>
-          <Link to="/admin/orders" className="bg-white border rounded-xl shadow-sm p-5">
-            View Orders
-          </Link>
-        </div>
+        ))}
+      </section>
     </div>
   );
 }

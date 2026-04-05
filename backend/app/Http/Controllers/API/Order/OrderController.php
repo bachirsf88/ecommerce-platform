@@ -20,13 +20,17 @@ class OrderController extends Controller
 
     public function checkout(CheckoutRequest $request): JsonResponse
     {
-        $order = $this->orderService->checkout($request->user(), $request->validated());
+        $result = $this->orderService->checkout($request->user(), $request->validated());
 
-        if (! $order) {
-            return $this->errorResponse('Cart is empty or contains unavailable products.', null, 400);
+        if (! $result['success']) {
+            return $this->errorResponse($result['message'], null, $result['status_code']);
         }
 
-        return $this->successResponse('Checkout completed successfully.', $order, 201);
+        return $this->successResponse(
+            $result['message'],
+            $result['data'],
+            $result['status_code']
+        );
     }
 
     public function index(Request $request): JsonResponse

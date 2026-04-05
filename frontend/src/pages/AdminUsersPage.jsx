@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import adminService from '../services/adminService';
 
 function AdminUsersPage() {
-  const { user, loading: authLoading } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,53 +21,44 @@ function AdminUsersPage() {
       }
     };
 
-    if (!authLoading && user?.role === 'admin') {
-      loadUsers();
-    }
-  }, [authLoading, user]);
-
-  if (authLoading) {
-    return <p>Checking user...</p>;
-  }
-
-  if (user?.role !== 'admin') {
-    return <Navigate to="/" replace />;
-  }
+    loadUsers();
+  }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-        <p className="mb-6">
-          <Link to="/admin" className="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium">
-            Back to Admin Dashboard
-          </Link>
+    <div className="space-y-6">
+      <section className="surface-card-strong p-6">
+        <span className="section-label">Users</span>
+        <h1 className="section-title mt-4">All Users</h1>
+        <p className="subtle-copy mt-3 text-sm">
+          A focused user-management view without seller, product, or order shortcuts mixed into the same header.
         </p>
+      </section>
 
-        <div className="bg-white border rounded-xl shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold mb-2">All Users</h1>
-          <p className="text-sm text-gray-600">
-            Review all registered users and their current roles.
-          </p>
-        </div>
+      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading users...</div> : null}
+      {error ? <div className="status-message status-error">{error}</div> : null}
 
-        {loading && <p className="mb-4">Loading users...</p>}
-        {error && <p className="mb-4">{error}</p>}
-
-        {!loading && !error && users.length === 0 && (
-          <p className="border rounded bg-white p-4 shadow">No users found.</p>
-        )}
-
-        {!loading && !error && users.length > 0 && (
-          <div className="flex flex-col gap-2">
+      {!loading && !error ? (
+        users.length === 0 ? (
+          <div className="empty-state">No users found.</div>
+        ) : (
+          <div className="grid gap-3">
             {users.map((item) => (
-              <div key={item.id} className="border rounded bg-white p-4 shadow">
-                <p className="mb-4 font-bold">{item.name}</p>
-                <p className="mb-4">Email: {item.email}</p>
-                <p className="mb-4">Role: {item.role}</p>
-                <p>Seller Status: {item.seller_status || 'N/A'}</p>
+              <div key={item.id} className="data-card">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-display text-3xl leading-none">{item.name}</p>
+                    <p className="mt-2 text-sm text-[rgba(2,2,2,0.62)]">{item.email}</p>
+                  </div>
+                  <span className="status-pill">{item.role}</span>
+                </div>
+                <p className="mt-4 text-sm text-[rgba(2,2,2,0.68)]">
+                  Seller Status: {item.seller_status || 'N/A'}
+                </p>
               </div>
             ))}
           </div>
-        )}
+        )
+      ) : null}
     </div>
   );
 }

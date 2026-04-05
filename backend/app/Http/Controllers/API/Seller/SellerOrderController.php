@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Services\Order\SellerOrderService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
@@ -39,25 +40,23 @@ class SellerOrderController extends Controller
     public function updateStatus(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'string', Rule::in([
-                'pending',
-                'confirmed',
-                'shipped',
-                'delivered',
-                'cancelled',
-            ])],
+            'status' => ['required', 'string', Rule::in(Order::STATUSES)],
         ]);
 
-        $order = $this->sellerOrderService->updateSellerOrderStatus(
+        $result = $this->sellerOrderService->updateSellerOrderStatus(
             $request->user(),
             $id,
             $validated['status']
         );
 
-        if (! $order) {
-            return $this->errorResponse('Order not found or status is invalid.', null, 404);
+        if (! $result['success']) {
+            return $this->errorResponse($result['message'], null, $result['status_code']);
         }
 
-        return $this->successResponse('Order status updated successfully.', $order);
+        return $this->successResponse(
+            $result['message'],
+            $result['data'],
+            $result['status_code']
+        );
     }
 }

@@ -36,6 +36,9 @@ class ProductRepository implements ProductRepositoryInterface
             ->when($filters['category'] ?? null, function ($query, $category) {
                 $query->where('category', $category);
             })
+            ->when($filters['seller_id'] ?? null, function ($query, $sellerId) {
+                $query->where('seller_id', $sellerId);
+            })
             ->when($filters['status'] ?? null, function ($query, $status) {
                 $query->where('status', $status);
             })

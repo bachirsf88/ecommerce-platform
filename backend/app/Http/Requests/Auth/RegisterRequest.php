@@ -20,6 +20,9 @@ class RegisterRequest extends FormRequest
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required'],
             'role' => ['required', 'string', Rule::in(['buyer', 'seller'])],
+            'store_name' => ['required_if:role,seller', 'string', 'max:255'],
+            'store_address' => ['required_if:role,seller', 'string'],
+            'postal_code' => ['required_if:role,seller', 'string', 'max:255'],
         ];
     }
 }

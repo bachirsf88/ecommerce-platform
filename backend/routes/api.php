@@ -6,7 +6,12 @@ use App\Http\Controllers\API\Cart\CartController;
 use App\Http\Controllers\API\Favorite\FavoriteController;
 use App\Http\Controllers\API\Order\OrderController;
 use App\Http\Controllers\API\Product\ProductController;
+use App\Http\Controllers\API\Review\ReviewController;
+use App\Http\Controllers\API\Seller\SellerDashboardController;
+use App\Http\Controllers\API\Seller\SellerFinanceController;
 use App\Http\Controllers\API\Seller\SellerOrderController;
+use App\Http\Controllers\API\Seller\SellerSettingsController;
+use App\Http\Controllers\API\Store\StoreController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -39,6 +44,7 @@ Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/search', [ProductController::class, 'search']);
     Route::get('/filter', [ProductController::class, 'filter']);
+    Route::get('/{id}/reviews', [ReviewController::class, 'indexByProduct']);
     Route::get('/{id}', [ProductController::class, 'show']);
 
     Route::middleware(['auth:sanctum', 'role:seller'])->group(function () {
@@ -46,6 +52,16 @@ Route::prefix('products')->group(function () {
         Route::put('/{product}', [ProductController::class, 'update']);
         Route::delete('/{product}', [ProductController::class, 'destroy']);
     });
+});
+
+Route::prefix('stores')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:seller'])->group(function () {
+        Route::get('/me', [StoreController::class, 'showMine']);
+        Route::post('/me', [StoreController::class, 'updateMine']);
+    });
+
+    Route::get('/seller/{sellerId}', [StoreController::class, 'showBySeller']);
+    Route::get('/{id}', [StoreController::class, 'show']);
 });
 
 Route::prefix('cart')->middleware(['auth:sanctum', 'role:buyer'])->group(function () {
@@ -65,12 +81,22 @@ Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
     Route::post('/checkout', [OrderController::class, 'checkout']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
 });
 
 Route::prefix('seller/orders')->middleware(['auth:sanctum', 'role:seller'])->group(function () {
     Route::get('/', [SellerOrderController::class, 'index']);
     Route::get('/{id}', [SellerOrderController::class, 'show']);
     Route::put('/{id}/status', [SellerOrderController::class, 'updateStatus']);
+});
+
+Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller'])->group(function () {
+    Route::get('/dashboard', [SellerDashboardController::class, 'show']);
+    Route::get('/finance', [SellerFinanceController::class, 'overview']);
+    Route::post('/finance/withdrawals', [SellerFinanceController::class, 'storeWithdrawal']);
+    Route::get('/settings', [SellerSettingsController::class, 'show']);
+    Route::post('/settings/profile', [SellerSettingsController::class, 'updateProfile']);
+    Route::put('/settings/password', [SellerSettingsController::class, 'updatePassword']);
 });
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(function () {

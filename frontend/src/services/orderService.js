@@ -3,8 +3,16 @@ import api from './api';
 const orderService = {
   async checkout(payload) {
     const response = await api.post('/checkout', {
+      full_name: payload.full_name,
+      phone: payload.phone,
+      country: payload.country,
+      state: payload.state,
+      municipality: payload.municipality,
+      neighborhood: payload.neighborhood,
+      street_address: payload.street_address,
+      notes: payload.notes,
+      shipping_method: payload.shipping_method,
       payment_method: payload.payment_method,
-      shipping_address: payload.shipping_address,
     });
 
     return response.data.data ?? null;

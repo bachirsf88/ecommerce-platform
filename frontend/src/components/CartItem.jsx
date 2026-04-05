@@ -24,17 +24,18 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+    <div className="data-card">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <span className="status-pill">Cart Item</span>
+          <h3 className="font-display text-3xl leading-none text-[var(--color-primary)]">
             {item.product?.name || 'Unnamed product'}
           </h3>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[rgba(2,2,2,0.68)]">
             Category: {item.product?.category || 'Uncategorized'}
           </p>
-          <p className="text-sm text-slate-600">Unit Price: ${item.unit_price}</p>
-          <p className="text-sm font-medium text-slate-900">
+          <p className="text-sm text-[rgba(2,2,2,0.68)]">Unit Price: ${item.unit_price}</p>
+          <p className="text-sm font-semibold text-[var(--color-primary)]">
             Subtotal: ${item.subtotal}
           </p>
         </div>
@@ -43,7 +44,7 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
           <div>
             <label
               htmlFor={`quantity-${item.id}`}
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-semibold text-[rgba(2,2,2,0.72)]"
             >
               Quantity
             </label>
@@ -53,7 +54,7 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
               min="1"
               value={quantity}
               onChange={(event) => setQuantity(event.target.value)}
-              className="mt-2 w-24 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+              className="text-input mt-2 w-24"
             />
           </div>
 
@@ -61,7 +62,7 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
             type="button"
             onClick={handleUpdate}
             disabled={loading}
-            className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-800 disabled:opacity-60"
+            className="btn-base btn-primary"
           >
             Update
           </button>
@@ -70,7 +71,7 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
             type="button"
             onClick={handleRemove}
             disabled={loading}
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-60"
+            className="btn-base btn-danger"
           >
             Remove
           </button>

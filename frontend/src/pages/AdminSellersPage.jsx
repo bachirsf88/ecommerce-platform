@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import adminService from '../services/adminService';
 
 function AdminSellersPage() {
-  const { user, loading: authLoading } = useAuth();
   const [sellers, setSellers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -25,10 +22,8 @@ function AdminSellersPage() {
       }
     };
 
-    if (!authLoading && user?.role === 'admin') {
-      loadSellers();
-    }
-  }, [authLoading, user]);
+    loadSellers();
+  }, []);
 
   const handleApproveSeller = async (sellerId) => {
     setActionLoading(true);
@@ -49,64 +44,55 @@ function AdminSellersPage() {
     }
   };
 
-  if (authLoading) {
-    return <p>Checking user...</p>;
-  }
-
-  if (user?.role !== 'admin') {
-    return <Navigate to="/" replace />;
-  }
-
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-        <p className="mb-6">
-          <Link to="/admin" className="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium">
-            Back to Admin Dashboard
-          </Link>
+    <div className="space-y-6">
+      <section className="surface-card-strong p-6">
+        <span className="section-label">Sellers</span>
+        <h1 className="section-title mt-4">Seller Review</h1>
+        <p className="subtle-copy mt-3 text-sm">
+          Handle seller approvals in a section that is only about seller accounts and status decisions.
         </p>
+      </section>
 
-        <div className="bg-white border rounded-xl shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold mb-2">Sellers</h1>
-          <p className="text-sm text-gray-600">
-            Review seller accounts and approve pending sellers.
-          </p>
-        </div>
+      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading sellers...</div> : null}
+      {error ? <div className="status-message status-error">{error}</div> : null}
 
-        {loading && <p className="mb-4">Loading sellers...</p>}
-        {error && <p className="mb-4">{error}</p>}
-
-        {!loading && !error && sellers.length === 0 && (
-          <p className="border rounded bg-white p-4 shadow">No sellers found.</p>
-        )}
-
-        {!loading && !error && sellers.length > 0 && (
-          <div className="flex flex-col gap-2">
+      {!loading && !error ? (
+        sellers.length === 0 ? (
+          <div className="empty-state">No sellers found.</div>
+        ) : (
+          <div className="grid gap-3">
             {sellers.map((seller) => (
-              <div key={seller.id} className="border rounded bg-white p-4 shadow">
-                <p className="mb-4 font-bold">{seller.name}</p>
-                <p className="mb-4">Email: {seller.email}</p>
-                <p className="mb-4">Seller Status: {seller.seller_status || 'N/A'}</p>
+              <div key={seller.id} className="data-card">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-display text-3xl leading-none">{seller.name}</p>
+                    <p className="mt-2 text-sm text-[rgba(2,2,2,0.62)]">{seller.email}</p>
+                  </div>
+                  <span className="status-pill">{seller.seller_status || 'N/A'}</span>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleApproveSeller(seller.id)}
-                  disabled={
-                    actionLoading || seller.seller_status === 'approved'
-                  }
-                  className={
-                    seller.seller_status === 'approved'
-                      ? 'rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700'
-                      : 'rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700'
-                  }
-                >
-                  {seller.seller_status === 'approved'
-                    ? 'Already Approved'
-                    : 'Approve Seller'}
-                </button>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => handleApproveSeller(seller.id)}
+                    disabled={actionLoading || seller.seller_status === 'approved'}
+                    className={
+                      seller.seller_status === 'approved'
+                        ? 'btn-base btn-secondary'
+                        : 'btn-base btn-primary'
+                    }
+                  >
+                    {seller.seller_status === 'approved'
+                      ? 'Already Approved'
+                      : 'Approve Seller'}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-        )}
+        )
+      ) : null}
     </div>
   );
 }

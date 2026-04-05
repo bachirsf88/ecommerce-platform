@@ -12,18 +12,23 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
+    private const SHIPPING_COSTS = [
+        'home_delivery' => 300,
+        'office_pickup' => 150,
+    ];
+
     public function __construct(
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly ProductRepositoryInterface $productRepository
     ) {
     }
 
-    public function checkout(User $buyer, array $data): ?Order
+    public function checkout(User $buyer, array $data): array
     {
         $cart = Cart::with('items')->where('user_id', $buyer->id)->first();
 
         if (! $cart || $cart->items->isEmpty()) {
-            return null;
+            return $this->failureResult('Cart is empty.', 400);
         }
 
         $products = collect();
@@ -32,24 +37,46 @@ class OrderService
             $product = $this->productRepository->findById($item->product_id);
 
             if (! $product) {
-                return null;
+                return $this->failureResult('A product in your cart could not be found.', 404);
             }
 
             if (($product->status ?? null) !== 'active') {
-                return null;
+                return $this->failureResult(
+                    sprintf('Product unavailable for checkout: %s', $product->name ?? 'Unknown product'),
+                    422
+                );
+            }
+
+            if ((int) $item->quantity > (int) ($product->stock ?? 0)) {
+                return $this->failureResult(
+                    sprintf('Insufficient stock for product: %s', $product->name ?? 'Unknown product'),
+                    422
+                );
             }
 
             $products->put((string) $item->product_id, $product);
         }
 
-        $total = (float) $cart->items->sum('subtotal');
+        $subtotal = (float) $cart->items->sum('subtotal');
+        $shippingCost = $this->resolveShippingCost($data['shipping_method']);
+        $total = $subtotal + $shippingCost;
 
-        $order = DB::transaction(function () use ($buyer, $data, $cart, $products, $total) {
+        $order = DB::transaction(function () use ($buyer, $data, $cart, $products, $shippingCost, $total) {
             $order = $this->orderRepository->createOrder([
                 'buyer_id' => $buyer->id,
+                'full_name' => $data['full_name'],
+                'phone' => $data['phone'],
+                'country' => $data['country'],
+                'state' => $data['state'],
+                'municipality' => $data['municipality'],
+                'neighborhood' => $data['neighborhood'],
+                'street_address' => $data['street_address'],
+                'notes' => $data['notes'] ?? null,
+                'shipping_method' => $data['shipping_method'],
+                'shipping_cost' => $shippingCost,
                 'total' => $total,
                 'payment_method' => $data['payment_method'],
-                'shipping_address' => $data['shipping_address'],
+                'shipping_address' => $this->buildShippingAddress($data),
                 'status' => Order::STATUS_PENDING,
             ]);
 
@@ -71,9 +98,14 @@ class OrderService
             return $order;
         });
 
-        return $this->attachProductsToOrder(
-            $this->orderRepository->loadOrderRelations($order)
-        );
+        return [
+            'success' => true,
+            'message' => 'Checkout completed successfully.',
+            'status_code' => 201,
+            'data' => $this->attachProductsToOrder(
+                $this->orderRepository->loadOrderRelations($order)
+            ),
+        ];
     }
 
     public function getBuyerOrders(User $buyer): Collection
@@ -107,5 +139,30 @@ class OrderService
         });
 
         return $order;
+    }
+
+    private function resolveShippingCost(string $shippingMethod): float
+    {
+        return (float) (self::SHIPPING_COSTS[$shippingMethod] ?? 0);
+    }
+
+    private function buildShippingAddress(array $data): string
+    {
+        return implode(', ', array_filter([
+            $data['street_address'] ?? null,
+            $data['neighborhood'] ?? null,
+            $data['municipality'] ?? null,
+            $data['state'] ?? null,
+            $data['country'] ?? null,
+        ]));
+    }
+
+    private function failureResult(string $message, int $statusCode): array
+    {
+        return [
+            'success' => false,
+            'message' => $message,
+            'status_code' => $statusCode,
+        ];
     }
 }

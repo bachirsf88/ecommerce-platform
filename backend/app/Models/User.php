@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -31,6 +32,9 @@ class User extends Authenticatable
         'password',
         'role',
         'seller_status',
+        'bio',
+        'profile_image_path',
+        'notification_preferences',
     ];
 
     /**
@@ -51,6 +55,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'notification_preferences' => 'array',
+    ];
+
+    protected $appends = [
+        'profile_image_url',
     ];
 
     public function isBuyer(): bool
@@ -66,5 +75,35 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class, 'seller_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'buyer_id');
+    }
+
+    public function withdrawalRequests()
+    {
+        return $this->hasMany(WithdrawalRequest::class, 'seller_id');
+    }
+
+    public function getProfileImageUrlAttribute(): ?string
+    {
+        $path = $this->profile_image_path;
+
+        if (! $path) {
+            return null;
+        }
+
+        if (preg_match('/^(https?:\/\/|data:|\/storage\/)/i', $path) === 1) {
+            return $path;
+        }
+
+        return url(Storage::disk('public')->url($path));
     }
 }

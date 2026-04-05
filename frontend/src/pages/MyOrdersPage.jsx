@@ -31,8 +31,8 @@ function MyOrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200/80 bg-white p-8 text-sm text-slate-600 shadow-sm">
+      <div className="page-shell">
+        <div className="page-container max-w-5xl surface-card p-8 text-sm text-[rgba(2,2,2,0.62)]">
           Checking user...
         </div>
       </div>
@@ -44,26 +44,22 @@ function MyOrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8 rounded-3xl border border-slate-200/80 bg-white px-6 py-8 shadow-sm sm:px-8">
-          <div className="flex gap-2 items-center justify-between flex-wrap">
+    <div className="page-shell">
+      <div className="page-container max-w-5xl">
+        <div className="surface-card-strong mb-8 px-6 py-8 sm:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span className="inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
-                My Orders
-              </span>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900">
-                Your Orders
-              </h1>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Review your completed checkouts and open an order to see full details.
+              <span className="section-label">My Orders</span>
+              <h1 className="section-title mt-4">Your Orders</h1>
+              <p className="subtle-copy mt-2 text-sm">
+                Follow each order from pending through delivery and open any order to see full details.
               </p>
             </div>
-            <div className="flex gap-2">
-              <Link to="/favorites" className="bg-gray-100 px-4 py-2 rounded-md">
+            <div className="flex flex-wrap gap-2">
+              <Link to="/favorites" className="btn-base btn-outline">
                 Favorites
               </Link>
-              <Link to="/cart" className="bg-gray-100 px-4 py-2 rounded-md">
+              <Link to="/cart" className="btn-base btn-outline">
                 Cart
               </Link>
             </div>
@@ -71,19 +67,19 @@ function MyOrdersPage() {
         </div>
 
         {loading && (
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 text-sm text-slate-600 shadow-sm">
+          <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
             Loading orders...
           </div>
         )}
 
         {error && (
-          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="status-message status-error mb-6">
             {error}
           </div>
         )}
 
         {!loading && !error && orders.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600">
+          <div className="empty-state">
             You do not have any orders yet.
           </div>
         )}
@@ -91,30 +87,24 @@ function MyOrdersPage() {
         {!loading && !error && orders.length > 0 && (
           <div className="space-y-4">
             {orders.map((order) => (
-              <div
-                key={order.id}
-                className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm"
-              >
+              <div key={order.id} className="data-card">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="space-y-2">
-                    <h2 className="text-lg font-semibold text-slate-900">
+                    <h2 className="font-display text-3xl leading-none text-[var(--color-primary)]">
                       Order #{order.id}
                     </h2>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-[rgba(2,2,2,0.62)]">
                       Payment Method: {order.payment_method || 'N/A'}
                     </p>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-[rgba(2,2,2,0.62)]">
                       Status: <span className="capitalize">{order.status || 'Unknown'}</span>
                     </p>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-semibold text-[var(--color-primary)]">
                       Total: ${order.total ?? '0.00'}
                     </p>
                   </div>
 
-                  <Link
-                    to={`/orders/${order.id}`}
-                    className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-sky-700"
-                  >
+                  <Link to={`/orders/${order.id}`} className="btn-base btn-primary">
                     View Details
                   </Link>
                 </div>
