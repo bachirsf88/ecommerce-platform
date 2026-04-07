@@ -58,6 +58,16 @@ class Product extends Model
             return $baseUrl . $path;
         }
 
-        return $baseUrl . Storage::disk('public')->url($path);
+        $storageUrl = Storage::disk('public')->url($path);
+
+        if (preg_match('/^https?:\/\//i', $storageUrl) === 1) {
+            return $storageUrl;
+        }
+
+        if (str_starts_with($storageUrl, '/')) {
+            return $baseUrl . $storageUrl;
+        }
+
+        return $baseUrl . '/' . ltrim($storageUrl, '/');
     }
 }

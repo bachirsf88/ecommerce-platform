@@ -2,32 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/hero.png';
 import productService from '../services/productService';
+import { resolveEntityImageUrl } from '../utils/media';
 
 const PAGE_SIZE = 6;
 
 function ProductVisual({ product }) {
-  const imageValue = product?.image;
-  const canRenderImage =
-    typeof imageValue === 'string' &&
-    /^(https?:\/\/|data:|\/)/i.test(imageValue.trim());
+  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
 
-  if (canRenderImage) {
+  if (imageSrc) {
     return (
       <img
-        src={imageValue}
+        src={imageSrc}
         alt={product?.name || 'Product'}
         className="h-full w-full object-cover object-center"
       />
-    );
-  }
-
-  if (imageValue) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(160deg,rgba(236,228,220,0.95),rgba(222,212,202,0.9))] p-5">
-        <p className="break-all text-center text-xs leading-6 text-[rgba(2,2,2,0.5)]">
-          {imageValue}
-        </p>
-      </div>
     );
   }
 

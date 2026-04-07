@@ -62,7 +62,17 @@ trait HandlesPublicFiles
             return $this->publicFileBaseUrl() . $path;
         }
 
-        return $this->publicFileBaseUrl() . Storage::disk('public')->url($path);
+        $storageUrl = Storage::disk('public')->url($path);
+
+        if (preg_match('/^https?:\/\//i', $storageUrl) === 1) {
+            return $storageUrl;
+        }
+
+        if (str_starts_with($storageUrl, '/')) {
+            return $this->publicFileBaseUrl() . $storageUrl;
+        }
+
+        return $this->publicFileBaseUrl() . '/' . ltrim($storageUrl, '/');
     }
 
     protected function deletePublicFile(?string $path): void
