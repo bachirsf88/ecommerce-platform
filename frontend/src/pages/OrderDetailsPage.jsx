@@ -237,7 +237,7 @@ function OrderDetailsPage() {
   if (authLoading) {
     return (
       <div className="page-shell">
-        <div className="page-container max-w-5xl surface-card p-8 text-sm text-[rgba(2,2,2,0.62)]">
+        <div className="page-container max-w-5xl surface-card p-8 text-sm text-[var(--color-text-soft)]">
           Checking user...
         </div>
       </div>
@@ -266,7 +266,7 @@ function OrderDetailsPage() {
         </div>
 
         {loading && (
-          <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
             Loading order details...
           </div>
         )}
@@ -294,7 +294,7 @@ function OrderDetailsPage() {
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">
                     Status
                   </p>
-                  <p className="mt-2 text-lg font-semibold capitalize text-[var(--color-primary)]">
+                  <p className="mt-2 text-lg font-semibold capitalize text-[var(--color-text)]">
                     {order.status || 'Unknown'}
                   </p>
                 </div>
@@ -303,7 +303,7 @@ function OrderDetailsPage() {
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">
                     Payment Method
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-[var(--color-primary)]">
+                  <p className="mt-2 text-lg font-semibold text-[var(--color-text)]">
                     {order.payment_method || 'N/A'}
                   </p>
                 </div>
@@ -313,7 +313,7 @@ function OrderDetailsPage() {
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">
                   Shipping Address
                 </p>
-                <p className="mt-2 text-sm leading-6 text-[rgba(2,2,2,0.68)]">
+                <p className="mt-2 text-sm leading-6 text-[var(--color-text-soft)]">
                   {order.shipping_address || 'No shipping address available.'}
                 </p>
               </div>
@@ -322,7 +322,7 @@ function OrderDetailsPage() {
             <div className="surface-card p-6 sm:p-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h2 className="font-display text-4xl leading-none text-[var(--color-primary)]">Order Items</h2>
+                  <h2 className="font-display text-4xl leading-none text-[var(--color-text)]">Order Items</h2>
                   <p className="subtle-copy mt-3 text-sm">
                     {isReviewEligibleOrder
                       ? 'Your order has been delivered. Share feedback for the pieces you received.'
@@ -331,7 +331,7 @@ function OrderDetailsPage() {
                 </div>
 
                 {reviewStateLoading && isReviewEligibleOrder && (
-                  <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[rgba(138,129,124,0.76)]">
+                  <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                     Checking review status...
                   </p>
                 )}
@@ -352,10 +352,10 @@ function OrderDetailsPage() {
                     <div key={item.id} className="metric-tile">
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="min-w-0">
-                          <h3 className="font-display text-3xl leading-none text-[var(--color-primary)]">
+                          <h3 className="font-display text-3xl leading-none text-[var(--color-text)]">
                             {item.product?.name || 'Unnamed product'}
                           </h3>
-                          <div className="mt-3 space-y-1 text-sm text-[rgba(2,2,2,0.66)]">
+                          <div className="mt-3 space-y-1 text-sm text-[var(--color-text-soft)]">
                             <p>Quantity: {item.quantity ?? 0}</p>
                             <p>Unit Price: ${formatCurrency(item.unit_price)}</p>
                             <p>Subtotal: ${formatCurrency(item.subtotal)}</p>
@@ -380,7 +380,7 @@ function OrderDetailsPage() {
                           )}
 
                           {!reviewStateLoading && isReviewEligibleOrder && isReviewed && (
-                            <span className="inline-flex items-center rounded-full border border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.78)] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[rgba(94,84,78,0.86)]">
+                            <span className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                               Review Submitted
                             </span>
                           )}
@@ -388,22 +388,22 @@ function OrderDetailsPage() {
                       </div>
 
                       {!reviewStateLoading && isReviewEligibleOrder && !isReviewed && !isFormOpen && (
-                        <p className="mt-5 text-sm leading-7 text-[rgba(88,78,72,0.78)]">
+                        <p className="mt-5 text-sm leading-7 text-[var(--color-text-faint)]">
                           Tell us what you think about this product after receiving your order.
                         </p>
                       )}
 
                       {isFormOpen && !isReviewed && (
-                        <div className="mt-6 rounded-[1.25rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.7)] p-5">
-                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.8)]">
+                        <div className="mt-6 rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-5">
+                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                             Share Feedback
                           </p>
-                          <p className="mt-2 text-sm leading-7 text-[rgba(88,78,72,0.8)]">
+                          <p className="mt-2 text-sm leading-7 text-[var(--color-text-faint)]">
                             Your order has been delivered. Share your feedback about this item.
                           </p>
 
                           <div className="mt-5">
-                            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.8)]">
+                            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                               Rating
                             </p>
                             <div className="mt-3 flex flex-wrap gap-2">
@@ -421,7 +421,7 @@ function OrderDetailsPage() {
                           <div className="mt-5">
                             <label
                               htmlFor={`review-comment-${itemId}`}
-                              className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.8)]"
+                              className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]"
                             >
                               Comment
                             </label>
@@ -470,8 +470,8 @@ function OrderDetailsPage() {
 
               <div className="metric-tile mt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-base font-medium text-[rgba(2,2,2,0.7)]">Total</span>
-                  <span className="text-2xl font-semibold text-[var(--color-primary)]">
+                  <span className="text-base font-medium text-[var(--color-text-soft)]">Total</span>
+                  <span className="text-2xl font-semibold text-[var(--color-text)]">
                     ${formatCurrency(order.total)}
                   </span>
                 </div>

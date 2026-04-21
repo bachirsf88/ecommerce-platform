@@ -100,32 +100,32 @@ function SellerStoreManagementPage() {
             Keep your public storefront polished with a refined description and a clear store identity foundation.
           </p>
 
-          {loading ? <div className="mt-6 text-sm text-[rgba(2,2,2,0.62)]">Loading store profile...</div> : null}
+          {loading ? <div className="mt-6 text-sm text-[var(--color-text-soft)]">Loading store profile...</div> : null}
 
           <div className="mt-8 space-y-5">
             <div>
-              <label htmlFor="store_name" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="store_name" className="field-label">
                 Store Name
               </label>
               <input id="store_name" name="store_name" type="text" value={formData.store_name} onChange={handleChange} required className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="description" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="description" className="field-label">
                 Store Description
               </label>
               <textarea id="description" name="description" rows="5" value={formData.description || ''} onChange={handleChange} className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="store_address" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="store_address" className="field-label">
                 Store Address
               </label>
               <textarea id="store_address" name="store_address" rows="4" value={formData.store_address} onChange={handleChange} required className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="postal_code" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="postal_code" className="field-label">
                 Postal Code
               </label>
               <input id="postal_code" name="postal_code" type="text" value={formData.postal_code} onChange={handleChange} required className="text-input" />
@@ -141,17 +141,17 @@ function SellerStoreManagementPage() {
             </h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="logo" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                <label htmlFor="logo" className="field-label">
                   Store Logo
                 </label>
-                <input id="logo" name="logo" type="file" accept="image/*" onChange={handleFileChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(2,2,2,0.08)] file:px-4 file:py-2 file:text-sm file:font-semibold" />
+                <input id="logo" name="logo" type="file" accept="image/*" onChange={handleFileChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(188,184,177,0.28)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-text)]" />
               </div>
 
               <div>
-                <label htmlFor="banner" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                <label htmlFor="banner" className="field-label">
                   Store Banner
                 </label>
-                <input id="banner" name="banner" type="file" accept="image/*" onChange={handleFileChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(2,2,2,0.08)] file:px-4 file:py-2 file:text-sm file:font-semibold" />
+                <input id="banner" name="banner" type="file" accept="image/*" onChange={handleFileChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(188,184,177,0.28)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-text)]" />
               </div>
             </div>
           </div>
@@ -163,14 +163,14 @@ function SellerStoreManagementPage() {
             </h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="phone_number" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                <label htmlFor="phone_number" className="field-label">
                   Phone Number
                 </label>
                 <input id="phone_number" name="phone_number" type="text" value={formData.phone_number || ''} onChange={handleChange} className="text-input" />
               </div>
 
               <div>
-                <label htmlFor="contact_email" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                <label htmlFor="contact_email" className="field-label">
                   Contact Email
                 </label>
                 <input id="contact_email" name="contact_email" type="email" value={formData.contact_email || ''} onChange={handleChange} className="text-input" />
@@ -188,13 +188,13 @@ function SellerStoreManagementPage() {
       </section>
 
       <aside className="surface-card-strong overflow-hidden">
-        <div className="aspect-[1.45] bg-[linear-gradient(160deg,rgba(241,235,229,0.88),rgba(224,211,201,0.86))]">
+        <div className="aspect-[1.45] bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.4))]">
           {formData.banner_url ? (
             <img src={resolveMediaUrl(formData.banner_url)} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
           ) : null}
         </div>
         <div className="p-6 sm:p-7">
-          <div className="-mt-16 inline-flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.8rem] border border-white/70 bg-[rgba(255,253,249,0.92)] shadow-[0_18px_32px_rgba(2,2,2,0.08)]">
+          <div className="-mt-16 inline-flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.8rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.94)] shadow-[0_18px_32px_rgba(138,129,124,0.12)]">
             {formData.logo_url ? (
               <img src={resolveMediaUrl(formData.logo_url)} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
             ) : (
@@ -207,11 +207,11 @@ function SellerStoreManagementPage() {
           <h2 className="font-display mt-6 text-[2.3rem] leading-none text-[var(--color-primary)]">
             {formData.store_name || 'Store Preview'}
           </h2>
-          <p className="mt-4 text-sm leading-7 text-[rgba(88,78,72,0.82)]">
+          <p className="mt-4 text-sm leading-7 text-[var(--color-text-soft)]">
             {formData.description || 'Your store description will appear here after you save it.'}
           </p>
 
-          <div className="mt-6 grid gap-3 text-sm text-[rgba(56,48,43,0.8)]">
+          <div className="mt-6 grid gap-3 text-sm text-[var(--color-text-soft)]">
             <p>{formData.store_address || 'Store address'}</p>
             <p>{formData.postal_code || 'Postal code'}</p>
             <p>{formData.contact_email || 'Contact email'}</p>

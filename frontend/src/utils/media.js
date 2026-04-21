@@ -1,6 +1,6 @@
-import api from '../services/api';
+import { resolveApiOrigin } from '../services/api';
 
-const API_ORIGIN = new URL(api.defaults.baseURL).origin;
+const API_ORIGIN = resolveApiOrigin();
 
 const STORAGE_PREFIXES = ['storage/', '/storage/'];
 

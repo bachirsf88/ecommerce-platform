@@ -107,9 +107,17 @@ Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller'])->group(func
 });
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
     Route::get('/users', [AdminController::class, 'users']);
     Route::get('/sellers', [AdminController::class, 'sellers']);
     Route::put('/sellers/{id}/approve', [AdminController::class, 'approveSeller']);
+    Route::put('/sellers/{id}/reject', [AdminController::class, 'rejectSeller']);
     Route::get('/products', [AdminController::class, 'products']);
+    Route::put('/products/{id}/status', [AdminController::class, 'updateProductStatus']);
     Route::get('/orders', [AdminController::class, 'orders']);
+    Route::get('/reviews', [AdminController::class, 'reviews']);
+    Route::delete('/reviews/{id}', [AdminController::class, 'destroyReview']);
+    Route::get('/withdrawals', [AdminController::class, 'withdrawals']);
+    Route::put('/withdrawals/{id}/approve', [AdminController::class, 'approveWithdrawal']);
+    Route::put('/withdrawals/{id}/reject', [AdminController::class, 'rejectWithdrawal']);
 });

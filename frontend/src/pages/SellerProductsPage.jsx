@@ -96,7 +96,7 @@ function SellerProductsPage() {
       <section className="surface-card p-5">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr_0.9fr]">
           <div>
-            <label htmlFor="product-search" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="product-search" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Search
             </label>
             <input
@@ -120,7 +120,7 @@ function SellerProductsPage() {
           </div>
 
           <div>
-            <label htmlFor="status-filter" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="status-filter" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Status
             </label>
             <select id="status-filter" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="text-input">
@@ -131,7 +131,7 @@ function SellerProductsPage() {
           </div>
 
           <div>
-            <label htmlFor="category-filter" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="category-filter" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Category
             </label>
             <select id="category-filter" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="text-input">
@@ -145,7 +145,7 @@ function SellerProductsPage() {
           </div>
 
           <div>
-            <label htmlFor="stock-filter" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="stock-filter" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Stock Level
             </label>
             <select id="stock-filter" value={stockFilter} onChange={(event) => setStockFilter(event.target.value)} className="text-input">
@@ -159,7 +159,7 @@ function SellerProductsPage() {
       </section>
 
       {error ? <div className="status-message status-error">{error}</div> : null}
-      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading products...</div> : null}
+      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading products...</div> : null}
 
       {!loading && !error ? (
         filteredProducts.length === 0 ? (
@@ -168,7 +168,7 @@ function SellerProductsPage() {
           <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
             {filteredProducts.map((product) => (
               <article key={product.id} className="surface-card overflow-hidden">
-                <div className="aspect-[1.08] bg-[rgba(241,235,229,0.74)]">
+                <div className="aspect-[1.08] bg-[rgba(244,243,238,0.86)]">
                   <img
                     src={resolveEntityImageUrl(product.image_url, product.image) || heroImage}
                     alt={product.name || 'Product'}
@@ -178,17 +178,17 @@ function SellerProductsPage() {
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                         {product.category || 'Uncategorized'}
                       </p>
-                      <h2 className="font-display mt-3 text-[2rem] leading-none text-[var(--color-primary)]">
+                      <h2 className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">
                         {product.name || 'Untitled product'}
                       </h2>
                     </div>
                     <span className="status-pill">{product.status || 'active'}</span>
                   </div>
 
-                  <div className="mt-5 grid gap-2 text-sm text-[rgba(56,48,43,0.78)] sm:grid-cols-2">
+                  <div className="mt-5 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2">
                     <p>Price: {formatCurrency(product.price)}</p>
                     <p>Stock: {product.stock ?? 0}</p>
                   </div>

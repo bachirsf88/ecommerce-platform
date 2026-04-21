@@ -54,9 +54,9 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
   };
 
   return (
-    <article className="border-t border-[rgba(138,129,124,0.12)] pt-8 first:border-t-0 first:pt-0">
+    <article className="border-t border-[var(--color-border-soft)] pt-8 first:border-t-0 first:pt-0">
       <div className="grid gap-6 md:grid-cols-[7rem_minmax(0,1fr)_auto] md:items-start">
-        <div className="overflow-hidden rounded-[0.8rem] bg-[linear-gradient(160deg,rgba(239,231,223,0.84),rgba(226,215,205,0.76))]">
+        <div className="overflow-hidden rounded-[0.8rem] bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.34))]">
           <div className="aspect-[0.8] overflow-hidden">
             <CartProductImage item={item} />
           </div>
@@ -68,12 +68,12 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
               <h2 className="font-display text-[2rem] leading-[0.95] text-[var(--color-primary)]">
                 {item.product?.name || 'Unnamed product'}
               </h2>
-              <p className="mt-2 text-sm leading-7 text-[rgba(138,129,124,0.88)]">
+              <p className="mt-2 text-sm leading-7 text-[var(--color-text-faint)]">
                 {item.product?.category || 'Artisan collection'} · Handmade marketplace selection
               </p>
             </div>
 
-            <p className="whitespace-nowrap text-[1rem] text-[rgba(2,2,2,0.72)]">
+            <p className="whitespace-nowrap text-[1rem] text-[var(--color-text-soft)]">
               ${item.unit_price}
             </p>
           </div>
@@ -83,34 +83,34 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
               type="button"
               onClick={handleRemove}
               disabled={loading}
-              className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)] hover:text-[var(--color-primary)]"
+              className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)] hover:text-[var(--color-primary)]"
             >
               Remove Item
             </button>
 
-            <div className="grid grid-cols-[2.3rem_2.8rem_2.3rem] overflow-hidden rounded-full border border-[rgba(138,129,124,0.18)]">
+            <div className="grid grid-cols-[2.3rem_2.8rem_2.3rem] overflow-hidden rounded-full border border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={handleDecrease}
                 disabled={loading || Number(item.quantity) <= 1}
-                className="bg-[rgba(255,253,249,0.72)] text-sm text-[var(--color-primary)] disabled:opacity-40"
+                className="bg-[rgba(244,243,238,0.92)] text-sm text-[var(--color-primary)] disabled:opacity-40"
               >
                 −
               </button>
-              <div className="flex items-center justify-center bg-white text-sm text-[var(--color-primary)]">
+              <div className="flex items-center justify-center bg-[rgba(255,255,255,0.94)] text-sm text-[var(--color-primary)]">
                 {item.quantity}
               </div>
               <button
                 type="button"
                 onClick={handleIncrease}
                 disabled={loading}
-                className="bg-[rgba(255,253,249,0.72)] text-sm text-[var(--color-primary)]"
+                className="bg-[rgba(244,243,238,0.92)] text-sm text-[var(--color-primary)]"
               >
                 +
               </button>
             </div>
 
-            <p className="text-sm text-[rgba(138,129,124,0.86)]">
+            <p className="text-sm text-[var(--color-text-faint)]">
               Subtotal <span className="ml-2 text-[var(--color-primary)]">${item.subtotal}</span>
             </p>
           </div>
@@ -184,7 +184,7 @@ function CartPage() {
     return (
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
-          <div className="rounded-[1.5rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.72)] p-8 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
             Checking user...
           </div>
         </div>
@@ -216,7 +216,7 @@ function CartPage() {
         </section>
 
         {loading && (
-          <div className="mt-10 rounded-[1.5rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.72)] p-8 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card mt-10 p-8 text-sm text-[var(--color-text-soft)]">
             Loading cart...
           </div>
         )}
@@ -228,8 +228,8 @@ function CartPage() {
         )}
 
         {!loading && !error && (!cart || itemCount === 0) && (
-          <div className="mt-10 rounded-[1.5rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.56)] p-10">
-            <p className="text-lg text-[rgba(2,2,2,0.72)]">Your cart is empty.</p>
+          <div className="soft-panel-muted mt-10 p-10">
+            <p className="text-lg text-[var(--color-text-soft)]">Your cart is empty.</p>
             <Link
               to="/products"
               className="mt-6 inline-block text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)]"
@@ -258,7 +258,7 @@ function CartPage() {
                 <div className="mt-12">
                   <Link
                     to="/products"
-                    className="inline-flex items-center gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.84)] hover:text-[var(--color-primary)]"
+                    className="inline-flex items-center gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)] hover:text-[var(--color-primary)]"
                   >
                     <span className="text-base">←</span>
                     Continue Shopping
@@ -267,27 +267,27 @@ function CartPage() {
               </div>
 
               <div className="space-y-6">
-                <aside className="rounded-[1rem] border border-[rgba(138,129,124,0.12)] bg-[rgba(255,251,247,0.66)] p-7 shadow-[0_14px_32px_rgba(2,2,2,0.04)]">
+                <aside className="surface-card p-7">
                   <h2 className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
                     Order Summary
                   </h2>
 
-                  <div className="mt-8 space-y-4 text-sm text-[rgba(138,129,124,0.86)]">
+                  <div className="mt-8 space-y-4 text-sm text-[var(--color-text-faint)]">
                     <div className="flex items-center justify-between gap-4">
                       <span>Subtotal</span>
                       <span className="text-[var(--color-primary)]">${cart.total}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                       <span>Estimated Shipping</span>
-                      <span className="text-[rgba(138,129,124,0.72)]">Calculated later</span>
+                      <span className="text-[var(--color-text-faint)]">Calculated later</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                       <span>Tax</span>
-                      <span className="text-[rgba(138,129,124,0.72)]">At checkout</span>
+                      <span className="text-[var(--color-text-faint)]">At checkout</span>
                     </div>
                   </div>
 
-                  <div className="mt-8 border-t border-[rgba(138,129,124,0.14)] pt-6">
+                  <div className="mt-8 border-t border-[var(--color-border-soft)] pt-6">
                     <div className="flex items-end justify-between gap-4">
                       <span className="text-lg text-[var(--color-primary)]">Total</span>
                       <span className="font-display text-[2.2rem] leading-none text-[var(--color-primary)]">
@@ -297,18 +297,18 @@ function CartPage() {
                   </div>
 
                   <div className="mt-8">
-                    <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[rgba(188,184,177,0.88)]">
+                    <p className="page-kicker text-[0.58rem]">
                       Promotional Code
                     </p>
                     <div className="mt-4 grid grid-cols-[minmax(0,1fr)_5.5rem] gap-2">
                       <input
                         type="text"
                         placeholder="Enter code"
-                        className="border-0 bg-[rgba(255,255,255,0.82)] px-4 py-3 text-[0.82rem] uppercase tracking-[0.12em] text-[var(--color-primary)] outline-none placeholder:text-[rgba(188,184,177,0.82)]"
+                        className="rounded-[0.95rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 text-[0.82rem] uppercase tracking-[0.12em] text-[var(--color-primary)] outline-none placeholder:text-[var(--color-text-faint)]"
                       />
                       <button
                         type="button"
-                        className="bg-[rgba(241,235,229,0.92)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.92)]"
+                        className="rounded-[0.95rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.96)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]"
                       >
                         Apply
                       </button>
@@ -322,17 +322,17 @@ function CartPage() {
                     Proceed to Checkout
                   </Link>
 
-                  <p className="mt-4 text-center text-[0.62rem] text-[rgba(138,129,124,0.78)]">
+                  <p className="mt-4 text-center text-[0.62rem] text-[var(--color-text-faint)]">
                     Secure encrypted checkout
                   </p>
                 </aside>
 
-                <div className="rounded-[1rem] border border-[rgba(138,129,124,0.12)] bg-[rgba(255,253,249,0.4)] p-6">
-                  <p className="font-display text-[1.2rem] leading-7 text-[rgba(2,2,2,0.72)]">
+                <div className="soft-panel-muted p-6">
+                  <p className="font-display text-[1.2rem] leading-7 text-[var(--color-text-soft)]">
                     “Thoughtful pieces deserve a checkout experience that feels calm, secure, and carefully considered.”
                   </p>
                   <div className="mt-5 inline-flex items-center gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[rgba(138,129,124,0.2)] text-[10px]">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[var(--color-border)] text-[10px]">
                       ✓
                     </span>
                     Trusted Handmade Marketplace
@@ -344,47 +344,47 @@ function CartPage() {
         )}
       </div>
 
-      <footer className="mt-20 bg-[linear-gradient(180deg,#151210,#0d0b0a)] pb-10 pt-16 text-[#f6f1eb]">
+      <footer className="site-footer mt-20 pb-10 pt-16">
         <div className="page-container max-w-[1180px]">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div>
               <p className="font-display text-4xl leading-none text-white sm:text-5xl">
                 GradShop
               </p>
-              <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(255,250,247,0.68)]">
+              <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-3">
               <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+                <p className="site-footer-label">
                   Discover
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Home</Link>
-                  <Link to="/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Products</Link>
-                  <Link to="/favorites" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Favorites</Link>
+                  <Link to="/" className="site-footer-link text-sm">Home</Link>
+                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
+                  <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>
                 </div>
               </div>
 
               <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+                <p className="site-footer-label">
                   Client Care
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/cart" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Cart</Link>
-                  <Link to="/checkout" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Checkout</Link>
-                  <Link to="/orders" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Orders</Link>
+                  <Link to="/cart" className="site-footer-link text-sm">Cart</Link>
+                  <Link to="/checkout" className="site-footer-link text-sm">Checkout</Link>
+                  <Link to="/orders" className="site-footer-link text-sm">Orders</Link>
                 </div>
               </div>
 
               <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+                <p className="site-footer-label">
                   Assurance
                 </p>
                 <div className="mt-4 space-y-3">
-                  <p className="text-sm leading-6 text-[rgba(255,250,247,0.68)]">
+                  <p className="site-footer-copy text-sm leading-6">
                     Secure checkout and thoughtfully presented products from trusted marketplace sellers.
                   </p>
                 </div>

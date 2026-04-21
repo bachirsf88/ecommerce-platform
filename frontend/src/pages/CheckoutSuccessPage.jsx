@@ -11,7 +11,7 @@ function CheckoutSuccessPage() {
     return (
       <div className="page-shell">
         <div className="page-container max-w-4xl">
-          <div className="surface-card p-8 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
             Checking user...
           </div>
         </div>
@@ -54,7 +54,7 @@ function CheckoutSuccessPage() {
           <div className="surface-card-strong p-6 sm:p-8">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="metric-tile">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                <p className="page-kicker text-[0.62rem]">
                   Order ID
                 </p>
                 <p className="font-display mt-4 text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -63,7 +63,7 @@ function CheckoutSuccessPage() {
               </div>
 
               <div className="metric-tile">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                <p className="page-kicker text-[0.62rem]">
                   Total
                 </p>
                 <p className="font-display mt-4 text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -73,8 +73,8 @@ function CheckoutSuccessPage() {
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.25rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.82)] p-5">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+              <div className="soft-panel p-5">
+                <p className="page-kicker text-[0.62rem]">
                   Payment Method
                 </p>
                 <p className="mt-3 text-lg font-semibold text-[var(--color-primary)]">
@@ -82,8 +82,8 @@ function CheckoutSuccessPage() {
                 </p>
               </div>
 
-              <div className="rounded-[1.25rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.82)] p-5">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+              <div className="soft-panel p-5">
+                <p className="page-kicker text-[0.62rem]">
                   Shipping Method
                 </p>
                 <p className="mt-3 text-lg font-semibold text-[var(--color-primary)]">
@@ -94,7 +94,7 @@ function CheckoutSuccessPage() {
           </div>
 
           <aside className="surface-card p-6">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+            <p className="page-kicker text-[0.62rem]">
               Next Actions
             </p>
             <div className="mt-5 space-y-3">

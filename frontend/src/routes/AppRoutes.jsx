@@ -4,8 +4,10 @@ import AccountPage from '../pages/AccountPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminOrdersPage from '../pages/AdminOrdersPage';
 import AdminProductsPage from '../pages/AdminProductsPage';
+import AdminReviewsPage from '../pages/AdminReviewsPage';
 import AdminSellersPage from '../pages/AdminSellersPage';
 import AdminUsersPage from '../pages/AdminUsersPage';
+import AdminWithdrawalsPage from '../pages/AdminWithdrawalsPage';
 import CartPage from '../pages/CartPage';
 import CheckoutPage from '../pages/CheckoutPage';
 import CheckoutSuccessPage from '../pages/CheckoutSuccessPage';
@@ -87,6 +89,8 @@ function AppRoutes() {
           <Route path="sellers" element={<AdminSellersPage />} />
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
+          <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
         </Route>
       </Route>
     </Routes>

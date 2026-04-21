@@ -9,7 +9,7 @@ function FilterPanel({
     <div className="surface-card p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="w-full lg:max-w-xs">
-          <label htmlFor="category" className="text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+          <label htmlFor="category" className="field-label">
             Filter by category
           </label>
           <select

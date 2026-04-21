@@ -246,7 +246,7 @@ function CheckoutPage() {
     return (
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
-          <div className="surface-card p-8 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
             Checking user...
           </div>
         </div>
@@ -263,12 +263,12 @@ function CheckoutPage() {
       <div className="page-container max-w-[1180px]">
         <section className="pt-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(188,184,177,0.88)]">
+            <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
               <Link to="/">Home</Link>
               <span>/</span>
               <Link to="/cart">Cart</Link>
               <span>/</span>
-              <span className="text-[var(--color-secondary)]">Checkout</span>
+              <span className="text-[var(--color-brand)]">Checkout</span>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -305,32 +305,32 @@ function CheckoutPage() {
                         key={item.id}
                         className={`rounded-[1.4rem] border p-4 ${
                           isActive
-                            ? 'border-[rgba(224,175,160,0.58)] bg-[rgba(255,248,245,0.9)]'
+                            ? 'border-[var(--color-accent)] bg-[rgba(255,255,255,0.92)]'
                             : isComplete
-                              ? 'border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.86)]'
-                              : 'border-[rgba(138,129,124,0.12)] bg-[rgba(255,255,255,0.58)]'
+                              ? 'border-[var(--color-border)] bg-[rgba(255,255,255,0.9)]'
+                              : 'border-[var(--color-border-soft)] bg-[rgba(255,255,255,0.68)]'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.8)]">
+                          <span className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                             Step {item.id}
                           </span>
                           <span
                             className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold ${
                               isActive
-                                ? 'bg-[var(--color-primary)] text-white'
+                                ? 'bg-[var(--color-brand)] text-[var(--color-text)]'
                                 : isComplete
-                                  ? 'bg-[rgba(2,2,2,0.08)] text-[var(--color-primary)]'
-                                  : 'bg-[rgba(138,129,124,0.1)] text-[rgba(138,129,124,0.8)]'
+                                  ? 'bg-[rgba(188,184,177,0.28)] text-[var(--color-text)]'
+                                  : 'bg-[rgba(188,184,177,0.16)] text-[var(--color-text-faint)]'
                             }`}
                           >
                             {isComplete ? '✓' : item.id}
                           </span>
                         </div>
-                        <p className="font-display mt-5 text-[2rem] leading-none text-[var(--color-primary)]">
+                        <p className="font-display mt-5 text-[2rem] leading-none text-[var(--color-text)]">
                           {item.title}
                         </p>
-                        <p className="mt-2 text-sm text-[rgba(138,129,124,0.88)]">
+                        <p className="mt-2 text-sm text-[var(--color-text-faint)]">
                           {item.caption}
                         </p>
                       </div>
@@ -351,12 +351,12 @@ function CheckoutPage() {
                 )}
 
                 {cartLoading ? (
-                  <div className="mt-8 rounded-[1.4rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.72)] p-6 text-sm text-[rgba(2,2,2,0.62)]">
+                  <div className="mt-8 rounded-[1.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] p-6 text-sm text-[var(--color-text-soft)]">
                     Loading checkout details...
                   </div>
                 ) : !error && (!cart || itemCount === 0) ? (
-                  <div className="mt-8 rounded-[1.4rem] border border-dashed border-[rgba(138,129,124,0.32)] bg-[rgba(255,253,249,0.72)] p-10 text-center">
-                    <p className="font-display text-4xl leading-none text-[var(--color-primary)]">
+                  <div className="mt-8 rounded-[1.4rem] border border-dashed border-[var(--color-border-strong)] bg-[rgba(255,255,255,0.76)] p-10 text-center">
+                    <p className="font-display text-4xl leading-none text-[var(--color-text)]">
                       Your cart is empty.
                     </p>
                     <p className="subtle-copy mt-4 text-sm">
@@ -380,37 +380,37 @@ function CheckoutPage() {
 
                         <div className="grid gap-5 md:grid-cols-2">
                           <div>
-                            <label htmlFor="full_name" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="full_name" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               Full Name
                             </label>
                             <input id="full_name" name="full_name" value={formData.full_name} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
-                            <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               Phone
                             </label>
                             <input id="phone" name="phone" value={formData.phone} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
-                            <label htmlFor="country" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="country" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               Country
                             </label>
                             <input id="country" name="country" value={formData.country} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
-                            <label htmlFor="state" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="state" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               State
                             </label>
                             <input id="state" name="state" value={formData.state} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
-                            <label htmlFor="municipality" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="municipality" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               Municipality
                             </label>
                             <input id="municipality" name="municipality" value={formData.municipality} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
-                            <label htmlFor="neighborhood" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                            <label htmlFor="neighborhood" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                               Neighborhood
                             </label>
                             <input id="neighborhood" name="neighborhood" value={formData.neighborhood} onChange={handleFieldChange} className="text-input" />
@@ -418,7 +418,7 @@ function CheckoutPage() {
                         </div>
 
                         <div>
-                          <label htmlFor="street_address" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                          <label htmlFor="street_address" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                             Street Address
                           </label>
                           <textarea
@@ -432,8 +432,8 @@ function CheckoutPage() {
                         </div>
 
                         <div>
-                          <label htmlFor="notes" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
-                            Notes <span className="text-[rgba(138,129,124,0.82)]">(Optional)</span>
+                          <label htmlFor="notes" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
+                            Notes <span className="text-[var(--color-text-faint)]">(Optional)</span>
                           </label>
                           <textarea
                             id="notes"
@@ -469,20 +469,20 @@ function CheckoutPage() {
                                 onClick={() => handleShippingSelect(option.value)}
                                 className={`w-full rounded-[1.5rem] border p-5 text-left ${
                                   isSelected
-                                    ? 'border-[rgba(224,175,160,0.62)] bg-[rgba(255,248,245,0.92)]'
-                                    : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.82)]'
+                                    ? 'border-[var(--color-accent)] bg-[rgba(255,255,255,0.94)]'
+                                    : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.82)]'
                                 }`}
                               >
                                 <div className="flex flex-wrap items-start justify-between gap-4">
                                   <div>
-                                    <p className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
+                                    <p className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                                       {option.label}
                                     </p>
-                                    <p className="mt-3 max-w-2xl text-sm leading-7 text-[rgba(138,129,124,0.9)]">
+                                    <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--color-text-faint)]">
                                       {option.description}
                                     </p>
                                   </div>
-                                  <div className="rounded-full border border-[rgba(138,129,124,0.14)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
+                                  <div className="rounded-full border border-[var(--color-border-soft)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-text)]">
                                     + {option.cost}
                                   </div>
                                 </div>
@@ -514,14 +514,14 @@ function CheckoutPage() {
                                 onClick={() => handlePaymentSelect(option.value)}
                                 className={`w-full rounded-[1.5rem] border p-5 text-left ${
                                   isSelected
-                                    ? 'border-[rgba(224,175,160,0.62)] bg-[rgba(255,248,245,0.92)]'
-                                    : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.82)]'
+                                    ? 'border-[var(--color-accent)] bg-[rgba(255,255,255,0.94)]'
+                                    : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.82)]'
                                 }`}
                               >
-                                <p className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
+                                <p className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                                   {option.label}
                                 </p>
-                                <p className="mt-3 max-w-2xl text-sm leading-7 text-[rgba(138,129,124,0.9)]">
+                                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--color-text-faint)]">
                                   {option.description}
                                 </p>
                               </button>
@@ -530,37 +530,37 @@ function CheckoutPage() {
                         </div>
 
                         {formData.payment_method === 'card' && (
-                          <div className="rounded-[1.5rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.82)] p-5">
+                          <div className="rounded-[1.5rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] p-5">
                             <div className="mb-5">
-                              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.82)]">
+                              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                                 Frontend-only card validation
                               </p>
-                              <p className="mt-2 text-sm text-[rgba(2,2,2,0.62)]">
+                              <p className="mt-2 text-sm text-[var(--color-text-soft)]">
                                 These fields help complete the flow visually, but they are not included in the backend payload.
                               </p>
                             </div>
 
                             <div className="grid gap-5 md:grid-cols-2">
                               <div className="md:col-span-2">
-                                <label htmlFor="cardholder_name" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                                <label htmlFor="cardholder_name" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                                   Cardholder Name
                                 </label>
                                 <input id="cardholder_name" name="cardholder_name" value={formData.cardholder_name} onChange={handleFieldChange} className="text-input" />
                               </div>
                               <div className="md:col-span-2">
-                                <label htmlFor="card_number" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                                <label htmlFor="card_number" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                                   Card Number
                                 </label>
                                 <input id="card_number" name="card_number" value={formData.card_number} onChange={handleFieldChange} className="text-input" inputMode="numeric" />
                               </div>
                               <div>
-                                <label htmlFor="expiry_date" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                                <label htmlFor="expiry_date" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                                   Expiry Date
                                 </label>
                                 <input id="expiry_date" name="expiry_date" value={formData.expiry_date} onChange={handleFieldChange} className="text-input" placeholder="MM/YY" />
                               </div>
                               <div>
-                                <label htmlFor="cvv" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                                <label htmlFor="cvv" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                                   CVV
                                 </label>
                                 <input id="cvv" name="cvv" value={formData.cvv} onChange={handleFieldChange} className="text-input" inputMode="numeric" />
@@ -571,7 +571,7 @@ function CheckoutPage() {
                       </div>
                     )}
 
-                    <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[rgba(138,129,124,0.12)] pt-6">
+                    <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border-soft)] pt-6">
                       <button
                         type="button"
                         onClick={handleBack}
@@ -606,74 +606,74 @@ function CheckoutPage() {
 
             <aside className="lg:sticky lg:top-28">
               <div className="surface-card p-6">
-                <div className="border-b border-[rgba(138,129,124,0.12)] pb-5">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.82)]">
+                <div className="border-b border-[var(--color-border-soft)] pb-5">
+                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                     Order Summary
                   </p>
-                  <p className="font-display mt-3 text-[2.4rem] leading-none text-[var(--color-primary)]">
+                  <p className="font-display mt-3 text-[2.4rem] leading-none text-[var(--color-text)]">
                     Review
                   </p>
                 </div>
 
                 <div className="mt-5 space-y-4">
-                  <div className="flex items-center justify-between text-sm text-[rgba(2,2,2,0.68)]">
+                  <div className="flex items-center justify-between text-sm text-[var(--color-text-soft)]">
                     <span>Items</span>
                     <span>{itemCount}</span>
                   </div>
 
                   <div className="space-y-3">
                     {(cart?.items ?? []).slice(0, 3).map((item) => (
-                      <div key={item.id} className="rounded-[1.1rem] border border-[rgba(138,129,124,0.12)] bg-[rgba(255,255,255,0.6)] p-4">
+                      <div key={item.id} className="rounded-[1.1rem] border border-[var(--color-border-soft)] bg-[rgba(255,255,255,0.76)] p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="text-sm font-semibold text-[var(--color-primary)]">
+                            <p className="text-sm font-semibold text-[var(--color-text)]">
                               {item.product?.name || 'Unnamed product'}
                             </p>
-                            <p className="mt-1 text-xs text-[rgba(138,129,124,0.86)]">
+                            <p className="mt-1 text-xs text-[var(--color-text-faint)]">
                               Qty {item.quantity}
                             </p>
                           </div>
-                          <p className="text-sm text-[rgba(2,2,2,0.72)]">${item.subtotal}</p>
+                          <p className="text-sm text-[var(--color-text-soft)]">${item.subtotal}</p>
                         </div>
                       </div>
                     ))}
 
                     {itemCount > 3 && (
-                      <p className="text-xs uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                      <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                         + {itemCount - 3} more item{itemCount - 3 > 1 ? 's' : ''}
                       </p>
                     )}
                   </div>
 
-                  <div className="rounded-[1.25rem] bg-[rgba(248,244,239,0.9)] p-4">
-                    <div className="flex items-center justify-between text-sm text-[rgba(2,2,2,0.68)]">
+                  <div className="rounded-[1.25rem] bg-[rgba(244,243,238,0.94)] p-4">
+                    <div className="flex items-center justify-between text-sm text-[var(--color-text-soft)]">
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="mt-3 flex items-center justify-between text-sm text-[rgba(2,2,2,0.68)]">
+                    <div className="mt-3 flex items-center justify-between text-sm text-[var(--color-text-soft)]">
                       <span>Shipping</span>
                       <span>
                         {selectedShipping ? `${estimatedShipping.toFixed(2)}` : 'Select delivery'}
                       </span>
                     </div>
-                    <div className="mt-4 flex items-center justify-between border-t border-[rgba(138,129,124,0.12)] pt-4">
-                      <span className="text-sm font-semibold text-[var(--color-primary)]">
+                    <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border-soft)] pt-4">
+                      <span className="text-sm font-semibold text-[var(--color-text)]">
                         Estimated Total
                       </span>
-                      <span className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
+                      <span className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                         ${estimatedTotal.toFixed(2)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="rounded-[1.25rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.82)] p-4">
-                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                  <div className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] p-4">
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                       Current Selection
                     </p>
-                    <p className="mt-3 text-sm text-[rgba(2,2,2,0.72)]">
+                    <p className="mt-3 text-sm text-[var(--color-text-soft)]">
                       Delivery: {selectedShipping?.label || 'Not selected yet'}
                     </p>
-                    <p className="mt-2 text-sm text-[rgba(2,2,2,0.72)]">
+                    <p className="mt-2 text-sm text-[var(--color-text-soft)]">
                       Payment: {paymentOptions.find((option) => option.value === formData.payment_method)?.label || 'Not selected yet'}
                     </p>
                   </div>

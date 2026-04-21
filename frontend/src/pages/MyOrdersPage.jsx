@@ -33,7 +33,7 @@ function MyOrdersPage() {
   if (authLoading) {
     return (
       <div className="page-shell">
-        <div className="page-container max-w-5xl surface-card p-8 text-sm text-[rgba(2,2,2,0.62)]">
+        <div className="page-container max-w-5xl surface-card p-8 text-sm text-[var(--color-text-soft)]">
           Checking user...
         </div>
       </div>
@@ -68,7 +68,7 @@ function MyOrdersPage() {
         </div>
 
         {loading && (
-          <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
             Loading orders...
           </div>
         )}
@@ -94,10 +94,10 @@ function MyOrdersPage() {
                     <h2 className="font-display text-3xl leading-none text-[var(--color-primary)]">
                       Order #{order.id}
                     </h2>
-                    <p className="text-sm text-[rgba(2,2,2,0.62)]">
+                    <p className="text-sm text-[var(--color-text-soft)]">
                       Payment Method: {order.payment_method || 'N/A'}
                     </p>
-                    <p className="text-sm text-[rgba(2,2,2,0.62)]">
+                    <p className="text-sm text-[var(--color-text-soft)]">
                       Status: <span className="capitalize">{order.status || 'Unknown'}</span>
                     </p>
                     <p className="text-sm font-semibold text-[var(--color-primary)]">

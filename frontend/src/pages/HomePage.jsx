@@ -45,26 +45,28 @@ function MediaTile({
   return (
     <Link
       to={to}
-      className={`group relative overflow-hidden rounded-[1.45rem] border border-[rgba(138,129,124,0.16)] ${className}`}
+      className={`group relative overflow-hidden rounded-[1.45rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.84)] shadow-[var(--shadow-card)] ${className}`}
     >
       <img
         src={heroImage}
         alt={title}
         className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
       />
-      <div className={`absolute inset-0 bg-[linear-gradient(180deg,rgba(2,2,2,0.08),rgba(2,2,2,0.62))] ${overlayClassName}`} />
-      <div className="relative z-10 flex h-full flex-col justify-end p-5 text-white">
-        <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-white/72">
-          {subtitle}
-        </p>
-        <h3 className="font-display mt-2 text-4xl leading-none">
-          {title}
-        </h3>
-        {description && (
-          <p className="mt-3 max-w-xs text-sm leading-6 text-white/74">
-            {description}
+      <div className={`absolute inset-0 bg-[linear-gradient(180deg,rgba(244,243,238,0.08),rgba(244,243,238,0.9))] ${overlayClassName}`} />
+      <div className="relative z-10 flex h-full flex-col justify-end p-5">
+        <div className="max-w-[17rem] rounded-[1.1rem] border border-[rgba(188,184,177,0.74)] bg-[rgba(255,255,255,0.7)] p-4 backdrop-blur-sm">
+          <p className="page-kicker text-[0.62rem]">
+            {subtitle}
           </p>
-        )}
+          <h3 className="font-display mt-2 text-4xl leading-none text-[var(--color-text)]">
+            {title}
+          </h3>
+          {description && (
+            <p className="mt-3 max-w-xs text-sm leading-6 text-[var(--color-text-soft)]">
+              {description}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -75,7 +77,7 @@ function ArrivalItem({ product }) {
 
   return (
     <Link to={product?.id ? `/products/${product.id}` : '/products'} className="group">
-      <div className="overflow-hidden rounded-[1.1rem] bg-[linear-gradient(160deg,rgba(239,231,223,0.95),rgba(226,216,207,0.9))]">
+      <div className="image-shell rounded-[1.1rem]">
         <div className="flex aspect-[0.9] items-center justify-center p-4">
           {imageSrc ? (
             <img
@@ -99,7 +101,7 @@ function ArrivalItem({ product }) {
         <h3 className="font-display text-2xl leading-none text-[var(--color-primary)]">
           {product?.name || 'Unnamed product'}
         </h3>
-        <p className="text-sm text-[rgba(2,2,2,0.66)]">
+        <p className="text-sm text-[var(--color-text-soft)]">
           ${product?.price ?? 'N/A'}
         </p>
       </div>
@@ -164,34 +166,48 @@ function HomePage() {
     <div className="page-shell pb-0">
       <div className="page-container max-w-[1180px]">
         <section className="pt-2">
-          <div className="relative overflow-hidden rounded-[1.9rem] bg-[#d9cfc4]">
+          <div className="relative overflow-hidden rounded-[1.9rem] border border-[var(--color-border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(244,243,238,0.98),rgba(122,75,46,0.18))] shadow-[var(--shadow-lifted)]">
             <img
               src={heroImage}
               alt="Artisan marketplace hero"
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              className="absolute inset-y-0 right-0 h-full w-full object-cover object-center opacity-65 lg:w-[56%]"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(22,19,17,0.54)_0%,rgba(22,19,17,0.14)_42%,rgba(22,19,17,0.06)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,243,238,0.96)_0%,rgba(244,243,238,0.88)_44%,rgba(244,243,238,0.2)_100%)]" />
+            <div className="absolute inset-y-0 right-0 w-full bg-[radial-gradient(circle_at_right,rgba(122,75,46,0.18),transparent_34%)] lg:w-[55%]" />
             <div className="relative z-10 min-h-[460px] px-7 py-8 sm:px-10 sm:py-10 lg:min-h-[560px] lg:px-14 lg:py-14">
-              <div className="flex h-full max-w-[320px] flex-col justify-end sm:max-w-[400px]">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-white/76">
+              <div className="flex h-full max-w-[34rem] flex-col justify-end">
+                <p className="page-kicker text-[0.62rem]">
                   Curated Marketplace
                 </p>
-                <h1 className="font-display mt-4 text-5xl leading-[0.9] text-white sm:text-6xl lg:text-7xl">
+                <h1 className="font-display mt-4 text-5xl leading-[0.9] text-[var(--color-text)] sm:text-6xl lg:text-7xl">
                   The Art of the Handmade
                 </h1>
-                <p className="mt-4 text-sm leading-7 text-white/76 sm:text-base">
+                <p className="mt-4 max-w-[30rem] text-sm leading-7 text-[var(--color-text-soft)] sm:text-base">
                   Discover artisan products from women-led home businesses through a calm, editorial shopping experience.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
-                  <Link to="/products" className="btn-base border border-white bg-white text-[var(--color-primary)]">
+                  <Link to="/products" className="btn-base btn-primary border-[var(--color-brand)] bg-[var(--color-brand)] px-7 shadow-[0_14px_30px_rgba(122,75,46,0.24)]">
                     Explore Products
                   </Link>
                   <Link
                     to={sellerCtaLink}
-                    className="btn-base border border-[rgba(255,255,255,0.3)] bg-[rgba(255,255,255,0.08)] text-white backdrop-blur-sm"
+                    className="btn-base border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-7 text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)]"
                   >
                     {sellerCtaLabel}
                   </Link>
+                </div>
+
+                <div className="mt-8 grid max-w-[28rem] gap-3 sm:grid-cols-3">
+                  {[
+                    ['Palette', '#F4F3EE'],
+                    ['Borders', '#BCB8B1'],
+                    ['Actions', '#7A4B2E'],
+                  ].map(([label, value]) => (
+                    <div key={label} className={`rounded-[1.15rem] border px-4 py-4 backdrop-blur-sm ${label === 'Actions' ? 'border-[var(--color-brand)] bg-[rgba(122,75,46,0.12)] shadow-[0_12px_26px_rgba(122,75,46,0.14)]' : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.74)]'}`}>
+                      <p className="page-kicker text-[0.56rem]">{label}</p>
+                      <p className={`mt-2 text-sm font-semibold ${label === 'Actions' ? 'text-[var(--color-brand)]' : 'text-[var(--color-text)]'}`}>{value}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -200,7 +216,7 @@ function HomePage() {
 
         <section className="pt-16">
           <div className="mb-6">
-            <p className="text-xs font-medium text-[rgba(138,129,124,0.82)]">Featured Collections</p>
+            <p className="page-kicker">Featured Collections</p>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.45fr_0.82fr]">
@@ -242,20 +258,20 @@ function HomePage() {
         <section className="pt-20">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[rgba(188,184,177,0.9)]">
+              <p className="page-kicker">
                 Latest Products
               </p>
-              <h2 className="font-display mt-3 text-4xl leading-none text-[var(--color-primary)] sm:text-5xl">
+              <h2 className="font-display mt-3 text-4xl leading-none text-[var(--color-text)] sm:text-5xl">
                 New Arrivals
               </h2>
             </div>
-            <Link to="/products" className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)] hover:text-[var(--color-primary)]">
+            <Link to="/products" className="line-link rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] hover:bg-[rgba(122,75,46,0.14)]">
               Shop All Products
             </Link>
           </div>
 
           {loading && (
-            <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+            <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
               Loading new arrivals...
             </div>
           )}
@@ -284,10 +300,10 @@ function HomePage() {
         <section className="pt-24">
           <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
             <div className="px-2 sm:px-4">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[rgba(188,184,177,0.9)]">
+              <p className="page-kicker">
                 Editorial Selection
               </p>
-              <h2 className="font-display mt-5 text-5xl leading-[0.92] text-[var(--color-primary)] sm:text-6xl">
+              <h2 className="font-display mt-5 text-5xl leading-[0.92] text-[var(--color-text)] sm:text-6xl">
                 The Curated Workspace
               </h2>
               <p className="subtle-copy mt-5 max-w-md text-base">
@@ -301,7 +317,7 @@ function HomePage() {
                     to={product?.id ? `/products/${product.id}` : '/products'}
                     className="flex items-center gap-4"
                   >
-                    <div className="h-11 w-11 overflow-hidden rounded-full bg-[rgba(224,175,160,0.3)]">
+                    <div className="h-11 w-11 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
                       <img
                         src={heroImage}
                         alt={product?.name || 'Product'}
@@ -309,10 +325,10 @@ function HomePage() {
                       />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[var(--color-primary)]">
+                      <p className="text-sm font-semibold text-[var(--color-text)]">
                         {product?.name || `Curated item ${index + 1}`}
                       </p>
-                      <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-secondary)]">
+                      <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-brand)]">
                         ${product?.price ?? 'N/A'} · {product?.category || 'Artisan'}
                       </p>
                     </div>
@@ -322,7 +338,7 @@ function HomePage() {
             </div>
 
             <div className="relative">
-              <div className="overflow-hidden rounded-[1.9rem] bg-[#e4dbd1] shadow-[0_18px_40px_rgba(2,2,2,0.08)]">
+              <div className="image-shell rounded-[1.9rem]">
                 <img
                   src={heroImage}
                   alt="Editorial artisan composition"
@@ -330,11 +346,11 @@ function HomePage() {
                 />
               </div>
 
-              <div className="absolute bottom-6 left-6 w-[180px] rounded-[1.2rem] bg-white p-4 shadow-[0_18px_36px_rgba(2,2,2,0.1)] sm:bottom-8 sm:left-8">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)]">
+              <div className="absolute bottom-6 left-6 w-[190px] rounded-[1.2rem] border border-[var(--color-brand)] bg-[rgba(255,255,255,0.94)] p-4 shadow-[0_20px_40px_rgba(122,75,46,0.16)] sm:bottom-8 sm:left-8">
+                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]">
                   Curated Note
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[rgba(2,2,2,0.7)]">
+                <p className="mt-3 text-sm leading-6 text-[var(--color-text-soft)]">
                   Thoughtful presentation helps handmade work feel elevated without losing usability.
                 </p>
               </div>
@@ -344,10 +360,10 @@ function HomePage() {
 
         <section className="pt-20">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[rgba(188,184,177,0.9)]">
+            <p className="page-kicker">
               Join the Journal
             </p>
-            <h2 className="font-display mt-4 text-4xl leading-none text-[var(--color-primary)] sm:text-5xl">
+            <h2 className="font-display mt-4 text-4xl leading-none text-[var(--color-text)] sm:text-5xl">
               Stay close to new artisan arrivals.
             </h2>
             <p className="subtle-copy mt-4 text-sm">
@@ -363,7 +379,7 @@ function HomePage() {
                 placeholder="Enter your email"
                 className="text-input min-w-0 flex-1"
               />
-              <button type="submit" className="btn-base btn-primary sm:px-6">
+              <button type="submit" className="btn-base btn-primary border-[var(--color-brand)] bg-[var(--color-brand)] px-7 sm:px-6">
                 Join
               </button>
             </form>
@@ -371,43 +387,43 @@ function HomePage() {
         </section>
       </div>
 
-      <footer className="mt-20 bg-[var(--color-primary)] pb-8 pt-14 text-[#f6f1eb]">
+      <footer className="site-footer mt-20 pb-8 pt-14">
         <div className="page-container max-w-[1180px]">
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
-              <p className="font-display text-4xl leading-none text-white sm:text-5xl">
+              <p className="font-display text-4xl leading-none text-[var(--color-background)] sm:text-5xl">
                 GradShop
               </p>
-              <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(255,250,247,0.72)]">
+              <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2">
               <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[rgba(255,250,247,0.46)]">
+                <p className="site-footer-label">
                   Navigate
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Home</Link>
-                  <Link to="/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Products</Link>
-                  <Link to={sellerCtaLink} className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">
+                  <Link to="/" className="site-footer-link text-sm">Home</Link>
+                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
+                  <Link to={sellerCtaLink} className="site-footer-link text-sm">
                     {sellerCtaLabel}
                   </Link>
                 </div>
               </div>
 
               <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[rgba(255,250,247,0.46)]">
+                <p className="site-footer-label">
                   Account
                 </p>
                 <div className="mt-4 grid gap-3">
-                  {!isAuthenticated && <Link to="/login" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Login</Link>}
-                  {!isAuthenticated && <Link to="/register" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Register</Link>}
-                  {canAccessBuyerFeatures(user) && <Link to="/favorites" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Favorites</Link>}
-                  {canAccessBuyerFeatures(user) && <Link to="/orders" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">My Orders</Link>}
-                  {user?.role === 'seller' && <Link to="/seller/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Seller Space</Link>}
-                  {user?.role === 'admin' && <Link to="/admin" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Admin Area</Link>}
+                  {!isAuthenticated && <Link to="/login" className="site-footer-link text-sm">Login</Link>}
+                  {!isAuthenticated && <Link to="/register" className="site-footer-link text-sm">Register</Link>}
+                  {canAccessBuyerFeatures(user) && <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>}
+                  {canAccessBuyerFeatures(user) && <Link to="/orders" className="site-footer-link text-sm">My Orders</Link>}
+                  {user?.role === 'seller' && <Link to="/seller/products" className="site-footer-link text-sm">Seller Space</Link>}
+                  {user?.role === 'admin' && <Link to="/admin" className="site-footer-link text-sm">Admin Area</Link>}
                 </div>
               </div>
             </div>

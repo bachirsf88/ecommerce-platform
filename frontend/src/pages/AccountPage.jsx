@@ -175,15 +175,15 @@ function AccountPage() {
           <section className="space-y-6">
             <form id="profile" onSubmit={handleProfileSubmit} className="surface-card p-6 sm:p-7 scroll-mt-32">
               <span className="section-label">Profile</span>
-              <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+              <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
                 Personal information
               </h2>
 
-              {loading ? <div className="mt-6 text-sm text-[rgba(2,2,2,0.62)]">Loading account...</div> : null}
+              {loading ? <div className="mt-6 text-sm text-[var(--color-text-soft)]">Loading account...</div> : null}
 
               <div className="mt-6 space-y-5">
                 <div>
-                  <label htmlFor="name" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                  <label htmlFor="name" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                     Full Name
                   </label>
                   <input id="name" name="name" type="text" value={profileForm.name} onChange={handleProfileChange} required className="text-input" />
@@ -191,14 +191,14 @@ function AccountPage() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                    <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                       Email
                     </label>
                     <input id="email" name="email" type="email" value={profileForm.email} onChange={handleProfileChange} required className="text-input" />
                   </div>
 
                   <div>
-                    <label htmlFor="phone_number" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                    <label htmlFor="phone_number" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                       Phone
                     </label>
                     <input id="phone_number" name="phone_number" type="text" value={profileForm.phone_number} onChange={handleProfileChange} className="text-input" />
@@ -206,10 +206,10 @@ function AccountPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="profile_image" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                  <label htmlFor="profile_image" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                     Profile Image
                   </label>
-                  <input id="profile_image" name="profile_image" type="file" accept="image/*" onChange={handleProfileImageChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(2,2,2,0.08)] file:px-4 file:py-2 file:text-sm file:font-semibold" />
+                  <input id="profile_image" name="profile_image" type="file" accept="image/*" onChange={handleProfileImageChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(188,184,177,0.28)] file:px-4 file:py-2 file:text-sm file:font-semibold" />
                 </div>
 
                 {error ? <div className="status-message status-error">{error}</div> : null}
@@ -223,27 +223,27 @@ function AccountPage() {
 
             <form id="password" onSubmit={handlePasswordSubmit} className="surface-card p-6 sm:p-7 scroll-mt-32">
               <span className="section-label">Password</span>
-              <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+              <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
                 Security
               </h2>
 
               <div className="mt-6 space-y-5">
                 <div>
-                  <label htmlFor="current_password" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                  <label htmlFor="current_password" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                     Current Password
                   </label>
                   <input id="current_password" name="current_password" type="password" value={passwordForm.current_password} onChange={handlePasswordChange} required className="text-input" />
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                  <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                     New Password
                   </label>
                   <input id="password" name="password" type="password" value={passwordForm.password} onChange={handlePasswordChange} required className="text-input" />
                 </div>
 
                 <div>
-                  <label htmlFor="password_confirmation" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                  <label htmlFor="password_confirmation" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
                     Confirm Password
                   </label>
                   <input id="password_confirmation" name="password_confirmation" type="password" value={passwordForm.password_confirmation} onChange={handlePasswordChange} required className="text-input" />
@@ -261,24 +261,24 @@ function AccountPage() {
           <aside className="surface-card-strong p-6 sm:p-7">
             <span className="section-label">Overview</span>
             <div className="mt-5 flex items-center gap-4">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.7rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.86)]">
+              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.7rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.86)]">
                 {profileForm.profile_image_url ? (
                   <img src={profileForm.profile_image_url} alt={profileForm.name || 'Profile'} className="h-full w-full object-cover" />
                 ) : (
-                  <span className="font-display text-4xl text-[var(--color-primary)]">
+                  <span className="font-display text-4xl text-[var(--color-text)]">
                     {(profileForm.name || 'A').charAt(0)}
                   </span>
                 )}
               </div>
 
               <div>
-                <h2 className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
+                <h2 className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                   {profileForm.name || 'Your account'}
                 </h2>
-                <p className="mt-2 text-sm text-[rgba(88,78,72,0.82)]">
+                <p className="mt-2 text-sm text-[var(--color-text-faint)]">
                   {profileForm.email || 'account@example.com'}
                 </p>
-                <p className="mt-1 text-sm text-[rgba(88,78,72,0.82)]">
+                <p className="mt-1 text-sm text-[var(--color-text-faint)]">
                   {profileForm.phone_number || 'Phone not added yet'}
                 </p>
               </div>
@@ -286,20 +286,20 @@ function AccountPage() {
 
             <div className="mt-8 grid gap-4">
               <div className="metric-tile">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                   Role
                 </p>
-                <p className="mt-4 text-lg font-semibold capitalize text-[var(--color-primary)]">
+                <p className="mt-4 text-lg font-semibold capitalize text-[var(--color-text)]">
                   {user?.role || 'Member'}
                 </p>
               </div>
 
               {sellerUser ? (
-                <div className="rounded-[1.4rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.72)] p-5">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(138,129,124,0.82)]">
+                <div className="rounded-[1.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] p-5">
+                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                     Separation
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-[rgba(56,48,43,0.78)]">
+                  <p className="mt-3 text-sm leading-7 text-[var(--color-text-soft)]">
                     Your seller workspace remains dedicated to business operations. This page only covers your personal account and shopping identity.
                   </p>
                 </div>

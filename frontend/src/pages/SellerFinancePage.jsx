@@ -40,13 +40,13 @@ function SellerFinancePage() {
       </section>
 
       {error ? <div className="status-message status-error">{error}</div> : null}
-      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading finance overview...</div> : null}
+      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading finance overview...</div> : null}
 
       {!loading && !error ? (
         <>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article className="surface-card p-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+              <p className="page-kicker text-[0.62rem]">
                 Available Balance
               </p>
               <p className="mt-4 font-display text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -54,7 +54,7 @@ function SellerFinancePage() {
               </p>
             </article>
             <article className="surface-card p-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+              <p className="page-kicker text-[0.62rem]">
                 Lifetime Earnings
               </p>
               <p className="mt-4 font-display text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -62,7 +62,7 @@ function SellerFinancePage() {
               </p>
             </article>
             <article className="surface-card p-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+              <p className="page-kicker text-[0.62rem]">
                 Pending Withdrawals
               </p>
               <p className="mt-4 font-display text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -70,7 +70,7 @@ function SellerFinancePage() {
               </p>
             </article>
             <article className="surface-card p-5">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+              <p className="page-kicker text-[0.62rem]">
                 Approved Withdrawals
               </p>
               <p className="mt-4 font-display text-[2.4rem] leading-none text-[var(--color-primary)]">
@@ -88,13 +88,13 @@ function SellerFinancePage() {
               <div className="mt-6 space-y-4">
                 {monthlyOverview.map((entry) => (
                   <div key={entry.key} className="space-y-2">
-                    <div className="flex items-center justify-between gap-3 text-sm text-[rgba(56,48,43,0.8)]">
+                    <div className="flex items-center justify-between gap-3 text-sm text-[var(--color-text-soft)]">
                       <span>{entry.label}</span>
                       <span>{formatCurrency(entry.amount)}</span>
                     </div>
-                    <div className="h-2 rounded-full bg-[rgba(188,184,177,0.18)]">
+                    <div className="h-2 rounded-full bg-[rgba(188,184,177,0.24)]">
                       <div
-                        className="h-full rounded-full bg-[linear-gradient(90deg,#020202,#8a817c)]"
+                        className="h-full rounded-full bg-[linear-gradient(90deg,#8a817c,#736b66)]"
                         style={{
                           width: `${Math.min(100, Number(entry.amount ?? 0) > 0 ? (Number(entry.amount) / Math.max(...monthlyOverview.map((item) => Number(item.amount ?? 0)), 1)) * 100 : 0)}%`,
                         }}
@@ -115,11 +115,11 @@ function SellerFinancePage() {
                   <div className="empty-state">Delivered orders and withdrawal requests will appear here.</div>
                 ) : (
                   recentTransactions.map((transaction) => (
-                    <article key={transaction.id} className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
+                    <article key={transaction.id} className="soft-panel p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-[var(--color-primary)]">{transaction.title}</p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[rgba(112,100,92,0.74)]">
+                          <p className="page-kicker mt-1 text-[0.68rem]">
                             {formatShortDate(transaction.date)}
                           </p>
                         </div>
@@ -127,7 +127,7 @@ function SellerFinancePage() {
                           <p className={`text-sm font-semibold ${transaction.direction === 'credit' ? 'text-[var(--color-success-text)]' : 'text-[var(--color-primary)]'}`}>
                             {transaction.direction === 'credit' ? '+' : '-'}{formatCurrency(transaction.amount)}
                           </p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[rgba(112,100,92,0.74)]">
+                          <p className="page-kicker mt-1 text-[0.68rem]">
                             {transaction.status}
                           </p>
                         </div>

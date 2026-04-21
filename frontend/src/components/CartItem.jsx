@@ -28,14 +28,14 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-2">
           <span className="status-pill">Cart Item</span>
-          <h3 className="font-display text-3xl leading-none text-[var(--color-primary)]">
+          <h3 className="font-display text-3xl leading-none text-[var(--color-text)]">
             {item.product?.name || 'Unnamed product'}
           </h3>
-          <p className="text-sm text-[rgba(2,2,2,0.68)]">
+          <p className="text-sm text-[var(--color-text-soft)]">
             Category: {item.product?.category || 'Uncategorized'}
           </p>
-          <p className="text-sm text-[rgba(2,2,2,0.68)]">Unit Price: ${item.unit_price}</p>
-          <p className="text-sm font-semibold text-[var(--color-primary)]">
+          <p className="text-sm text-[var(--color-text-soft)]">Unit Price: ${item.unit_price}</p>
+          <p className="text-sm font-semibold text-[var(--color-text)]">
             Subtotal: ${item.subtotal}
           </p>
         </div>
@@ -44,7 +44,7 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
           <div>
             <label
               htmlFor={`quantity-${item.id}`}
-              className="text-sm font-semibold text-[rgba(2,2,2,0.72)]"
+              className="text-sm font-semibold text-[var(--color-text-soft)]"
             >
               Quantity
             </label>

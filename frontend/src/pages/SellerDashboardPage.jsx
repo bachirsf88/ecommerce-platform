@@ -52,7 +52,7 @@ function SellerDashboardPage() {
           </div>
 
           <div className="surface-card p-5">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
               Quick Actions
             </p>
             <div className="mt-5 grid gap-3">
@@ -71,17 +71,17 @@ function SellerDashboardPage() {
       </section>
 
       {error ? <div className="status-message status-error">{error}</div> : null}
-      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading dashboard...</div> : null}
+      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading dashboard...</div> : null}
 
       {!loading && !error ? (
         <>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {metricCards.map((card) => (
               <article key={card.key} className="surface-card p-5">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                   {card.label}
                 </p>
-                <p className="mt-4 font-display text-[2.6rem] leading-none text-[var(--color-primary)]">
+                <p className="mt-4 font-display text-[2.6rem] leading-none text-[var(--color-text)]">
                   {overview[card.key] ?? 0}
                 </p>
               </article>
@@ -92,24 +92,24 @@ function SellerDashboardPage() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <span className="section-label">Overview</span>
-                <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+                <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
                   Financial summary
                 </h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="metric-tile min-w-[13rem]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[rgba(112,100,92,0.76)]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                     Delivered Revenue
                   </p>
-                  <p className="mt-3 font-display text-4xl leading-none text-[var(--color-primary)]">
+                  <p className="mt-3 font-display text-4xl leading-none text-[var(--color-text)]">
                     {formatCurrency(financialSummary.delivered_revenue)}
                   </p>
                 </div>
                 <div className="metric-tile min-w-[13rem]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[rgba(112,100,92,0.76)]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                     Pending Revenue
                   </p>
-                  <p className="mt-3 font-display text-4xl leading-none text-[var(--color-primary)]">
+                  <p className="mt-3 font-display text-4xl leading-none text-[var(--color-text)]">
                     {formatCurrency(financialSummary.pending_revenue)}
                   </p>
                 </div>
@@ -122,7 +122,7 @@ function SellerDashboardPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <span className="section-label">Recent Orders</span>
-                  <h2 className="font-display mt-4 text-[2.2rem] leading-none text-[var(--color-primary)]">
+                  <h2 className="font-display mt-4 text-[2.2rem] leading-none text-[var(--color-text)]">
                     Latest activity
                   </h2>
                 </div>
@@ -136,19 +136,19 @@ function SellerDashboardPage() {
                   <div className="empty-state">Recent orders will appear here once buyers start ordering your products.</div>
                 ) : (
                   (dashboard?.recent_orders ?? []).map((order) => (
-                    <article key={order.id} className="rounded-[1.35rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
+                    <article key={order.id} className="rounded-[1.35rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-[var(--color-primary)]">
+                          <p className="text-sm font-semibold text-[var(--color-text)]">
                             Order #{order.id}
                           </p>
-                          <p className="mt-1 text-sm text-[rgba(88,78,72,0.76)]">
+                          <p className="mt-1 text-sm text-[var(--color-text-faint)]">
                             {order.buyer_name || 'Unknown buyer'}
                           </p>
                         </div>
                         <span className="status-pill">{order.status}</span>
                       </div>
-                      <div className="mt-4 grid gap-2 text-sm text-[rgba(56,48,43,0.76)] sm:grid-cols-3">
+                      <div className="mt-4 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-3">
                         <p>Total: {formatCurrency(order.seller_total)}</p>
                         <p>Items: {order.item_count ?? 0}</p>
                         <p>{formatShortDate(order.created_at)}</p>
@@ -164,7 +164,7 @@ function SellerDashboardPage() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <span className="section-label">Inventory Alerts</span>
-                    <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+                    <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
                       Low stock
                     </h2>
                   </div>
@@ -178,9 +178,9 @@ function SellerDashboardPage() {
                     <div className="empty-state">No low-stock products need attention right now.</div>
                   ) : (
                     (dashboard?.low_stock_alerts ?? []).map((product) => (
-                      <article key={product.id} className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
-                        <p className="text-sm font-semibold text-[var(--color-primary)]">{product.name}</p>
-                        <div className="mt-2 flex items-center justify-between gap-3 text-sm text-[rgba(56,48,43,0.76)]">
+                      <article key={product.id} className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-4">
+                        <p className="text-sm font-semibold text-[var(--color-text)]">{product.name}</p>
+                        <div className="mt-2 flex items-center justify-between gap-3 text-sm text-[var(--color-text-soft)]">
                           <span>{product.stock} left</span>
                           <span>{product.status}</span>
                         </div>
@@ -192,12 +192,12 @@ function SellerDashboardPage() {
 
               <section className="surface-card p-6">
                 <span className="section-label">Insights</span>
-                <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
+                <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
                   Small updates
                 </h2>
                 <div className="mt-5 space-y-3">
                   {(dashboard?.insights ?? []).map((insight) => (
-                    <div key={insight} className="rounded-[1.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.56)] px-4 py-3 text-sm leading-7 text-[rgba(56,48,43,0.78)]">
+                    <div key={insight} className="rounded-[1.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm leading-7 text-[var(--color-text-soft)]">
                       {insight}
                     </div>
                   ))}

@@ -167,22 +167,22 @@ function ProductCard({ product, onFavoriteChange }) {
       </div>
 
       <div className="mb-4 flex items-center justify-between gap-3">
-        <span className="status-pill">
+        <span className="status-pill border border-[rgba(122,75,46,0.18)] bg-[rgba(122,75,46,0.12)] text-[var(--color-brand)]">
           {productCategory}
         </span>
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[rgba(138,129,124,0.82)]">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-text-faint)]">
           Stock: {productStock}
         </span>
       </div>
 
-      <h3 className="font-display text-3xl leading-none text-[var(--color-primary)]">
+      <h3 className="font-display text-3xl leading-none text-[var(--color-text)]">
         {productName}
       </h3>
 
       <div className="mt-3 flex items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">Price</p>
-          <p className="mt-1 text-2xl font-extrabold text-[var(--color-primary)]">${productPrice}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-brand)]">Price</p>
+          <p className="mt-1 text-2xl font-extrabold text-[var(--color-text)]">${productPrice}</p>
         </div>
       </div>
 
@@ -216,7 +216,7 @@ function ProductCard({ product, onFavoriteChange }) {
             type="button"
             onClick={handleAddToCart}
             disabled={cartLoading || !productId}
-            className="btn-base btn-primary w-full"
+            className="btn-base btn-primary w-full border-[var(--color-brand)] bg-[var(--color-brand)]"
           >
             {cartLoading ? 'Adding...' : 'Add to Cart'}
           </button>
@@ -225,7 +225,7 @@ function ProductCard({ product, onFavoriteChange }) {
             type="button"
             onClick={handleFavoriteToggle}
             disabled={favoriteLoading || !productId}
-            className="btn-base btn-secondary w-full"
+            className={`btn-base w-full ${isFavorite ? 'border-[var(--color-brand)] bg-[rgba(122,75,46,0.12)] text-[var(--color-brand)]' : 'btn-secondary'}`}
           >
             {favoriteLoading
               ? 'Saving...'

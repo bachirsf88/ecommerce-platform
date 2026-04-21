@@ -55,14 +55,14 @@ function SellerOrdersPage() {
       <section className="surface-card p-5">
         <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <label htmlFor="order-search" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="order-search" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Search
             </label>
             <input id="order-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search by order id or buyer" className="text-input" />
           </div>
 
           <div>
-            <label htmlFor="order-status" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="order-status" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
               Status
             </label>
             <select id="order-status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="text-input">
@@ -78,7 +78,7 @@ function SellerOrdersPage() {
       </section>
 
       {error ? <div className="status-message status-error">{error}</div> : null}
-      {loading ? <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading seller orders...</div> : null}
+      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading seller orders...</div> : null}
 
       {!loading && !error ? (
         filteredOrders.length === 0 ? (
@@ -87,7 +87,7 @@ function SellerOrdersPage() {
           <section className="surface-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-[rgba(241,235,229,0.65)] text-[0.68rem] uppercase tracking-[0.18em] text-[rgba(112,100,92,0.82)]">
+                <thead className="bg-[rgba(244,243,238,0.9)] text-[0.68rem] uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                   <tr>
                     <th className="px-5 py-4">Order</th>
                     <th className="px-5 py-4">Buyer</th>
@@ -99,8 +99,8 @@ function SellerOrdersPage() {
                 </thead>
                 <tbody>
                   {filteredOrders.map((order) => (
-                    <tr key={order.id} className="border-t border-[var(--color-border)] text-sm text-[rgba(56,48,43,0.82)]">
-                      <td className="px-5 py-4 font-semibold text-[var(--color-primary)]">#{order.id}</td>
+                    <tr key={order.id} className="border-t border-[var(--color-border)] text-sm text-[var(--color-text-soft)]">
+                      <td className="px-5 py-4 font-semibold text-[var(--color-text)]">#{order.id}</td>
                       <td className="px-5 py-4">{order.buyer?.name || 'Unknown buyer'}</td>
                       <td className="px-5 py-4">{formatShortDate(order.created_at)}</td>
                       <td className="px-5 py-4">{formatCurrency(order.seller_total)}</td>

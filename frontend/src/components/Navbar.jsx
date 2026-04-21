@@ -10,8 +10,8 @@ function IconButton({ to, label, children }) {
       className={({ isActive }) =>
         `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
           isActive
-            ? 'border-[rgba(2,2,2,0.12)] bg-[rgba(2,2,2,0.06)] text-[var(--color-primary)]'
-            : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.76)] text-[rgba(88,78,72,0.84)] hover:border-[rgba(138,129,124,0.26)] hover:text-[var(--color-primary)]'
+            ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
+            : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
         }`
       }
       aria-label={label}
@@ -71,23 +71,23 @@ function Navbar() {
   }, []);
 
   const getLinkClassName = ({ isActive }) =>
-    `text-[0.78rem] font-semibold uppercase tracking-[0.18em] transition-colors ${
+    `inline-flex items-center rounded-full border px-4 py-2 text-[0.78rem] font-semibold uppercase tracking-[0.18em] transition-colors ${
       isActive
-        ? 'text-[var(--color-primary)]'
-        : 'text-[rgba(138,129,124,0.9)] hover:text-[var(--color-primary)]'
+        ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.16)]'
+        : 'border-transparent text-[var(--color-brand)] hover:border-[var(--color-border)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
     }`;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[rgba(138,129,124,0.14)] bg-[rgba(250,246,241,0.88)] backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[rgba(244,243,238,0.96)] shadow-[0_12px_24px_rgba(138,129,124,0.08)] backdrop-blur-xl">
       <div className="page-container px-4 py-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center justify-between gap-4">
             <NavLink to="/" className="group">
               <div>
-                <p className="font-display text-2xl leading-none text-[var(--color-primary)] sm:text-3xl">
+                <p className="font-display text-2xl leading-none text-[var(--color-text)] sm:text-3xl">
                   GradShop
                 </p>
-                <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[var(--color-secondary)]">
+                <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[var(--color-brand)]">
                   Artisan Marketplace
                 </p>
               </div>
@@ -95,10 +95,10 @@ function Navbar() {
 
             {isAuthenticated ? (
               <div className="hidden text-right lg:block">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-secondary)]">
+                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand)]">
                   Signed In
                 </p>
-                <p className="mt-1 text-sm text-[var(--color-primary)]">
+                <p className="mt-1 text-sm text-[var(--color-text)]">
                   {user?.name || 'Account'}
                 </p>
               </div>
@@ -153,8 +153,8 @@ function Navbar() {
                     onClick={() => setAccountOpen((previous) => !previous)}
                     className={`flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
                       accountOpen
-                        ? 'border-[rgba(2,2,2,0.12)] bg-[rgba(2,2,2,0.06)] text-[var(--color-primary)]'
-                        : 'border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.76)] text-[rgba(88,78,72,0.84)] hover:border-[rgba(138,129,124,0.26)] hover:text-[var(--color-primary)]'
+                        ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
+                        : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
                     }`}
                     aria-label="Account menu"
                     aria-expanded={accountOpen}
@@ -163,12 +163,12 @@ function Navbar() {
                   </button>
 
                   {accountOpen ? (
-                    <div className="absolute right-0 top-[calc(100%+0.75rem)] w-[17rem] rounded-[1.45rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.98)] p-3 shadow-[0_24px_40px_rgba(2,2,2,0.12)]">
-                      <div className="border-b border-[rgba(138,129,124,0.12)] px-3 pb-3">
-                        <p className="text-sm font-semibold text-[var(--color-primary)]">
+                    <div className="absolute right-0 top-[calc(100%+0.75rem)] w-[17rem] rounded-[1.45rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] p-3 shadow-[0_24px_40px_rgba(138,129,124,0.16)]">
+                      <div className="border-b border-[var(--color-border-soft)] px-3 pb-3">
+                        <p className="text-sm font-semibold text-[var(--color-text)]">
                           {user?.name || 'Account'}
                         </p>
-                        <p className="mt-1 text-xs text-[rgba(88,78,72,0.74)]">
+                        <p className="mt-1 text-xs text-[var(--color-text-faint)]">
                           {user?.email || 'No email'}
                         </p>
                       </div>
@@ -179,21 +179,21 @@ function Navbar() {
                             <Link
                               to="/account"
                               onClick={() => setAccountOpen(false)}
-                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
                             >
                               Account / Profile
                             </Link>
                             <Link
                               to="/orders"
                               onClick={() => setAccountOpen(false)}
-                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
                             >
                               My Purchases
                             </Link>
                             <Link
                               to="/account#password"
                               onClick={() => setAccountOpen(false)}
-                              className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                              className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
                             >
                               Change Password
                             </Link>
@@ -204,18 +204,18 @@ function Navbar() {
                           <Link
                             to="/seller/dashboard"
                             onClick={() => setAccountOpen(false)}
-                            className="rounded-[1rem] px-3 py-2 text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                            className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
                           >
                             Seller Workspace
                           </Link>
                         ) : null}
                       </div>
 
-                      <div className="border-t border-[rgba(138,129,124,0.12)] px-1 pt-3">
+                      <div className="border-t border-[var(--color-border-soft)] px-1 pt-3">
                         <button
                           type="button"
                           onClick={logout}
-                          className="w-full rounded-[1rem] px-3 py-2 text-left text-sm text-[rgba(56,48,43,0.82)] transition-colors hover:bg-[rgba(2,2,2,0.05)] hover:text-[var(--color-primary)]"
+                          className="w-full rounded-[1rem] px-3 py-2 text-left text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
                         >
                           Logout
                         </button>

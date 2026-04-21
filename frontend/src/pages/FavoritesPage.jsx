@@ -46,7 +46,7 @@ function FavoritesPage() {
   if (authLoading) {
     return (
       <div className="page-shell">
-        <div className="page-container surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+        <div className="page-container surface-card p-6 text-sm text-[var(--color-text-soft)]">
           Checking user...
         </div>
       </div>
@@ -83,7 +83,7 @@ function FavoritesPage() {
         </div>
 
         {loading && (
-          <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
             Loading favorites...
           </div>
         )}

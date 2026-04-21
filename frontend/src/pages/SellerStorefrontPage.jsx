@@ -87,13 +87,13 @@ function VerifiedBadge({ light = false }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] ${
         light
-          ? 'border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.08)] text-white/84'
-          : 'border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.8)] text-[rgba(94,84,78,0.88)]'
+          ? 'border-[rgba(255,255,255,0.22)] bg-[rgba(255,255,255,0.12)] text-white/84'
+          : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] text-[var(--color-primary)]'
       }`}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          light ? 'bg-white/84' : 'bg-[rgba(96,86,80,0.82)]'
+          light ? 'bg-white/84' : 'bg-[var(--color-primary)]'
         }`}
       />
       Verified
@@ -104,7 +104,7 @@ function VerifiedBadge({ light = false }) {
 function ProductRatingSummary({ summary, loading = false }) {
   if (loading) {
     return (
-      <p className="mt-2 text-[0.72rem] text-[rgba(112,100,92,0.72)]">
+      <p className="mt-2 text-[0.72rem] text-[var(--color-text-faint)]">
         Loading reviews...
       </p>
     );
@@ -112,18 +112,18 @@ function ProductRatingSummary({ summary, loading = false }) {
 
   if (!summary || Number(summary.review_count ?? 0) === 0) {
     return (
-      <p className="mt-2 text-[0.72rem] text-[rgba(112,100,92,0.72)]">
+      <p className="mt-2 text-[0.72rem] text-[var(--color-text-faint)]">
         New
       </p>
     );
   }
 
   return (
-    <div className="mt-2 flex items-center gap-2 text-[0.74rem] text-[rgba(88,78,72,0.82)]">
-      <span className="font-semibold text-[rgba(28,24,21,0.82)]">
+    <div className="mt-2 flex items-center gap-2 text-[0.74rem] text-[var(--color-text-soft)]">
+      <span className="font-semibold text-[var(--color-text)]">
         {formatAverageRating(summary.average_rating)}
       </span>
-      <span className="h-1 w-1 rounded-full bg-[rgba(138,129,124,0.5)]" />
+      <span className="h-1 w-1 rounded-full bg-[var(--color-border-strong)]" />
       <span>
         {summary.review_count} {summary.review_count === 1 ? 'review' : 'reviews'}
       </span>
@@ -137,8 +137,8 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
   return (
     <article className="group">
       <Link to={product?.id ? `/products/${product.id}` : '/products'} className="block">
-        <div className="overflow-hidden bg-[linear-gradient(160deg,rgba(243,237,231,0.98),rgba(228,219,209,0.9))] shadow-[0_10px_24px_rgba(2,2,2,0.05)]">
-          <div className="aspect-[0.92] overflow-hidden bg-[rgba(249,246,242,0.9)]">
+        <div className="overflow-hidden bg-[linear-gradient(160deg,rgba(244,243,238,0.96),rgba(188,184,177,0.34))] shadow-[0_10px_24px_rgba(138,129,124,0.12)]">
+          <div className="aspect-[0.92] overflow-hidden bg-[rgba(255,255,255,0.88)]">
             {imageSrc !== heroImage ? (
               <img
                 src={imageSrc}
@@ -157,7 +157,7 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
       </Link>
 
       <div className="px-1 pb-1 pt-4">
-        <p className="text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">
+        <p className="page-kicker text-[0.58rem]">
           {product?.category || 'Collected Piece'}
         </p>
         <Link to={product?.id ? `/products/${product.id}` : '/products'}>
@@ -166,7 +166,7 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
           </h3>
         </Link>
         <ProductRatingSummary summary={ratingSummary} loading={ratingsLoading} />
-        <p className="mt-2 text-[0.92rem] text-[rgba(28,24,21,0.76)]">
+        <p className="mt-2 text-[0.92rem] text-[var(--color-text-soft)]">
           ${formatPrice(product?.price)}
         </p>
       </div>
@@ -176,8 +176,8 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
 
 function FilterSection({ title, children }) {
   return (
-    <div className="border-b border-[rgba(138,129,124,0.14)] pb-6">
-      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[rgba(112,100,92,0.82)]">
+    <div className="border-b border-[var(--color-border-soft)] pb-6">
+      <p className="page-kicker text-[0.58rem]">
         {title}
       </p>
       <div className="mt-4 space-y-3">{children}</div>
@@ -187,50 +187,50 @@ function FilterSection({ title, children }) {
 
 function StorefrontFooter() {
   return (
-    <footer className="mt-24 bg-[linear-gradient(180deg,#151210,#0d0b0a)] pb-10 pt-16 text-[#f6f1eb]">
+    <footer className="site-footer mt-24 pb-10 pt-16">
       <div className="page-container max-w-[1180px]">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <p className="font-display text-4xl leading-none text-white sm:text-5xl">
               GradShop
             </p>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(255,250,247,0.68)]">
+            <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
               A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
             </p>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+              <p className="site-footer-label">
                 Discover
               </p>
               <div className="mt-4 grid gap-3">
-                <Link to="/" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Home</Link>
-                <Link to="/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Products</Link>
-                <Link to="/register" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Register</Link>
+                <Link to="/" className="site-footer-link text-sm">Home</Link>
+                <Link to="/products" className="site-footer-link text-sm">Products</Link>
+                <Link to="/register" className="site-footer-link text-sm">Register</Link>
               </div>
             </div>
 
             <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+              <p className="site-footer-label">
                 Storefronts
               </p>
               <div className="mt-4 grid gap-3">
-                <Link to="/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Browse Collection</Link>
-                <Link to="/login" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Login</Link>
-                <Link to="/register" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Become a Seller</Link>
+                <Link to="/products" className="site-footer-link text-sm">Browse Collection</Link>
+                <Link to="/login" className="site-footer-link text-sm">Login</Link>
+                <Link to="/register" className="site-footer-link text-sm">Become a Seller</Link>
               </div>
             </div>
 
             <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+              <p className="site-footer-label">
                 Newsletter
               </p>
               <div className="mt-4 space-y-3">
-                <p className="text-sm leading-6 text-[rgba(255,250,247,0.68)]">
+                <p className="site-footer-copy text-sm leading-6">
                   Join for artisan updates and thoughtful new arrivals.
                 </p>
-                <div className="border-b border-[rgba(255,250,247,0.18)] pb-3 text-[0.68rem] uppercase tracking-[0.18em] text-[rgba(255,250,247,0.56)]">
+                <div className="border-b border-[rgba(244,243,238,0.18)] pb-3 text-[0.68rem] uppercase tracking-[0.18em] text-[rgba(244,243,238,0.56)]">
                   Email Address
                 </div>
               </div>
@@ -461,7 +461,7 @@ function SellerStorefrontPage() {
     return (
       <div className="page-shell pb-0">
         <div className="page-container max-w-[1180px]">
-          <div className="rounded-[1.5rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.72)] p-8 text-sm text-[rgba(2,2,2,0.62)]">
+          <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
             Loading storefront...
           </div>
         </div>
@@ -474,7 +474,7 @@ function SellerStorefrontPage() {
     return (
       <div className="page-shell pb-0">
         <div className="page-container max-w-[1180px]">
-          <div className="rounded-[1.5rem] border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.72)] p-8">
+          <div className="surface-card p-8">
             <p className="status-message status-error mb-4">{error}</p>
             <div className="flex flex-wrap gap-3">
               <Link to="/products" className="btn-base btn-outline">
@@ -496,14 +496,14 @@ function SellerStorefrontPage() {
       <div className="page-shell pb-0">
         <div className="page-container max-w-[1180px]">
           <section className="pt-6">
-            <div className="rounded-[1.7rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.78)] p-8 sm:p-10">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[rgba(112,100,92,0.82)]">
+            <div className="surface-card-strong p-8 sm:p-10">
+              <p className="page-kicker text-[0.62rem]">
                 Storefront
               </p>
-              <h1 className="font-display mt-5 text-[3rem] leading-[0.92] text-[var(--color-primary)] sm:text-[4rem]">
+              <h1 className="font-display mt-5 text-[3rem] leading-[0.92] text-[var(--color-text)] sm:text-[4rem]">
                 This storefront could not be found.
               </h1>
-              <p className="mt-4 max-w-[34rem] text-sm leading-7 text-[rgba(88,78,72,0.86)]">
+              <p className="mt-4 max-w-[34rem] text-sm leading-7 text-[var(--color-text-soft)]">
                 The store may not exist yet, or the public link may no longer be available.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -526,22 +526,22 @@ function SellerStorefrontPage() {
     <div className="page-shell px-0 pb-0 pt-0">
       <section className="relative">
         <div className="mx-auto max-w-[1320px] px-4 pt-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-[0.8rem] bg-[#baaa99] shadow-[0_30px_60px_rgba(2,2,2,0.08)]">
+          <div className="relative overflow-hidden rounded-[0.8rem] bg-[var(--color-border-base)] shadow-[0_30px_60px_rgba(138,129,124,0.16)]">
             <img
               src={resolveMediaUrl(bannerImage)}
               alt={storeName}
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(27,20,16,0.5)_0%,rgba(27,20,16,0.18)_45%,rgba(27,20,16,0.28)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,2,2,0.5)_0%,rgba(2,2,2,0.18)_45%,rgba(2,2,2,0.28)_100%)]" />
             <div className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.24),transparent_72%)]" />
             <div className="relative h-[300px] sm:h-[380px] lg:h-[440px]" />
           </div>
         </div>
 
         <div className="relative z-10 mx-auto -mt-14 max-w-[1200px] px-4 sm:px-6 lg:-mt-16 lg:px-8">
-          <div className="rounded-[0.4rem] border border-[rgba(138,129,124,0.12)] bg-[rgba(255,253,249,0.96)] px-5 py-6 shadow-[0_22px_45px_rgba(2,2,2,0.08)] sm:px-7 lg:px-8 lg:py-7">
+          <div className="rounded-[0.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] px-5 py-6 shadow-[0_22px_45px_rgba(138,129,124,0.16)] sm:px-7 lg:px-8 lg:py-7">
             <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
-              <div className="h-22 w-18 overflow-hidden rounded-[0.15rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(243,238,232,0.9)] sm:h-24 sm:w-20">
+              <div className="h-22 w-18 overflow-hidden rounded-[0.15rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.92)] sm:h-24 sm:w-20">
                 <img
                   src={resolveMediaUrl(avatarImage)}
                   alt={sellerName}
@@ -551,19 +551,19 @@ function SellerStorefrontPage() {
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="font-display text-[2.2rem] leading-[0.95] text-[var(--color-primary)] sm:text-[2.8rem]">
+                  <h1 className="font-display text-[2.2rem] leading-[0.95] text-[var(--color-text)] sm:text-[2.8rem]">
                     {storeName}
                   </h1>
                   {isVerifiedSeller && <VerifiedBadge />}
                 </div>
-                <p className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[rgba(112,100,92,0.82)]">
+                <p className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                   {sellerName}
                 </p>
-                <p className="mt-4 max-w-[42rem] text-sm leading-7 text-[rgba(88,78,72,0.86)] sm:text-[0.96rem]">
+                <p className="mt-4 max-w-[42rem] text-sm leading-7 text-[var(--color-text-faint)] sm:text-[0.96rem]">
                   {storeDescription}
                 </p>
 
-                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.76)]">
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                   <span>{store?.store_address}</span>
                   <span>{store?.postal_code}</span>
                   {store?.phone_number ? <span>{store.phone_number}</span> : null}
@@ -572,17 +572,17 @@ function SellerStorefrontPage() {
                 <div className="mt-5 flex flex-wrap gap-5">
                   {stats.map((item) => (
                     <div key={item.label}>
-                      <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.62)]">
+                      <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-sm text-[rgba(28,24,21,0.86)]">
+                      <p className="mt-1 text-sm text-[var(--color-text-soft)]">
                         {item.value}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <p className="mt-4 text-[0.76rem] leading-6 text-[rgba(112,100,92,0.78)]">
+                <p className="mt-4 text-[0.76rem] leading-6 text-[var(--color-text-faint)]">
                   {storefrontRatingSummary.review_count > 0
                     ? `${storefrontRatingSummary.rated_products} ${storefrontRatingSummary.rated_products === 1 ? 'piece has' : 'pieces have'} received feedback so far.`
                     : ratingsLoading
@@ -594,13 +594,13 @@ function SellerStorefrontPage() {
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
                 <button
                   type="button"
-                  className="rounded-[0.2rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(250,247,243,0.9)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.82)]"
+                  className="rounded-[0.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]"
                 >
                   Message Seller
                 </button>
                 <button
                   type="button"
-                  className="rounded-[0.2rem] bg-[var(--color-primary)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white"
+                  className="rounded-[0.2rem] bg-[var(--color-brand)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]"
                 >
                   Follow Store
                 </button>
@@ -615,10 +615,10 @@ function SellerStorefrontPage() {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="space-y-6">
               <div className="pb-2">
-                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[rgba(112,100,92,0.82)]">
+                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                   Curated View
                 </p>
-                <p className="mt-3 text-sm leading-7 text-[rgba(88,78,72,0.78)]">
+                <p className="mt-3 text-sm leading-7 text-[var(--color-text-faint)]">
                   Refine the collection by category, price, and current availability.
                 </p>
               </div>
@@ -631,13 +631,13 @@ function SellerStorefrontPage() {
                     onClick={() => setSelectedCategory(category)}
                     className={`flex w-full items-center justify-between text-left text-sm ${
                       selectedCategory === category
-                        ? 'text-[var(--color-primary)]'
-                        : 'text-[rgba(112,100,92,0.8)]'
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-faint)]'
                     }`}
                   >
                     <span>{category === 'all' ? 'All Categories' : category}</span>
                     {category !== 'all' && (
-                      <span className="text-[0.7rem] text-[rgba(138,129,124,0.72)]">
+                      <span className="text-[0.7rem] text-[var(--color-text-faint)]">
                         {products.filter((product) => product?.category === category).length}
                       </span>
                     )}
@@ -653,8 +653,8 @@ function SellerStorefrontPage() {
                     onClick={() => setSelectedPriceRange(range.id)}
                     className={`block w-full text-left text-sm ${
                       selectedPriceRange === range.id
-                        ? 'text-[var(--color-primary)]'
-                        : 'text-[rgba(112,100,92,0.8)]'
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-faint)]'
                     }`}
                   >
                     {range.label}
@@ -674,8 +674,8 @@ function SellerStorefrontPage() {
                     onClick={() => setSelectedAvailability(item.id)}
                     className={`block w-full text-left text-sm ${
                       selectedAvailability === item.id
-                        ? 'text-[var(--color-primary)]'
-                        : 'text-[rgba(112,100,92,0.8)]'
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-faint)]'
                     }`}
                   >
                     {item.label}
@@ -690,7 +690,7 @@ function SellerStorefrontPage() {
                   setSelectedPriceRange('all');
                   setSelectedAvailability('all');
                 }}
-                className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(112,100,92,0.76)]"
+                className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]"
               >
                 Reset Filters
               </button>
@@ -698,27 +698,27 @@ function SellerStorefrontPage() {
           </aside>
 
           <main className="min-w-0">
-            <div className="border-b border-[rgba(138,129,124,0.12)] pb-5">
+            <div className="border-b border-[var(--color-border-soft)] pb-5">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div>
-                  <div className="flex flex-wrap gap-6 text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[rgba(138,129,124,0.7)]">
-                    <span className="text-[var(--color-primary)]">Products ({productCount})</span>
+                  <div className="flex flex-wrap gap-6 text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
+                    <span className="text-[var(--color-text)]">Products ({productCount})</span>
                     <span>About the Atelier</span>
                     <span>Contact</span>
                   </div>
-                  <h2 className="font-display mt-4 text-[2.4rem] leading-[0.98] text-[var(--color-primary)]">
+                  <h2 className="font-display mt-4 text-[2.4rem] leading-[0.98] text-[var(--color-text)]">
                     Collected Works
                   </h2>
-                  <p className="mt-3 max-w-[38rem] text-sm leading-7 text-[rgba(88,78,72,0.82)]">
+                  <p className="mt-3 max-w-[38rem] text-sm leading-7 text-[var(--color-text-faint)]">
                     {supportingLine}
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[rgba(138,129,124,0.68)]">
+                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                     Showing
                   </p>
-                  <p className="mt-2 text-sm text-[rgba(28,24,21,0.78)]">
+                  <p className="mt-2 text-sm text-[var(--color-text-soft)]">
                     {productCount} of {totalProductCount} pieces
                   </p>
                 </div>
@@ -726,11 +726,11 @@ function SellerStorefrontPage() {
             </div>
 
             {filteredProducts.length === 0 ? (
-              <div className="mt-10 rounded-[0.5rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,253,249,0.62)] px-6 py-10">
-                <p className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
+              <div className="soft-panel mt-10 px-6 py-10">
+                <p className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                   Nothing matches the current view.
                 </p>
-                <p className="mt-4 max-w-[34rem] text-sm leading-7 text-[rgba(88,78,72,0.82)]">
+                <p className="mt-4 max-w-[34rem] text-sm leading-7 text-[var(--color-text-faint)]">
                   Try widening the filters, or return to the full collection to explore everything this store has published so far.
                 </p>
                 <button

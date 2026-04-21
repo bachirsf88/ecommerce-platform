@@ -32,7 +32,7 @@ function ProductTile({ product }) {
   return (
     <article className="group">
       <Link to={product?.id ? `/products/${product.id}` : '/products'}>
-        <div className="overflow-hidden rounded-[0.9rem] bg-[linear-gradient(160deg,rgba(240,232,224,0.82),rgba(231,221,212,0.74))] transition-transform duration-300 group-hover:translate-y-[-2px]">
+        <div className="image-shell rounded-[0.9rem] transition-transform duration-300 group-hover:translate-y-[-2px]">
           <div className="aspect-[0.82] overflow-hidden">
             <ProductVisual product={product} />
           </div>
@@ -42,16 +42,16 @@ function ProductTile({ product }) {
       <div className="mt-5 flex items-start justify-between gap-5">
         <div className="min-w-0 pr-2">
           <Link to={product?.id ? `/products/${product.id}` : '/products'}>
-            <h3 className="font-display text-[1.78rem] leading-[0.98] text-[var(--color-primary)]">
+            <h3 className="font-display text-[1.78rem] leading-[0.98] text-[var(--color-text)]">
               {product?.name || 'Unnamed product'}
             </h3>
           </Link>
-          <p className="mt-2 text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-[rgba(138,129,124,0.88)]">
+          <p className="mt-2 text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
             {product?.seller?.name || product?.seller_name || product?.category || 'Artisan'}
           </p>
         </div>
 
-        <p className="whitespace-nowrap pt-1 text-[0.88rem] font-medium text-[rgba(2,2,2,0.72)]">
+        <p className="whitespace-nowrap pt-1 text-[0.88rem] font-medium text-[var(--color-text-soft)]">
           ${product?.price ?? 'N/A'}
         </p>
       </div>
@@ -201,20 +201,20 @@ function ProductsPage() {
     <div className="page-shell pb-0">
       <div className="page-container max-w-[1180px]">
         <section className="pt-4">
-          <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(188,184,177,0.9)]">
+          <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
             <Link to="/">Home</Link>
             <span>/</span>
-            <span className="text-[var(--color-secondary)]">
+            <span className="text-[var(--color-brand)]">
               {selectedCategory || 'Products'}
             </span>
           </div>
 
           <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[42rem]">
-              <h1 className="font-display text-[3.5rem] leading-[0.94] text-[var(--color-primary)] sm:text-[4.25rem]">
+              <h1 className="font-display text-[3.5rem] leading-[0.94] text-[var(--color-text)] sm:text-[4.25rem]">
                 {currentTitle}
               </h1>
-              <p className="mt-6 max-w-[34rem] text-[0.98rem] leading-8 text-[rgba(138,129,124,0.9)]">
+              <p className="mt-6 max-w-[34rem] text-[0.98rem] leading-8 text-[var(--color-text-faint)]">
                 {currentDescription}
               </p>
             </div>
@@ -222,7 +222,7 @@ function ProductsPage() {
             <div className="w-full lg:max-w-[210px]">
               <label
                 htmlFor="sort-products"
-                className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[rgba(188,184,177,0.9)]"
+                className="page-kicker"
               >
                 Sort
               </label>
@@ -230,7 +230,7 @@ function ProductsPage() {
                 id="sort-products"
                 value={sortBy}
                 onChange={(event) => setSortBy(event.target.value)}
-                className="mt-3 w-full appearance-none border-0 border-b border-[rgba(138,129,124,0.18)] bg-transparent px-0 pb-3 pt-1 text-sm text-[var(--color-primary)] outline-none"
+                className="line-input mt-3 w-full appearance-none text-sm"
               >
                 <option value="newest">New Arrivals</option>
                 <option value="price-asc">Price: Low to High</option>
@@ -246,16 +246,16 @@ function ProductsPage() {
           <div className="grid gap-14 lg:grid-cols-[210px_minmax(0,1fr)]">
             <aside className="space-y-10">
               <div>
-                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.25em] text-[rgba(188,184,177,0.9)]">
+                <p className="page-kicker">
                   Filters
                 </p>
-                <p className="mt-1 text-[0.6rem] uppercase tracking-[0.2em] text-[rgba(138,129,124,0.76)]">
+                <p className="mt-1 text-[0.6rem] uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                   Refine Collection
                 </p>
               </div>
 
               <div className="space-y-4">
-                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                   Search
                 </p>
                 <input
@@ -263,12 +263,12 @@ function ProductsPage() {
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="Search products"
-                  className="w-full border-0 border-b border-[rgba(138,129,124,0.18)] bg-transparent px-0 pb-3 pt-1 text-[0.9rem] text-[var(--color-primary)] outline-none placeholder:text-[rgba(138,129,124,0.56)]"
+                  className="line-input text-[0.9rem]"
                 />
               </div>
 
               <div className="space-y-4">
-                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                   Categories
                 </p>
                 <div className="grid gap-3">
@@ -277,8 +277,8 @@ function ProductsPage() {
                     onClick={() => setSelectedCategory('')}
                     className={`text-left text-[0.64rem] font-semibold uppercase tracking-[0.2em] ${
                       selectedCategory === ''
-                        ? 'text-[var(--color-primary)]'
-                        : 'text-[rgba(138,129,124,0.8)]'
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-faint)]'
                     }`}
                   >
                     All Products
@@ -290,8 +290,8 @@ function ProductsPage() {
                       onClick={() => setSelectedCategory(category)}
                       className={`text-left text-[0.64rem] font-semibold uppercase tracking-[0.2em] ${
                         selectedCategory === category
-                          ? 'text-[var(--color-primary)]'
-                          : 'text-[rgba(138,129,124,0.8)]'
+                          ? 'text-[var(--color-text)]'
+                          : 'text-[var(--color-text-faint)]'
                       }`}
                     >
                       {category}
@@ -301,7 +301,7 @@ function ProductsPage() {
               </div>
 
               <div className="space-y-4">
-                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                   Price Range
                 </p>
                 <div className="grid gap-3">
@@ -310,27 +310,27 @@ function ProductsPage() {
                     value={minPrice}
                     onChange={(event) => setMinPrice(event.target.value)}
                     placeholder="Min"
-                    className="w-full border-0 border-b border-[rgba(138,129,124,0.18)] bg-transparent px-0 pb-3 pt-1 text-[0.9rem] text-[var(--color-primary)] outline-none placeholder:text-[rgba(138,129,124,0.56)]"
+                    className="line-input text-[0.9rem]"
                   />
                   <input
                     type="number"
                     value={maxPrice}
                     onChange={(event) => setMaxPrice(event.target.value)}
                     placeholder="Max"
-                    className="w-full border-0 border-b border-[rgba(138,129,124,0.18)] bg-transparent px-0 pb-3 pt-1 text-[0.9rem] text-[var(--color-primary)] outline-none placeholder:text-[rgba(138,129,124,0.56)]"
+                    className="line-input text-[0.9rem]"
                   />
                 </div>
               </div>
 
               {sellers.length > 0 && (
                 <div className="space-y-4">
-                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                     Seller
                   </p>
                   <select
                     value={selectedSeller}
                     onChange={(event) => setSelectedSeller(event.target.value)}
-                    className="w-full border-0 border-b border-[rgba(138,129,124,0.18)] bg-transparent px-0 pb-3 pt-1 text-[0.9rem] text-[var(--color-primary)] outline-none"
+                    className="line-input text-[0.9rem]"
                   >
                     <option value="">All Sellers</option>
                     {sellers.map((seller) => (
@@ -343,15 +343,15 @@ function ProductsPage() {
               )}
 
               <div className="space-y-4">
-                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+                <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                   Availability
                 </p>
-                <label className="flex items-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.8)]">
+                <label className="flex items-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                   <input
                     type="checkbox"
                     checked={inStockOnly}
                     onChange={(event) => setInStockOnly(event.target.checked)}
-                    className="h-4 w-4 rounded border border-[rgba(138,129,124,0.28)] accent-[var(--color-primary)]"
+                    className="h-4 w-4 rounded border border-[var(--color-border-strong)] accent-[var(--color-brand)]"
                   />
                   In Stock
                 </label>
@@ -360,7 +360,7 @@ function ProductsPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-secondary)]"
+                className="line-link text-[0.64rem] font-semibold uppercase tracking-[0.2em]"
               >
                 Clear Filters
               </button>
@@ -369,14 +369,14 @@ function ProductsPage() {
             <div>
               {!loading && !error && filteredProducts.length > 0 && (
                 <div className="mb-10 flex items-center justify-between gap-4">
-                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.82)]">
+                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                     Showing {filteredProducts.length} products
                   </p>
                 </div>
               )}
 
               {loading && (
-                <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">
+                <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
                   Loading products...
                 </div>
               )}
@@ -402,7 +402,7 @@ function ProductsPage() {
               )}
 
               {!loading && !error && filteredProducts.length > 0 && (
-                <div className="mt-20 flex items-center justify-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.8)]">
+                <div className="mt-20 flex items-center justify-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                   <button
                     type="button"
                     onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
@@ -417,7 +417,7 @@ function ProductsPage() {
                       key={page}
                       type="button"
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 ${currentPage === page ? 'text-[var(--color-primary)]' : ''}`}
+                      className={`px-3 py-2 ${currentPage === page ? 'text-[var(--color-text)]' : ''}`}
                     >
                       {String(page).padStart(2, '0')}
                     </button>
@@ -438,38 +438,38 @@ function ProductsPage() {
         </section>
       </div>
 
-      <footer className="mt-24 bg-[linear-gradient(180deg,#151210,#0d0b0a)] pb-10 pt-16 text-[#f6f1eb]">
+      <footer className="site-footer mt-24 pb-10 pt-16">
         <div className="page-container max-w-[1180px]">
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
               <p className="font-display text-4xl leading-none text-white sm:text-5xl">
                 GradShop
               </p>
-              <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(255,250,247,0.68)]">
+              <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2">
               <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+                <p className="site-footer-label">
                   Navigate
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Home</Link>
-                  <Link to="/products" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Products</Link>
-                  <Link to="/login" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Login</Link>
+                  <Link to="/" className="site-footer-link text-sm">Home</Link>
+                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
+                  <Link to="/login" className="site-footer-link text-sm">Login</Link>
                 </div>
               </div>
 
               <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-[rgba(255,250,247,0.42)]">
+                <p className="site-footer-label">
                   Marketplace
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/register" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Register</Link>
-                  <Link to="/favorites" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Favorites</Link>
-                  <Link to="/cart" className="text-sm text-[rgba(255,250,247,0.78)] hover:text-white">Cart</Link>
+                  <Link to="/register" className="site-footer-link text-sm">Register</Link>
+                  <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>
+                  <Link to="/cart" className="site-footer-link text-sm">Cart</Link>
                 </div>
               </div>
             </div>

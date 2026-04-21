@@ -150,35 +150,35 @@ function SellerSettingsPage() {
             Update the seller-facing account details that support your public identity and workspace preferences.
           </p>
 
-          {loading ? <div className="mt-6 text-sm text-[rgba(2,2,2,0.62)]">Loading settings...</div> : null}
+          {loading ? <div className="mt-6 text-sm text-[var(--color-text-soft)]">Loading settings...</div> : null}
 
           <div className="mt-8 space-y-5">
             <div>
-              <label htmlFor="name" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="name" className="field-label">
                 Display Name
               </label>
               <input id="name" name="name" type="text" value={profileForm.name} onChange={handleProfileChange} required className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="email" className="field-label">
                 Email
               </label>
               <input id="email" name="email" type="email" value={profileForm.email} disabled className="text-input opacity-70" />
             </div>
 
             <div>
-              <label htmlFor="bio" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="bio" className="field-label">
                 Bio / About
               </label>
               <textarea id="bio" name="bio" rows="5" value={profileForm.bio} onChange={handleProfileChange} className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="profile_image" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="profile_image" className="field-label">
                 Profile Image
               </label>
-              <input id="profile_image" name="profile_image" type="file" accept="image/*" onChange={handleProfileImageChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(2,2,2,0.08)] file:px-4 file:py-2 file:text-sm file:font-semibold" />
+              <input id="profile_image" name="profile_image" type="file" accept="image/*" onChange={handleProfileImageChange} className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(188,184,177,0.28)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-text)]" />
             </div>
 
             {error ? <div className="status-message status-error">{error}</div> : null}
@@ -198,21 +198,21 @@ function SellerSettingsPage() {
 
           <div className="mt-6 space-y-5">
             <div>
-              <label htmlFor="current_password" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="current_password" className="field-label">
                 Current Password
               </label>
               <input id="current_password" name="current_password" type="password" value={passwordForm.current_password} onChange={handlePasswordChange} required className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="password" className="field-label">
                 New Password
               </label>
               <input id="password" name="password" type="password" value={passwordForm.password} onChange={handlePasswordChange} required className="text-input" />
             </div>
 
             <div>
-              <label htmlFor="password_confirmation" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+              <label htmlFor="password_confirmation" className="field-label">
                 Confirm Password
               </label>
               <input id="password_confirmation" name="password_confirmation" type="password" value={passwordForm.password_confirmation} onChange={handlePasswordChange} required className="text-input" />
@@ -237,7 +237,7 @@ function SellerSettingsPage() {
               ['review_updates', 'Review updates'],
               ['marketing_updates', 'Marketing updates'],
             ].map(([key, label]) => (
-              <label key={key} className="flex items-center justify-between gap-4 rounded-[1.15rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] px-4 py-3 text-sm text-[rgba(56,48,43,0.82)]">
+              <label key={key} className="flex items-center justify-between gap-4 rounded-[1.15rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] px-4 py-3 text-sm text-[var(--color-text-soft)]">
                 <span>{label}</span>
                 <input type="checkbox" name={key} checked={Boolean(profileForm.notification_preferences[key])} onChange={handleNotificationChange} className="h-4 w-4 accent-[var(--color-primary)]" />
               </label>
@@ -249,7 +249,7 @@ function SellerSettingsPage() {
       <aside className="surface-card-strong p-6 sm:p-7">
         <span className="section-label">Account Preview</span>
         <div className="mt-6 flex items-center gap-4">
-          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.7rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)]">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.7rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.88)]">
             {profileForm.profile_image_url ? (
               <img src={profileForm.profile_image_url} alt={profileForm.name || 'Seller profile'} className="h-full w-full object-cover" />
             ) : (
@@ -262,13 +262,13 @@ function SellerSettingsPage() {
             <h2 className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
               {profileForm.name || 'Seller name'}
             </h2>
-            <p className="mt-2 text-sm text-[rgba(88,78,72,0.82)]">
+            <p className="mt-2 text-sm text-[var(--color-text-soft)]">
               {profileForm.email || 'seller@example.com'}
             </p>
           </div>
         </div>
 
-        <p className="mt-6 text-sm leading-7 text-[rgba(88,78,72,0.82)]">
+        <p className="mt-6 text-sm leading-7 text-[var(--color-text-soft)]">
           {profileForm.bio || 'Your seller bio will appear here once you save it.'}
         </p>
       </aside>

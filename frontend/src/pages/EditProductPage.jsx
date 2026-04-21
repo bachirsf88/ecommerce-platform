@@ -91,7 +91,7 @@ function EditProductPage() {
   };
 
   if (loading) {
-    return <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading product...</div>;
+    return <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading product...</div>;
   }
 
   return (

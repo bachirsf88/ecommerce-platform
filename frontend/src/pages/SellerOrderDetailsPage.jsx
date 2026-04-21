@@ -50,7 +50,7 @@ function SellerOrderDetailsPage() {
   };
 
   if (loading) {
-    return <div className="surface-card p-6 text-sm text-[rgba(2,2,2,0.62)]">Loading seller order details...</div>;
+    return <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading seller order details...</div>;
   }
 
   if (!order && !error) {
@@ -78,23 +78,23 @@ function SellerOrderDetailsPage() {
             <div className="surface-card p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">Buyer</p>
+                  <p className="page-kicker text-[0.62rem]">Buyer</p>
                   <p className="mt-2 text-sm text-[var(--color-primary)]">{order.buyer?.name || 'Unknown buyer'}</p>
                 </div>
                 <div>
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">Order Date</p>
+                  <p className="page-kicker text-[0.62rem]">Order Date</p>
                   <p className="mt-2 text-sm text-[var(--color-primary)]">{formatDateTime(order.created_at)}</p>
                 </div>
                 <div>
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">Payment Method</p>
+                  <p className="page-kicker text-[0.62rem]">Payment Method</p>
                   <p className="mt-2 text-sm text-[var(--color-primary)]">{order.payment_method || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">Seller Total</p>
+                  <p className="page-kicker text-[0.62rem]">Seller Total</p>
                   <p className="mt-2 text-sm text-[var(--color-primary)]">{formatCurrency(order.seller_total)}</p>
                 </div>
                 <div className="sm:col-span-2">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(112,100,92,0.82)]">Shipping Address</p>
+                  <p className="page-kicker text-[0.62rem]">Shipping Address</p>
                   <p className="mt-2 text-sm leading-7 text-[var(--color-primary)]">{order.shipping_address || 'N/A'}</p>
                 </div>
               </div>
@@ -111,13 +111,13 @@ function SellerOrderDetailsPage() {
 
               <div className="mt-6 space-y-4">
                 {(order.items ?? []).map((item) => (
-                  <article key={item.id} className="rounded-[1.35rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
+                  <article key={item.id} className="soft-panel p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-[var(--color-primary)]">
                           {item.product?.name || 'Unnamed product'}
                         </p>
-                        <p className="mt-1 text-sm text-[rgba(88,78,72,0.76)]">
+                        <p className="mt-1 text-sm text-[var(--color-text-soft)]">
                           Quantity: {item.quantity ?? 0}
                         </p>
                       </div>
@@ -125,7 +125,7 @@ function SellerOrderDetailsPage() {
                         {formatCurrency(item.subtotal)}
                       </p>
                     </div>
-                    <p className="mt-3 text-sm text-[rgba(56,48,43,0.76)]">
+                    <p className="mt-3 text-sm text-[var(--color-text-soft)]">
                       Unit price: {formatCurrency(item.unit_price)}
                     </p>
                   </article>
@@ -141,7 +141,7 @@ function SellerOrderDetailsPage() {
                 Update order
               </h2>
               <div className="mt-6">
-                <label htmlFor="status" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+                <label htmlFor="status" className="field-label">
                   Order Status
                 </label>
                 <select id="status" value={status} onChange={(event) => setStatus(event.target.value)} className="text-input">
@@ -163,7 +163,7 @@ function SellerOrderDetailsPage() {
               <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-primary)]">
                 Buyer details
               </h2>
-              <div className="mt-5 space-y-3 text-sm text-[rgba(56,48,43,0.82)]">
+              <div className="mt-5 space-y-3 text-sm text-[var(--color-text-soft)]">
                 <p>Name: {order.buyer?.name || 'Unknown buyer'}</p>
                 <p>Full name: {order.full_name || 'N/A'}</p>
                 <p>Phone: {order.phone || 'N/A'}</p>

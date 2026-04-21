@@ -78,14 +78,14 @@ function SellerWithdrawPage() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div>
-            <label htmlFor="amount" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="amount" className="field-label">
               Amount
             </label>
             <input id="amount" name="amount" type="number" min="0.01" step="0.01" value={formData.amount} onChange={handleChange} required className="text-input" />
           </div>
 
           <div>
-            <label htmlFor="payout_method" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="payout_method" className="field-label">
               Payout Method
             </label>
             <select id="payout_method" name="payout_method" value={formData.payout_method} onChange={handleChange} className="text-input">
@@ -96,14 +96,14 @@ function SellerWithdrawPage() {
           </div>
 
           <div>
-            <label htmlFor="destination_account" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="destination_account" className="field-label">
               Destination Account / Details
             </label>
             <textarea id="destination_account" name="destination_account" rows="4" value={formData.destination_account} onChange={handleChange} required className="text-input" />
           </div>
 
           <div>
-            <label htmlFor="notes" className="mb-2 block text-sm font-semibold text-[rgba(2,2,2,0.72)]">
+            <label htmlFor="notes" className="field-label">
               Notes
             </label>
             <textarea id="notes" name="notes" rows="3" value={formData.notes} onChange={handleChange} className="text-input" />
@@ -123,15 +123,15 @@ function SellerWithdrawPage() {
         <h2 className="font-display mt-4 text-[2.5rem] leading-none text-[var(--color-primary)]">
           {formatCurrency(availableBalance)}
         </h2>
-        <p className="mt-4 text-sm leading-7 text-[rgba(88,78,72,0.82)]">
+        <p className="mt-4 text-sm leading-7 text-[var(--color-text-soft)]">
           Pending requests are already considered in the balance calculation so you do not accidentally over-request funds.
         </p>
 
         <div className="mt-8 space-y-3">
-          <div className="rounded-[1.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.6)] px-4 py-3 text-sm text-[rgba(56,48,43,0.78)]">
+          <div className="soft-panel p-4 text-sm text-[var(--color-text-soft)]">
             Withdrawal requests remain internal records until a real payout workflow is added.
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.6)] px-4 py-3 text-sm text-[rgba(56,48,43,0.78)]">
+          <div className="soft-panel p-4 text-sm text-[var(--color-text-soft)]">
             Use clear destination details so payout processing can be reviewed easily later.
           </div>
         </div>

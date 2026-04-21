@@ -23,23 +23,23 @@ function WorkspaceShell({
         <div className="workspace-sidebar-panel">
           <div>
             <p className="workspace-sidebar-kicker">{workspaceLabel}</p>
-            <h1 className="font-display text-[2.2rem] leading-[0.92] text-[var(--color-primary)]">
+            <h1 className="font-display text-[2.2rem] leading-[0.92] text-[var(--color-text)]">
               {workspaceTitle}
             </h1>
-            <p className="mt-3 text-sm leading-7 text-[rgba(88,78,72,0.84)]">
+            <p className="mt-3 text-sm leading-7 text-[var(--color-text-soft)]">
               {workspaceDescription}
             </p>
           </div>
 
           <div className="workspace-sidebar-profile">
             <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(120,108,100,0.72)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                 Account
               </p>
-              <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">
+              <p className="mt-2 text-sm font-semibold text-[var(--color-text)]">
                 {accountName}
               </p>
-              <p className="mt-1 text-xs text-[rgba(88,78,72,0.74)]">
+              <p className="mt-1 text-xs text-[var(--color-text-faint)]">
                 {accountEmail}
               </p>
             </div>
@@ -97,11 +97,11 @@ function WorkspaceShell({
         <div className="workspace-topbar">
           <div>
             <p className="workspace-topbar-kicker">{topbarKicker}</p>
-            <h2 className="font-display mt-2 text-[2.1rem] leading-[0.94] text-[var(--color-primary)]">
+            <h2 className="font-display mt-2 text-[2.1rem] leading-[0.94] text-[var(--color-text)]">
               {topbarTitle}
             </h2>
             {topbarDescription ? (
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[rgba(56,48,43,0.76)]">
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--color-text-soft)]">
                 {topbarDescription}
               </p>
             ) : null}

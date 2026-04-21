@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import heroImage from '../assets/hero.png';
 import { useAuth } from '../context/AuthContext';
+import { getApiErrorMessage } from '../services/api';
 
 function RegisterPage() {
   const location = useLocation();
@@ -23,17 +24,21 @@ function RegisterPage() {
 
   const isSellerMode = formData.role === 'seller';
   const sectionEyebrowClass =
-    'text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[rgba(112,100,92,0.9)]';
+    'page-kicker text-[0.62rem]';
   const sectionCopyClass =
-    'text-[0.95rem] leading-7 text-[rgba(88,78,72,0.9)]';
+    'text-[0.95rem] leading-7 text-[var(--color-text-soft)]';
   const fieldLabelClass =
-    'text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[rgba(86,76,70,0.9)]';
+    'text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-soft)]';
   const fieldInputClass =
-    'mt-2.5 w-full border-0 border-b border-[rgba(126,114,106,0.34)] bg-transparent px-0 pb-3.5 pt-1 text-[1rem] font-medium text-[rgba(26,21,18,0.96)] outline-none placeholder:text-[rgba(112,100,92,0.78)] focus:border-[rgba(78,67,61,0.56)]';
+    'line-input mt-2.5 w-full text-[1rem] font-medium';
   const helperTextClass =
-    'text-[0.76rem] leading-6 text-[rgba(102,92,86,0.78)]';
+    'text-[0.76rem] leading-6 text-[var(--color-text-faint)]';
 
   const getDefaultRouteByRole = (role) => {
+    if (role === 'admin') {
+      return '/admin';
+    }
+
     if (role === 'seller') {
       return '/seller/dashboard';
     }
@@ -98,9 +103,7 @@ function RegisterPage() {
 
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message || 'Registration failed. Please try again.'
-      );
+      setError(getApiErrorMessage(err, 'Registration failed. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -111,18 +114,18 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fcfaf7_0%,#f4ede6_100%)] text-[var(--color-primary)]">
+    <div className="min-h-screen bg-[var(--gradient-page)] text-[var(--color-text)]">
       <header className="px-6 pt-8 sm:px-8 lg:px-12 lg:pt-10">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6">
           <Link to="/" className="inline-flex items-center gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.74)] text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[rgba(138,129,124,0.86)]">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.8)] text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand)]">
               GS
             </span>
             <div>
-              <p className="font-display text-3xl leading-none text-[var(--color-primary)] sm:text-4xl">
+              <p className="font-display text-3xl leading-none text-[var(--color-text)] sm:text-4xl">
                 GradShop
               </p>
-              <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[rgba(138,129,124,0.72)]">
+              <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                 Thoughtful Marketplace
               </p>
             </div>
@@ -130,7 +133,7 @@ function RegisterPage() {
 
           <Link
             to="/login"
-            className="rounded-full border border-[rgba(138,129,124,0.16)] bg-[rgba(255,253,249,0.62)] px-5 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[rgba(138,129,124,0.9)] hover:bg-[rgba(255,253,249,0.9)] hover:text-[var(--color-primary)]"
+            className="rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-5 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)]"
           >
             Login
           </Link>
@@ -139,13 +142,13 @@ function RegisterPage() {
 
       <main className="px-6 pb-16 pt-8 sm:px-8 lg:px-12 lg:pb-20 lg:pt-10">
         <div className="mx-auto grid max-w-[1240px] gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <section className="relative overflow-hidden rounded-[2.2rem] border border-[rgba(255,255,255,0.18)] bg-[#d9cec1] shadow-[0_24px_60px_rgba(2,2,2,0.1)]">
+          <section className="relative overflow-hidden rounded-[2.2rem] border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-lifted)]">
             <img
               src={heroImage}
               alt="GradShop artisan register"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,11,9,0.08)_0%,rgba(14,11,9,0.68)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,2,2,0.08)_0%,rgba(2,2,2,0.68)_100%)]" />
 
             <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_70%)]" />
 
@@ -186,26 +189,26 @@ function RegisterPage() {
 
           <section className="flex items-center">
             <div className="w-full max-w-[31rem] lg:ml-auto">
-              <div className="rounded-[2rem] border border-[rgba(138,129,124,0.16)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96),rgba(248,244,239,0.84))] p-7 shadow-[0_18px_40px_rgba(2,2,2,0.05)] sm:p-8">
+              <div className="rounded-[2rem] border border-[var(--color-border)] bg-[var(--gradient-soft-surface)] p-7 shadow-[var(--shadow-card)] sm:p-8">
                 <p className={sectionEyebrowClass}>
                   Create Account
                 </p>
-                <h2 className="font-display mt-5 text-[3rem] leading-[0.92] text-[var(--color-primary)] sm:text-[3.9rem]">
+                <h2 className="font-display mt-5 text-[3rem] leading-[0.92] text-[var(--color-text)] sm:text-[3.9rem]">
                   Register
                 </h2>
                 <p className={`mt-3 max-w-[24rem] ${sectionCopyClass}`}>
                   Choose your path and complete registration through the live marketplace flow.
                 </p>
 
-                <div className="mt-7 rounded-[1.25rem] border border-[rgba(138,129,124,0.14)] bg-[rgba(255,252,248,0.7)] p-2">
+                <div className="mt-7 rounded-[1.25rem] border border-[var(--color-border-soft)] bg-[rgba(255,255,255,0.7)] p-2">
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => handleRoleChange('buyer')}
                       className={`rounded-[1rem] px-4 py-4 text-left ${
                         !isSellerMode
-                          ? 'bg-[var(--color-primary)] text-white shadow-[0_12px_24px_rgba(2,2,2,0.12)]'
-                          : 'bg-transparent text-[rgba(96,86,80,0.92)]'
+                          ? 'bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_12px_24px_rgba(122,75,46,0.2)]'
+                          : 'bg-transparent text-[var(--color-text-soft)]'
                       }`}
                     >
                       <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em]">
@@ -221,8 +224,8 @@ function RegisterPage() {
                       onClick={() => handleRoleChange('seller')}
                       className={`rounded-[1rem] px-4 py-4 text-left ${
                         isSellerMode
-                          ? 'bg-[var(--color-primary)] text-white shadow-[0_12px_24px_rgba(2,2,2,0.12)]'
-                          : 'bg-transparent text-[rgba(96,86,80,0.92)]'
+                          ? 'bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_12px_24px_rgba(122,75,46,0.2)]'
+                          : 'bg-transparent text-[var(--color-text-soft)]'
                       }`}
                     >
                       <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em]">
@@ -317,7 +320,7 @@ function RegisterPage() {
                   </div>
 
                   {isSellerMode && (
-                    <div className="border-t border-[rgba(138,129,124,0.16)] pt-5">
+                    <div className="border-t border-[var(--color-border-soft)] pt-5">
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <div>
                           <p className={sectionEyebrowClass}>
@@ -327,7 +330,7 @@ function RegisterPage() {
                             Required to create your linked seller store.
                           </p>
                         </div>
-                        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[rgba(108,97,90,0.82)]">
+                        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
                           Seller Only
                         </span>
                       </div>
@@ -396,11 +399,11 @@ function RegisterPage() {
                     </div>
                   )}
 
-                  <div className="border-t border-[rgba(138,129,124,0.14)] pt-4">
+                  <div className="border-t border-[var(--color-border-soft)] pt-4">
                     <p className={sectionEyebrowClass}>
                       Registration Mode
                     </p>
-                    <p className="mt-1.5 text-sm leading-7 text-[rgba(94,83,77,0.86)]">
+                    <p className="mt-1.5 text-sm leading-7 text-[var(--color-text-soft)]">
                       {isSellerMode
                         ? 'Seller registration creates your seller account and the linked store record required by the backend approval flow.'
                         : 'Buyer registration stays intentionally lighter for browsing, favorites, cart, and ordering.'}
@@ -427,34 +430,34 @@ function RegisterPage() {
                 </form>
 
                 <div className="mt-8 flex items-center gap-4">
-                  <div className="h-px flex-1 bg-[rgba(138,129,124,0.14)]" />
+                  <div className="h-px flex-1 bg-[var(--color-border-soft)]" />
                   <span className={sectionEyebrowClass}>
                     Or continue with
                   </span>
-                  <div className="h-px flex-1 bg-[rgba(138,129,124,0.14)]" />
+                  <div className="h-px flex-1 bg-[var(--color-border-soft)]" />
                 </div>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <button
                     type="button"
-                    className="rounded-[1rem] border border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.72)] px-5 py-4 text-sm font-semibold text-[rgba(2,2,2,0.74)] hover:bg-white"
+                    className="rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] px-5 py-4 text-sm font-semibold text-[var(--color-text-soft)] hover:border-[var(--color-brand)] hover:bg-white"
                   >
                     Google
                   </button>
                   <button
                     type="button"
-                    className="rounded-[1rem] border border-[rgba(138,129,124,0.18)] bg-[rgba(255,253,249,0.72)] px-5 py-4 text-sm font-semibold text-[rgba(2,2,2,0.74)] hover:bg-white"
+                    className="rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] px-5 py-4 text-sm font-semibold text-[var(--color-text-soft)] hover:border-[var(--color-brand)] hover:bg-white"
                   >
                     Apple
                   </button>
                 </div>
 
-                <div className="mt-8 border-t border-[rgba(138,129,124,0.16)] pt-6">
-                  <p className="text-sm leading-7 text-[rgba(94,83,77,0.9)]">
+                <div className="mt-8 border-t border-[var(--color-border-soft)] pt-6">
+                  <p className="text-sm leading-7 text-[var(--color-text-soft)]">
                     Already have an account?{' '}
                     <Link
                       to="/login"
-                      className="font-semibold text-[var(--color-primary)] underline decoration-[rgba(138,129,124,0.38)] underline-offset-4"
+                      className="font-semibold text-[var(--color-text)] underline decoration-[rgba(188,184,177,0.6)] underline-offset-4"
                     >
                       Sign in
                     </Link>
@@ -466,21 +469,21 @@ function RegisterPage() {
         </div>
       </main>
 
-      <footer className="border-t border-[rgba(138,129,124,0.12)] px-6 py-8 sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-4 text-sm text-[rgba(138,129,124,0.82)] sm:flex-row sm:items-center sm:justify-between">
+      <footer className="border-t border-[var(--color-border-soft)] px-6 py-8 sm:px-8 lg:px-12">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-4 text-sm text-[var(--color-text-faint)] sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-display text-xl leading-none text-[var(--color-primary)]">
+            <p className="font-display text-xl leading-none text-[var(--color-text)]">
               GradShop
             </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[rgba(138,129,124,0.7)]">
+            <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
               Crafted registration flow
             </p>
           </div>
 
           <div className="flex flex-wrap gap-5">
-            <Link to="/" className="hover:text-[var(--color-primary)]">Home</Link>
-            <Link to="/products" className="hover:text-[var(--color-primary)]">Products</Link>
-            <Link to="/login" className="hover:text-[var(--color-primary)]">Login</Link>
+            <Link to="/" className="hover:text-[var(--color-text)]">Home</Link>
+            <Link to="/products" className="hover:text-[var(--color-text)]">Products</Link>
+            <Link to="/login" className="hover:text-[var(--color-text)]">Login</Link>
           </div>
         </div>
       </footer>
