@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import heroImage from '../assets/marketplace-hero.png';
 import { useAuth } from '../context/AuthContext';
 import { getApiErrorMessage } from '../services/api';
 

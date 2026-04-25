@@ -1,27 +1,17 @@
 import { Link, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import heroImage from '../assets/hero.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
-import { resolveEntityImageUrl } from '../utils/media';
+import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 function CartProductImage({ item }) {
-  const imageSrc = resolveEntityImageUrl(item.product?.image_url, item.product?.image);
-
-  if (imageSrc) {
-    return (
-      <img
-        src={imageSrc}
-        alt={item.product?.name || 'Cart product'}
-        className="h-full w-full object-cover object-center"
-      />
-    );
-  }
+  const imageSrc = resolveProductPrimaryImage(item.product, fashionProductFallback);
 
   return (
     <img
-      src={heroImage}
+      src={imageSrc}
       alt={item.product?.name || 'Cart product'}
       className="h-full w-full object-cover object-center"
     />

@@ -23,6 +23,19 @@ trait HandlesPublicFiles
         return $file->store($directory, 'public');
     }
 
+    /**
+     * @param  UploadedFile[]  $files
+     * @return string[]
+     */
+    protected function storePublicFiles(array $files, string $directory): array
+    {
+        return collect($files)
+            ->filter(fn ($file) => $file instanceof UploadedFile)
+            ->map(fn (UploadedFile $file) => $this->storePublicFile($file, $directory))
+            ->values()
+            ->all();
+    }
+
     protected function normalizeStoredFileInput(?string $path): ?string
     {
         if ($path === null) {
@@ -86,6 +99,18 @@ trait HandlesPublicFiles
         if (Storage::disk('public')->exists($relativePath)) {
             Storage::disk('public')->delete($relativePath);
         }
+    }
+
+    /**
+     * @param  array<int, string|null>  $paths
+     */
+    protected function deletePublicFiles(array $paths): void
+    {
+        collect($paths)
+            ->map(fn ($path) => $this->normalizePublicPath($path))
+            ->filter()
+            ->unique()
+            ->each(fn ($path) => $this->deletePublicFile($path));
     }
 
     protected function normalizePublicPath(?string $path): ?string

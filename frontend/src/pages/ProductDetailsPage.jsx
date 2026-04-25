@@ -1,23 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import productGalleryFallback from '../assets/product-gallery-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
-import { resolveEntityImageUrl, resolveMediaUrl } from '../utils/media';
+import {
+  resolveMediaUrl,
+  resolveProductGalleryImages,
+  resolveProductPrimaryImage,
+  resolveProductVideoUrl,
+} from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
-
-const GALLERY_POSITIONS = [
-  'center 16%',
-  'center center',
-  'center 78%',
-  '82% center',
-];
-
-const isRenderableImageSrc = (value) =>
-  typeof value === 'string' && /^(https?:\/\/|data:|\/)/i.test(value.trim());
 
 const formatReviewDate = (value) => {
   if (!value) {
@@ -62,47 +59,19 @@ function RatingMarks({ rating, muted = false }) {
   );
 }
 
-function ProductImage({ product, objectPosition = 'center center', compact = false }) {
-  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
-
-  if (imageSrc) {
-    return (
-      <img
-        src={imageSrc}
-        alt={product?.name || 'Product'}
-        className="h-full w-full object-cover"
-        style={{ objectPosition }}
-      />
-    );
-  }
-
-  if (product?.image) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.34))] p-4">
-        <p className={`text-center text-[var(--color-text-faint)] ${compact ? 'text-[10px] leading-4' : 'text-xs leading-6'}`}>
-          {product.image}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={heroImage}
-      alt={product?.name || 'Product'}
-      className="h-full w-full object-cover"
-      style={{ objectPosition }}
-    />
-  );
-}
-
 function RelatedProductTile({ product }) {
+  const imageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
+
   return (
     <article className="group">
       <Link to={product?.id ? `/products/${product.id}` : '/products'}>
         <div className="overflow-hidden rounded-[0.9rem] bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.34))]">
           <div className="aspect-[0.9] overflow-hidden">
-            <ProductImage product={product} objectPosition="center center" compact />
+            <img
+              src={imageSrc}
+              alt={product?.name || 'Product'}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       </Link>
@@ -432,25 +401,17 @@ function ProductDetailsPage() {
   const averageRating = Number(reviewsData?.average_rating ?? 0);
   const reviewCount = Number(reviewsData?.review_count ?? 0);
   const reviews = reviewsData?.reviews ?? [];
-
-  const galleryItems = useMemo(
-    () =>
-      GALLERY_POSITIONS.map((position, index) => ({
-        id: index,
-        position,
-        label:
-          index === 0
-            ? 'Primary view'
-            : index === 1
-              ? 'Detail view'
-              : index === 2
-                ? 'Material view'
-                : 'Profile view',
-      })),
-    []
+  const galleryImages = useMemo(
+    () => resolveProductGalleryImages(product, productGalleryFallback),
+    [product]
   );
+  const productVideoUrl = useMemo(() => resolveProductVideoUrl(product), [product]);
+  const selectedImage = galleryImages[Math.min(activeImageIndex, Math.max(galleryImages.length - 1, 0))]
+    || resolveProductPrimaryImage(product, productGalleryFallback);
 
-  const selectedImage = galleryItems[activeImageIndex] || galleryItems[0];
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [id, product?.id]);
 
   if (loading) {
     return (
@@ -510,15 +471,19 @@ function ProductDetailsPage() {
         <section className="pt-8">
           <div className="grid gap-8 xl:grid-cols-[4.5rem_minmax(0,1.05fr)_0.92fr] xl:items-start">
             <div className="order-2 flex gap-3 xl:order-1 xl:flex-col">
-              {galleryItems.map((item) => (
+              {galleryImages.map((imageSrc, index) => (
                 <button
-                  key={item.id}
+                  key={`${imageSrc}-${index}`}
                   type="button"
-                  onClick={() => setActiveImageIndex(item.id)}
-                  className={`group relative overflow-hidden rounded-[0.75rem] border ${activeImageIndex === item.id ? 'border-[var(--color-primary)]' : 'border-[var(--color-border)]'} bg-[rgba(255,255,255,0.82)]`}
+                  onClick={() => setActiveImageIndex(index)}
+                  className={`group relative overflow-hidden rounded-[0.75rem] border ${activeImageIndex === index ? 'border-[var(--color-primary)]' : 'border-[var(--color-border)]'} bg-[rgba(255,255,255,0.82)]`}
                 >
                   <div className="h-[5.4rem] w-[4.25rem] overflow-hidden">
-                    <ProductImage product={product} objectPosition={item.position} compact />
+                    <img
+                      src={imageSrc}
+                      alt={`${product.name || 'Product'} view ${index + 1}`}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    />
                   </div>
                 </button>
               ))}
@@ -527,9 +492,26 @@ function ProductDetailsPage() {
             <div className="order-1 xl:order-2">
               <div className="image-shell rounded-[1rem] shadow-[0_20px_40px_rgba(138,129,124,0.16)]">
                 <div className="aspect-[0.78] overflow-hidden">
-                  <ProductImage product={product} objectPosition={selectedImage.position} />
+                  <img
+                    src={selectedImage}
+                    alt={product?.name || 'Product'}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               </div>
+
+              {productVideoUrl ? (
+                <div className="mt-5 overflow-hidden rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-3 shadow-[0_18px_34px_rgba(138,129,124,0.1)]">
+                  <p className="px-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
+                    Product Video
+                  </p>
+                  <video
+                    src={productVideoUrl}
+                    controls
+                    className="mt-3 aspect-video w-full rounded-[0.8rem] bg-[rgba(244,243,238,0.92)] object-cover"
+                  />
+                </div>
+              ) : null}
             </div>
 
             <div className="order-3 max-w-[24rem] xl:pt-6">
@@ -633,7 +615,7 @@ function ProductDetailsPage() {
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
                       <img
-                        src={resolveMediaUrl(sellerStore?.logo_image_url || sellerStore?.logo_url) || heroImage}
+                        src={resolveMediaUrl(sellerStore?.logo_image_url || sellerStore?.logo_url) || artisanAvatarFallback}
                         alt={sellerName}
                         className="h-full w-full object-cover"
                       />

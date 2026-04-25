@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
+import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import storeService from '../services/storeService';
 import { resolveMediaUrl } from '../utils/media';
@@ -14,8 +16,8 @@ function SellerStoreManagementPage() {
     phone_number: '',
     logo: null,
     banner: null,
-    logo_url: '',
-    banner_url: '',
+    logo_url: artisanAvatarFallback,
+    banner_url: storefrontBannerFallback,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,8 +36,8 @@ function SellerStoreManagementPage() {
           ...data,
           logo: null,
           banner: null,
-          logo_url: data?.logo_image_url || data?.logo_url || '',
-          banner_url: data?.banner_image_url || data?.banner_url || '',
+          logo_url: data?.logo_image_url || data?.logo_url || artisanAvatarFallback,
+          banner_url: data?.banner_image_url || data?.banner_url || storefrontBannerFallback,
         }));
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load store profile.');
@@ -79,8 +81,8 @@ function SellerStoreManagementPage() {
         ...updatedStore,
         logo: null,
         banner: null,
-        logo_url: updatedStore?.logo_image_url || updatedStore?.logo_url || previous.logo_url,
-        banner_url: updatedStore?.banner_image_url || updatedStore?.banner_url || previous.banner_url,
+        logo_url: updatedStore?.logo_image_url || updatedStore?.logo_url || previous.logo_url || artisanAvatarFallback,
+        banner_url: updatedStore?.banner_image_url || updatedStore?.banner_url || previous.banner_url || storefrontBannerFallback,
       }));
       setMessage('Store identity updated successfully.');
     } catch (err) {
@@ -189,19 +191,11 @@ function SellerStoreManagementPage() {
 
       <aside className="surface-card-strong overflow-hidden">
         <div className="aspect-[1.45] bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.4))]">
-          {formData.banner_url ? (
-            <img src={resolveMediaUrl(formData.banner_url)} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
-          ) : null}
+          <img src={resolveMediaUrl(formData.banner_url || storefrontBannerFallback)} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
         </div>
         <div className="p-6 sm:p-7">
           <div className="-mt-16 inline-flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.8rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.94)] shadow-[0_18px_32px_rgba(138,129,124,0.12)]">
-            {formData.logo_url ? (
-              <img src={resolveMediaUrl(formData.logo_url)} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
-            ) : (
-              <span className="font-display text-3xl text-[var(--color-primary)]">
-                {(formData.store_name || 'S').charAt(0)}
-              </span>
-            )}
+            <img src={resolveMediaUrl(formData.logo_url || artisanAvatarFallback)} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
           </div>
 
           <h2 className="font-display mt-6 text-[2.3rem] leading-none text-[var(--color-primary)]">

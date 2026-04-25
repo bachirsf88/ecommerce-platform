@@ -2,20 +2,21 @@
 
 namespace App\Models\Mongo;
 
+use App\Services\Concerns\HandlesPublicFiles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Storage;
 use MongoDB\Laravel\Eloquent\Model;
 
 class ProductDocument extends Model
 {
     use HasFactory;
+    use HandlesPublicFiles;
 
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
 
     protected $connection = 'mongodb';
     protected $table = 'products';
-    protected $appends = ['id', 'image_url'];
+    protected $appends = ['id', 'image_url', 'image_urls', 'video_url'];
     protected $hidden = ['_id'];
 
     protected $fillable = [
@@ -26,12 +27,15 @@ class ProductDocument extends Model
         'stock',
         'category',
         'image',
+        'images',
+        'video',
         'status',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
+        'images' => 'array',
     ];
 
     public function getIdAttribute($value = null): ?string
@@ -43,34 +47,30 @@ class ProductDocument extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        $path = $this->image;
+        return $this->publicFileUrl($this->image);
+    }
 
-        if (! $path) {
-            return null;
+    public function getImageUrlsAttribute(): array
+    {
+        $rawImages = collect($this->images ?? [])
+            ->filter(fn ($value) => is_string($value) && trim($value) !== '');
+
+        $primaryImage = is_string($this->image) ? trim($this->image) : null;
+
+        if ($primaryImage) {
+            $rawImages = $rawImages->prepend($primaryImage);
         }
 
-        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
-            return $path;
-        }
+        return $rawImages
+            ->unique()
+            ->map(fn (string $path) => $this->publicFileUrl($path))
+            ->filter()
+            ->values()
+            ->all();
+    }
 
-        $baseUrl = request()
-            ? rtrim(request()->getSchemeAndHttpHost(), '/')
-            : rtrim((string) config('app.url'), '/');
-
-        if (str_starts_with($path, '/storage/')) {
-            return $baseUrl . $path;
-        }
-
-        $storageUrl = Storage::disk('public')->url($path);
-
-        if (preg_match('/^https?:\/\//i', $storageUrl) === 1) {
-            return $storageUrl;
-        }
-
-        if (str_starts_with($storageUrl, '/')) {
-            return $baseUrl . $storageUrl;
-        }
-
-        return $baseUrl . '/' . ltrim($storageUrl, '/');
+    public function getVideoUrlAttribute(): ?string
+    {
+        return $this->publicFileUrl($this->video);
     }
 }

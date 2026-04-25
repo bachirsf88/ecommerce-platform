@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
-import heroAltImage from '../assets/hero1.png';
+import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
-import { resolveEntityImageUrl, resolveMediaUrl } from '../utils/media';
+import { resolveMediaUrl, resolveProductPrimaryImage } from '../utils/media';
 
 const isRenderableImageSrc = (value) =>
   typeof value === 'string' && /^(https?:\/\/|data:|\/)/i.test(value.trim());
@@ -49,11 +50,9 @@ function resolveBannerImage(store, products) {
     return store.banner_url;
   }
 
-  return (
-    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image_url ||
-    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image ||
-    heroImage
-  );
+  const productWithImage = products.find((product) => resolveProductPrimaryImage(product));
+
+  return resolveProductPrimaryImage(productWithImage, storefrontBannerFallback);
 }
 
 function resolveAvatarImage(store, products) {
@@ -65,11 +64,9 @@ function resolveAvatarImage(store, products) {
     return store.logo_url;
   }
 
-  return (
-    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image_url ||
-    products.find((product) => isRenderableImageSrc(product?.image_url || product?.image))?.image ||
-    heroAltImage
-  );
+  const productWithImage = products.find((product) => resolveProductPrimaryImage(product));
+
+  return resolveProductPrimaryImage(productWithImage, artisanAvatarFallback);
 }
 
 function formatAverageRating(value) {
@@ -132,26 +129,18 @@ function ProductRatingSummary({ summary, loading = false }) {
 }
 
 function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
-  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image) || heroImage;
+  const imageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
 
   return (
     <article className="group">
       <Link to={product?.id ? `/products/${product.id}` : '/products'} className="block">
         <div className="overflow-hidden bg-[linear-gradient(160deg,rgba(244,243,238,0.96),rgba(188,184,177,0.34))] shadow-[0_10px_24px_rgba(138,129,124,0.12)]">
           <div className="aspect-[0.92] overflow-hidden bg-[rgba(255,255,255,0.88)]">
-            {imageSrc !== heroImage ? (
-              <img
-                src={imageSrc}
-                alt={product?.name || 'Product'}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
-              />
-            ) : (
-              <img
-                src={imageSrc}
-                alt={product?.name || 'Product'}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
-              />
-            )}
+            <img
+              src={imageSrc}
+              alt={product?.name || 'Product'}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+            />
           </div>
         </div>
       </Link>

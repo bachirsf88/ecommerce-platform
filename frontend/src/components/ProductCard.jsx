@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
-import { resolveEntityImageUrl } from '../utils/media';
+import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 function ProductCard({ product, onFavoriteChange }) {
@@ -15,7 +15,7 @@ function ProductCard({ product, onFavoriteChange }) {
   const productCategory = product?.category || 'Uncategorized';
   const productPrice = product?.price ?? 'N/A';
   const productStock = product?.stock ?? 'N/A';
-  const productImageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
+  const productImageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
   const buyerAccess = canAccessBuyerFeatures(user);
   const [cartLoading, setCartLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -151,19 +151,11 @@ function ProductCard({ product, onFavoriteChange }) {
   return (
     <article className="surface-card flex h-full flex-col p-5">
       <div className="product-media mb-5 flex h-52 items-center justify-center overflow-hidden p-6">
-        {productImageSrc ? (
-          <img
-            src={productImageSrc}
-            alt={productName}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <img
-            src={heroImage}
-            alt={productName}
-            className="h-full w-full object-cover"
-          />
-        )}
+        <img
+          src={productImageSrc}
+          alt={productName}
+          className="h-full w-full object-cover"
+        />
       </div>
 
       <div className="mb-4 flex items-center justify-between gap-3">

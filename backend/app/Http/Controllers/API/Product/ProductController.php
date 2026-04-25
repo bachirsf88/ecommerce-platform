@@ -62,7 +62,8 @@ class ProductController extends Controller
         $product = $this->productService->createSellerProduct(
             $request->validated(),
             $request->user(),
-            $request->file('image_file')
+            $this->extractImageFiles($request),
+            $request->file('video_file')
         );
 
         return $this->successResponse('Product created successfully.', $product, 201);
@@ -80,7 +81,8 @@ class ProductController extends Controller
             $existingProduct,
             $request->validated(),
             $request->user(),
-            $request->file('image_file')
+            $this->extractImageFiles($request),
+            $request->file('video_file')
         );
 
         if (! $updatedProduct) {
@@ -105,5 +107,21 @@ class ProductController extends Controller
         }
 
         return $this->successResponse('Product deleted successfully.');
+    }
+
+    /**
+     * @return array<int, \Illuminate\Http\UploadedFile>
+     */
+    private function extractImageFiles(Request $request): array
+    {
+        $imageFiles = $request->file('image_files', []);
+        $normalizedFiles = is_array($imageFiles) ? $imageFiles : [];
+        $legacyImage = $request->file('image_file');
+
+        if ($legacyImage) {
+            $normalizedFiles[] = $legacyImage;
+        }
+
+        return array_values(array_filter($normalizedFiles));
     }
 }

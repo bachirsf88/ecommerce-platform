@@ -4,6 +4,12 @@ import SellerProductForm from '../components/seller/SellerProductForm';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 
+function revokeBlobUrl(value) {
+  if (typeof value === 'string' && value.startsWith('blob:')) {
+    URL.revokeObjectURL(value);
+  }
+}
+
 function EditProductPage() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -15,13 +21,22 @@ function EditProductPage() {
     stock: '',
     category: '',
     image_url: '',
-    image_file: null,
-    image_preview: '',
+    image_urls: [],
+    image_files: [],
+    image_previews: [],
+    video_url: '',
+    video_file: null,
+    video_preview: '',
     status: 'active',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => () => {
+    formData.image_previews.forEach(revokeBlobUrl);
+    revokeBlobUrl(formData.video_preview);
+  }, [formData.image_previews, formData.video_preview]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -43,8 +58,16 @@ function EditProductPage() {
           stock: product.stock ?? '',
           category: product.category || '',
           image_url: product.image_url || '',
-          image_file: null,
-          image_preview: '',
+          image_urls: Array.isArray(product.image_urls)
+            ? product.image_urls
+            : product.image_url
+              ? [product.image_url]
+              : [],
+          image_files: [],
+          image_previews: [],
+          video_url: product.video_url || '',
+          video_file: null,
+          video_preview: '',
           status: product.status || 'active',
         });
       } catch (err) {
@@ -65,14 +88,43 @@ function EditProductPage() {
   };
 
   const handleFileChange = (event) => {
-    const file = event.target.files?.[0] ?? null;
-    const previewUrl = file ? URL.createObjectURL(file) : '';
+    const { name, files } = event.target;
 
-    setFormData((previous) => ({
-      ...previous,
-      image_file: file,
-      image_preview: previewUrl,
-    }));
+    if (name === 'image_files') {
+      const nextFiles = Array.from(files ?? []);
+
+      if (nextFiles.length > 5) {
+        setError('Upload up to 5 product images.');
+        event.target.value = '';
+        return;
+      }
+
+      setError('');
+      setFormData((previous) => {
+        previous.image_previews.forEach(revokeBlobUrl);
+
+        return {
+          ...previous,
+          image_files: nextFiles,
+          image_previews: nextFiles.map((file) => URL.createObjectURL(file)),
+        };
+      });
+
+      return;
+    }
+
+    const file = files?.[0] ?? null;
+
+    setError('');
+    setFormData((previous) => {
+      revokeBlobUrl(previous.video_preview);
+
+      return {
+        ...previous,
+        video_file: file,
+        video_preview: file ? URL.createObjectURL(file) : '',
+      };
+    });
   };
 
   const handleSubmit = async (event) => {

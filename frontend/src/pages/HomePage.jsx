@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import marketplaceHero from '../assets/marketplace-hero.png';
+import productGalleryFallback from '../assets/product-gallery-fallback.jpg';
+import sellerWorkspaceCover from '../assets/seller-workspace-cover.jpg';
+import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
-import { resolveEntityImageUrl } from '../utils/media';
+import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 const fallbackCategories = [
@@ -39,6 +43,7 @@ function MediaTile({
   description,
   to = '/products',
   className = '',
+  imageSrc = marketplaceHero,
   imageClassName = '',
   overlayClassName = '',
 }) {
@@ -48,7 +53,7 @@ function MediaTile({
       className={`group relative overflow-hidden rounded-[1.45rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.84)] shadow-[var(--shadow-card)] ${className}`}
     >
       <img
-        src={heroImage}
+        src={imageSrc}
         alt={title}
         className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
       />
@@ -73,25 +78,17 @@ function MediaTile({
 }
 
 function ArrivalItem({ product }) {
-  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
+  const imageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
 
   return (
     <Link to={product?.id ? `/products/${product.id}` : '/products'} className="group">
       <div className="image-shell rounded-[1.1rem]">
         <div className="flex aspect-[0.9] items-center justify-center p-4">
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={product?.name || 'Product'}
-              className="h-full w-full object-cover object-center"
-            />
-          ) : (
-            <img
-              src={heroImage}
-              alt={product?.name || 'Product'}
-              className="h-full w-full object-cover object-center"
-            />
-          )}
+          <img
+            src={imageSrc}
+            alt={product?.name || 'Product'}
+            className="h-full w-full object-cover object-center"
+          />
         </div>
       </div>
       <div className="mt-4 space-y-1">
@@ -168,7 +165,7 @@ function HomePage() {
         <section className="pt-2">
           <div className="relative overflow-hidden rounded-[1.9rem] border border-[var(--color-border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(244,243,238,0.98),rgba(122,75,46,0.18))] shadow-[var(--shadow-lifted)]">
             <img
-              src={heroImage}
+              src={marketplaceHero}
               alt="Artisan marketplace hero"
               className="absolute inset-y-0 right-0 h-full w-full object-cover object-center opacity-65 lg:w-[56%]"
             />
@@ -197,7 +194,7 @@ function HomePage() {
                   </Link>
                 </div>
 
-                <div className="mt-8 grid max-w-[28rem] gap-3 sm:grid-cols-3">
+                {/* <div className="mt-8 grid max-w-[28rem] gap-3 sm:grid-cols-3">
                   {[
                     ['Palette', '#F4F3EE'],
                     ['Borders', '#BCB8B1'],
@@ -208,7 +205,7 @@ function HomePage() {
                       <p className={`mt-2 text-sm font-semibold ${label === 'Actions' ? 'text-[var(--color-brand)]' : 'text-[var(--color-text)]'}`}>{value}</p>
                     </div>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -225,6 +222,7 @@ function HomePage() {
                 title={categories[0]?.name || 'Collection'}
                 subtitle={categories[0]?.subtitle || 'Featured Collection'}
                 description={categories[0]?.description}
+                imageSrc={marketplaceHero}
                 imageClassName="object-[center_35%]"
                 className="min-h-[280px]"
               />
@@ -233,12 +231,14 @@ function HomePage() {
                 <MediaTile
                   title={categories[1]?.name || 'Collection'}
                   subtitle={categories[1]?.subtitle || 'Featured'}
+                  imageSrc={fashionProductFallback}
                   imageClassName="object-[center_70%]"
                   className="min-h-[220px]"
                 />
                 <MediaTile
                   title={categories[2]?.name || 'Collection'}
                   subtitle={categories[2]?.subtitle || 'Featured'}
+                  imageSrc={productGalleryFallback}
                   imageClassName="object-[center_55%]"
                   className="min-h-[220px]"
                 />
@@ -249,6 +249,7 @@ function HomePage() {
               title={categories[3]?.name || 'Collection'}
               subtitle={categories[3]?.subtitle || 'Featured'}
               description={categories[3]?.description}
+              imageSrc={storefrontBannerFallback}
               imageClassName="object-[center_55%]"
               className="min-h-[520px]"
             />
@@ -319,7 +320,7 @@ function HomePage() {
                   >
                     <div className="h-11 w-11 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
                       <img
-                        src={heroImage}
+                        src={resolveProductPrimaryImage(product, fashionProductFallback)}
                         alt={product?.name || 'Product'}
                         className="h-full w-full object-cover object-center"
                       />
@@ -340,7 +341,7 @@ function HomePage() {
             <div className="relative">
               <div className="image-shell rounded-[1.9rem]">
                 <img
-                  src={heroImage}
+                  src={sellerWorkspaceCover}
                   alt="Editorial artisan composition"
                   className="h-[420px] w-full object-cover object-center sm:h-[520px]"
                 />

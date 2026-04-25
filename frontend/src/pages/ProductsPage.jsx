@@ -1,27 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import productService from '../services/productService';
-import { resolveEntityImageUrl } from '../utils/media';
+import { resolveProductPrimaryImage } from '../utils/media';
 
 const PAGE_SIZE = 6;
 
 function ProductVisual({ product }) {
-  const imageSrc = resolveEntityImageUrl(product?.image_url, product?.image);
-
-  if (imageSrc) {
-    return (
-      <img
-        src={imageSrc}
-        alt={product?.name || 'Product'}
-        className="h-full w-full object-cover object-center"
-      />
-    );
-  }
+  const imageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
 
   return (
     <img
-      src={heroImage}
+      src={imageSrc}
       alt={product?.name || 'Product'}
       className="h-full w-full object-cover object-center"
     />

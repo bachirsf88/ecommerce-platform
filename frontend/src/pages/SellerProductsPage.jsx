@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import heroImage from '../assets/hero.png';
+import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
-import { resolveEntityImageUrl } from '../utils/media';
+import { resolveProductPrimaryImage } from '../utils/media';
 
 function SellerProductsPage() {
   const { user } = useAuth();
@@ -17,7 +17,7 @@ function SellerProductsPage() {
   const [stockFilter, setStockFilter] = useState('all');
   const searchQuery = searchParams.get('query') ?? '';
 
-  const loadSellerProducts = async () => {
+  const loadSellerProducts = useCallback(async () => {
     if (!user?.id) {
       return;
     }
@@ -33,11 +33,11 @@ function SellerProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     loadSellerProducts();
-  }, [user?.id]);
+  }, [loadSellerProducts]);
 
   const categories = useMemo(
     () => Array.from(new Set(products.map((product) => product.category).filter(Boolean))),
@@ -170,7 +170,7 @@ function SellerProductsPage() {
               <article key={product.id} className="surface-card overflow-hidden">
                 <div className="aspect-[1.08] bg-[rgba(244,243,238,0.86)]">
                   <img
-                    src={resolveEntityImageUrl(product.image_url, product.image) || heroImage}
+                    src={resolveProductPrimaryImage(product, fashionProductFallback)}
                     alt={product.name || 'Product'}
                     className="h-full w-full object-cover"
                   />

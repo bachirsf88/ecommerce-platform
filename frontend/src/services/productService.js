@@ -13,8 +13,19 @@ const normalizeProductPayload = (payload) => {
     formData.append('status', payload.status);
   }
 
-  if (payload.image_file instanceof File) {
-    formData.append('image_file', payload.image_file);
+  if (Array.isArray(payload.image_files)) {
+    payload.image_files
+      .filter((file) => file instanceof File)
+      .slice(0, 5)
+      .forEach((file) => {
+        formData.append('image_files[]', file);
+      });
+  } else if (payload.image_file instanceof File) {
+    formData.append('image_files[]', payload.image_file);
+  }
+
+  if (payload.video_file instanceof File) {
+    formData.append('video_file', payload.video_file);
   }
 
   return formData;
