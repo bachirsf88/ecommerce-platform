@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Services\Concerns\HandlesPublicFiles;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HandlesPublicFiles;
     use HasApiTokens, HasFactory, Notifiable;
 
     public const ROLE_BUYER = 'buyer';
@@ -95,24 +96,6 @@ class User extends Authenticatable
 
     public function getProfileImageUrlAttribute(): ?string
     {
-        $path = $this->profile_image_path;
-
-        if (! $path) {
-            return null;
-        }
-
-        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
-            return $path;
-        }
-
-        $baseUrl = request()
-            ? rtrim(request()->getSchemeAndHttpHost(), '/')
-            : rtrim((string) config('app.url'), '/');
-
-        if (str_starts_with($path, '/storage/')) {
-            return $baseUrl . $path;
-        }
-
-        return $baseUrl . Storage::disk('public')->url($path);
+        return $this->publicFileUrl($this->profile_image_path);
     }
 }

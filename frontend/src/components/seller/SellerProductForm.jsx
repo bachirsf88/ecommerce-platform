@@ -1,5 +1,6 @@
 import fashionProductFallback from '../../assets/fashion-product-fallback.jpg';
 import productGalleryFallback from '../../assets/product-gallery-fallback.jpg';
+import FallbackImage from '../common/FallbackImage';
 import { resolveMediaUrl } from '../../utils/media';
 
 function SellerProductForm({
@@ -20,7 +21,6 @@ function SellerProductForm({
       : formData.image_url
         ? [formData.image_url]
         : [];
-  const previewVideo = formData.video_preview || formData.video_url;
   const mainPreviewImage = previewImages[0] || fashionProductFallback;
 
   return (
@@ -101,20 +101,13 @@ function SellerProductForm({
           </div>
 
           <div>
-            <label htmlFor="video_file" className="field-label">
-              Product Video Optional
-            </label>
+            <p className="field-label">Product Video</p>
             <p className="mb-3 text-xs uppercase tracking-[0.16em] text-[var(--color-text-faint)]">
-              Accepted formats: MP4, MOV, WEBM.
+              Video upload will be available later.
             </p>
-            <input
-              id="video_file"
-              name="video_file"
-              type="file"
-              accept="video/mp4,video/webm,video/quicktime"
-              onChange={onFileChange}
-              className="text-input file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(188,184,177,0.28)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-text)]"
-            />
+            <div className="rounded-[1rem] border border-dashed border-[var(--color-border)] bg-[rgba(255,255,255,0.58)] px-4 py-4 text-sm text-[var(--color-text-soft)]">
+              Product videos are temporarily disabled while media storage is being finalized.
+            </div>
           </div>
 
           {previewImages.length > 0 ? (
@@ -124,8 +117,9 @@ function SellerProductForm({
                 {previewImages.map((imageSrc, index) => (
                   <div key={`${imageSrc}-${index}`} className="overflow-hidden rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)]">
                     <div className="aspect-[0.82] overflow-hidden bg-[rgba(244,243,238,0.82)]">
-                      <img
+                      <FallbackImage
                         src={resolveMediaUrl(imageSrc)}
+                        fallbackSrc={productGalleryFallback}
                         alt={`${formData.name || 'Product'} preview ${index + 1}`}
                         className="h-full w-full object-cover"
                       />
@@ -136,30 +130,18 @@ function SellerProductForm({
             </div>
           ) : null}
 
-          {previewVideo ? (
-            <div className="space-y-3">
-              <p className="field-label">Video Preview</p>
-              <div className="overflow-hidden rounded-[1.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)]">
-                <video
-                  src={resolveMediaUrl(previewVideo)}
-                  controls
-                  className="aspect-video w-full bg-[rgba(244,243,238,0.9)] object-cover"
-                />
-              </div>
-            </div>
-          ) : null}
-
-          {!previewImages.length && !previewVideo ? (
+          {!previewImages.length ? (
             <div className="rounded-[1rem] border border-dashed border-[var(--color-border-strong)] bg-[rgba(255,255,255,0.58)] px-4 py-5 text-sm leading-6 text-[var(--color-text-soft)]">
-              Add a small gallery and optional video to give the product a stronger editorial presentation across cards and detail pages.
+              Add a small gallery to give the product a stronger editorial presentation across cards and detail pages.
             </div>
           ) : null}
 
           {previewImages.length === 0 ? (
             <div className="overflow-hidden rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.8)]">
               <div className="aspect-[1.2] bg-[rgba(244,243,238,0.92)]">
-                <img
+                <FallbackImage
                   src={productGalleryFallback}
+                  fallbackSrc={productGalleryFallback}
                   alt="Gallery fallback"
                   className="h-full w-full object-cover"
                 />
@@ -179,8 +161,9 @@ function SellerProductForm({
         <span className="section-label">Preview</span>
         <div className="mt-5 overflow-hidden rounded-[1.6rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.8)]">
           <div className="aspect-[0.92] bg-[rgba(244,243,238,0.92)]">
-            <img
+            <FallbackImage
               src={resolveMediaUrl(mainPreviewImage) || fashionProductFallback}
+              fallbackSrc={fashionProductFallback}
               alt={formData.name || 'Product preview'}
               className="h-full w-full object-cover"
             />
@@ -205,24 +188,15 @@ function SellerProductForm({
                 {previewImages.slice(0, 4).map((imageSrc, index) => (
                   <div key={`aside-${imageSrc}-${index}`} className="overflow-hidden rounded-[0.9rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.88)]">
                     <div className="aspect-square overflow-hidden">
-                      <img
+                      <FallbackImage
                         src={resolveMediaUrl(imageSrc)}
+                        fallbackSrc={productGalleryFallback}
                         alt={`${formData.name || 'Product'} thumbnail ${index + 1}`}
                         className="h-full w-full object-cover"
                       />
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : null}
-
-            {previewVideo ? (
-              <div className="mt-5 overflow-hidden rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)]">
-                <video
-                  src={resolveMediaUrl(previewVideo)}
-                  controls
-                  className="aspect-video w-full bg-[rgba(244,243,238,0.9)] object-cover"
-                />
               </div>
             ) : null}
           </div>

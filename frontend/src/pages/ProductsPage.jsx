@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import FallbackImage from '../components/common/FallbackImage';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import productService from '../services/productService';
 import { resolveProductPrimaryImage } from '../utils/media';
@@ -10,8 +11,9 @@ function ProductVisual({ product }) {
   const imageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
 
   return (
-    <img
+    <FallbackImage
       src={imageSrc}
+      fallbackSrc={fashionProductFallback}
       alt={product?.name || 'Product'}
       className="h-full w-full object-cover object-center"
     />

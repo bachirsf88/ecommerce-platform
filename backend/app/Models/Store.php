@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\Concerns\HandlesPublicFiles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Store extends Model
 {
+    use HandlesPublicFiles;
     use HasFactory;
 
     protected $fillable = [
@@ -56,32 +57,6 @@ class Store extends Model
 
     private function resolveMediaUrl(?string $path): ?string
     {
-        if (! $path) {
-            return null;
-        }
-
-        if (preg_match('/^(https?:\/\/|data:|blob:)/i', $path) === 1) {
-            return $path;
-        }
-
-        $baseUrl = request()
-            ? rtrim(request()->getSchemeAndHttpHost(), '/')
-            : rtrim((string) config('app.url'), '/');
-
-        if (str_starts_with($path, '/storage/')) {
-            return $baseUrl . $path;
-        }
-
-        $storageUrl = Storage::disk('public')->url($path);
-
-        if (preg_match('/^https?:\/\//i', $storageUrl) === 1) {
-            return $storageUrl;
-        }
-
-        if (str_starts_with($storageUrl, '/')) {
-            return $baseUrl . $storageUrl;
-        }
-
-        return $baseUrl . '/' . ltrim($storageUrl, '/');
+        return $this->publicFileUrl($path);
     }
 }

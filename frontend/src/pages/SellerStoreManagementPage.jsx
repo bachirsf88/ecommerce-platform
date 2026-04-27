@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
 import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
+import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import storeService from '../services/storeService';
 import { resolveMediaUrl } from '../utils/media';
@@ -191,11 +192,21 @@ function SellerStoreManagementPage() {
 
       <aside className="surface-card-strong overflow-hidden">
         <div className="aspect-[1.45] bg-[linear-gradient(160deg,rgba(244,243,238,0.94),rgba(188,184,177,0.4))]">
-          <img src={resolveMediaUrl(formData.banner_url || storefrontBannerFallback)} alt={formData.store_name || 'Store banner'} className="h-full w-full object-cover" />
+          <FallbackImage
+            src={resolveMediaUrl(formData.banner_url || storefrontBannerFallback)}
+            fallbackSrc={storefrontBannerFallback}
+            alt={formData.store_name || 'Store banner'}
+            className="h-full w-full object-cover"
+          />
         </div>
         <div className="p-6 sm:p-7">
           <div className="-mt-16 inline-flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.8rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.94)] shadow-[0_18px_32px_rgba(138,129,124,0.12)]">
-            <img src={resolveMediaUrl(formData.logo_url || artisanAvatarFallback)} alt={formData.store_name || 'Store logo'} className="h-full w-full object-cover" />
+            <FallbackImage
+              src={resolveMediaUrl(formData.logo_url || artisanAvatarFallback)}
+              fallbackSrc={artisanAvatarFallback}
+              alt={formData.store_name || 'Store logo'}
+              className="h-full w-full object-cover"
+            />
           </div>
 
           <h2 className="font-display mt-6 text-[2.3rem] leading-none text-[var(--color-primary)]">

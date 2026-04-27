@@ -24,9 +24,6 @@ function EditProductPage() {
     image_urls: [],
     image_files: [],
     image_previews: [],
-    video_url: '',
-    video_file: null,
-    video_preview: '',
     status: 'active',
   });
   const [loading, setLoading] = useState(true);
@@ -35,8 +32,7 @@ function EditProductPage() {
 
   useEffect(() => () => {
     formData.image_previews.forEach(revokeBlobUrl);
-    revokeBlobUrl(formData.video_preview);
-  }, [formData.image_previews, formData.video_preview]);
+  }, [formData.image_previews]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -65,9 +61,6 @@ function EditProductPage() {
               : [],
           image_files: [],
           image_previews: [],
-          video_url: product.video_url || '',
-          video_file: null,
-          video_preview: '',
           status: product.status || 'active',
         });
       } catch (err) {
@@ -112,19 +105,6 @@ function EditProductPage() {
 
       return;
     }
-
-    const file = files?.[0] ?? null;
-
-    setError('');
-    setFormData((previous) => {
-      revokeBlobUrl(previous.video_preview);
-
-      return {
-        ...previous,
-        video_file: file,
-        video_preview: file ? URL.createObjectURL(file) : '',
-      };
-    });
   };
 
   const handleSubmit = async (event) => {

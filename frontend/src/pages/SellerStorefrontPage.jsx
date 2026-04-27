@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
+import FallbackImage from '../components/common/FallbackImage';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
 import { resolveMediaUrl, resolveProductPrimaryImage } from '../utils/media';
@@ -136,8 +137,9 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
       <Link to={product?.id ? `/products/${product.id}` : '/products'} className="block">
         <div className="overflow-hidden bg-[linear-gradient(160deg,rgba(244,243,238,0.96),rgba(188,184,177,0.34))] shadow-[0_10px_24px_rgba(138,129,124,0.12)]">
           <div className="aspect-[0.92] overflow-hidden bg-[rgba(255,255,255,0.88)]">
-            <img
+            <FallbackImage
               src={imageSrc}
+              fallbackSrc={fashionProductFallback}
               alt={product?.name || 'Product'}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
             />
@@ -516,8 +518,9 @@ function SellerStorefrontPage() {
       <section className="relative">
         <div className="mx-auto max-w-[1320px] px-4 pt-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-[0.8rem] bg-[var(--color-border-base)] shadow-[0_30px_60px_rgba(138,129,124,0.16)]">
-            <img
+            <FallbackImage
               src={resolveMediaUrl(bannerImage)}
+              fallbackSrc={storefrontBannerFallback}
               alt={storeName}
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
@@ -531,8 +534,9 @@ function SellerStorefrontPage() {
           <div className="rounded-[0.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] px-5 py-6 shadow-[0_22px_45px_rgba(138,129,124,0.16)] sm:px-7 lg:px-8 lg:py-7">
             <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
               <div className="h-22 w-18 overflow-hidden rounded-[0.15rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.92)] sm:h-24 sm:w-20">
-                <img
+                <FallbackImage
                   src={resolveMediaUrl(avatarImage)}
+                  fallbackSrc={artisanAvatarFallback}
                   alt={sellerName}
                   className="h-full w-full object-cover object-center"
                 />

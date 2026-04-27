@@ -84,7 +84,11 @@ export function resolveMediaUrl(value) {
   }
 
   if (normalizedValue.startsWith('/')) {
-    return `${API_ORIGIN}${normalizedValue}`;
+    if (normalizedValue.startsWith('/storage/')) {
+      return `${API_ORIGIN}${normalizedValue}`;
+    }
+
+    return normalizedValue;
   }
 
   if (normalizedValue.startsWith('storage/')) {
@@ -112,7 +116,9 @@ function flattenCandidates(candidates) {
 
 export function resolveProductPrimaryImage(product, fallbackImage = '') {
   const candidates = flattenCandidates([
+    product?.primary_image_url,
     product?.image_url,
+    product?.gallery_urls,
     product?.image_urls,
     product?.image,
     product?.images,
@@ -123,7 +129,9 @@ export function resolveProductPrimaryImage(product, fallbackImage = '') {
 
 export function resolveProductGalleryImages(product, fallbackImage = '') {
   const galleryImages = flattenCandidates([
+    product?.primary_image_url,
     product?.image_url,
+    product?.gallery_urls,
     product?.image_urls,
     product?.image,
     product?.images,

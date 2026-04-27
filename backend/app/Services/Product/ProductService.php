@@ -49,8 +49,7 @@ class ProductService
     public function createSellerProduct(
         array $data,
         User $seller,
-        array $imageFiles = [],
-        ?UploadedFile $videoFile = null
+        array $imageFiles = []
     )
     {
         unset(
@@ -73,10 +72,6 @@ class ProductService
             $data['image'] = $storedImages[0];
         }
 
-        if ($videoFile) {
-            $data['video'] = $this->storeProductVideo($videoFile);
-        }
-
         return $this->productRepository->create($data);
     }
 
@@ -87,8 +82,7 @@ class ProductService
         $product,
         array $data,
         User $seller,
-        array $imageFiles = [],
-        ?UploadedFile $videoFile = null
+        array $imageFiles = []
     )
     {
         if (! $this->ownsProduct($product, $seller)) {
@@ -107,16 +101,10 @@ class ProductService
         );
 
         $previousImages = $this->resolvePersistedProductImages($product);
-        $previousVideo = $product->video;
-
         if ($imageFiles !== []) {
             $nextImages = $this->storeProductImages($imageFiles);
             $data['images'] = $nextImages;
             $data['image'] = $nextImages[0] ?? null;
-        }
-
-        if ($videoFile) {
-            $data['video'] = $this->storeProductVideo($videoFile);
         }
 
         $updatedProduct = $this->productRepository->update($product, $data);
@@ -127,10 +115,6 @@ class ProductService
 
         if ($imageFiles !== []) {
             $this->deletePublicFiles($previousImages);
-        }
-
-        if ($videoFile && $previousVideo !== ($data['video'] ?? null)) {
-            $this->deletePublicFile($previousVideo);
         }
 
         return $updatedProduct;
@@ -163,12 +147,22 @@ class ProductService
      */
     private function storeProductImages(array $imageFiles): array
     {
-        return $this->storePublicFiles($imageFiles, 'products/images');
-    }
+        $normalizedFiles = array_values(array_filter(
+            $imageFiles,
+            fn ($file) => $file instanceof UploadedFile
+        ));
 
-    private function storeProductVideo(UploadedFile $videoFile): string
-    {
-        return $this->storePublicFile($videoFile, 'products/videos');
+        if ($normalizedFiles === []) {
+            return [];
+        }
+
+        $primaryImage = array_shift($normalizedFiles);
+        $galleryImages = $this->storePublicFiles($normalizedFiles, 'products/gallery');
+
+        return array_values(array_filter([
+            $primaryImage ? $this->storePublicFile($primaryImage, 'products') : null,
+            ...$galleryImages,
+        ]));
     }
 
     /**

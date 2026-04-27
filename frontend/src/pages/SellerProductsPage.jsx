@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
@@ -169,8 +170,9 @@ function SellerProductsPage() {
             {filteredProducts.map((product) => (
               <article key={product.id} className="surface-card overflow-hidden">
                 <div className="aspect-[1.08] bg-[rgba(244,243,238,0.86)]">
-                  <img
+                  <FallbackImage
                     src={resolveProductPrimaryImage(product, fashionProductFallback)}
+                    fallbackSrc={fashionProductFallback}
                     alt={product.name || 'Product'}
                     className="h-full w-full object-cover"
                   />

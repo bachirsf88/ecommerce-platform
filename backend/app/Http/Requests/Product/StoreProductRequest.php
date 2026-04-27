@@ -24,7 +24,6 @@ class StoreProductRequest extends FormRequest
             'image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
             'image_files' => ['nullable', 'array', 'max:5'],
             'image_files.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
-            'video_file' => ['nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm', 'max:20480'],
             'status' => ['nullable', 'string', Rule::in([
                 Product::STATUS_ACTIVE,
                 Product::STATUS_INACTIVE,

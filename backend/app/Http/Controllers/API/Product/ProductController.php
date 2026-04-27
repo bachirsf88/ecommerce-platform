@@ -62,8 +62,7 @@ class ProductController extends Controller
         $product = $this->productService->createSellerProduct(
             $request->validated(),
             $request->user(),
-            $this->extractImageFiles($request),
-            $request->file('video_file')
+            $this->extractImageFiles($request)
         );
 
         return $this->successResponse('Product created successfully.', $product, 201);
@@ -81,8 +80,7 @@ class ProductController extends Controller
             $existingProduct,
             $request->validated(),
             $request->user(),
-            $this->extractImageFiles($request),
-            $request->file('video_file')
+            $this->extractImageFiles($request)
         );
 
         if (! $updatedProduct) {

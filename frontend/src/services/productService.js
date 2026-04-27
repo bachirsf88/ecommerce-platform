@@ -24,10 +24,6 @@ const normalizeProductPayload = (payload) => {
     formData.append('image_files[]', payload.image_file);
   }
 
-  if (payload.video_file instanceof File) {
-    formData.append('video_file', payload.video_file);
-  }
-
   return formData;
 };
 

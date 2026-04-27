@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import FallbackImage from './common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
@@ -151,8 +152,9 @@ function ProductCard({ product, onFavoriteChange }) {
   return (
     <article className="surface-card flex h-full flex-col p-5">
       <div className="product-media mb-5 flex h-52 items-center justify-center overflow-hidden p-6">
-        <img
+        <FallbackImage
           src={productImageSrc}
+          fallbackSrc={fashionProductFallback}
           alt={productName}
           className="h-full w-full object-cover"
         />

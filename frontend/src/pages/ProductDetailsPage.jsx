@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import artisanAvatarFallback from '../assets/artisan-avatar-fallback.png';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import productGalleryFallback from '../assets/product-gallery-fallback.jpg';
+import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
@@ -479,8 +480,9 @@ function ProductDetailsPage() {
                   className={`group relative overflow-hidden rounded-[0.75rem] border ${activeImageIndex === index ? 'border-[var(--color-primary)]' : 'border-[var(--color-border)]'} bg-[rgba(255,255,255,0.82)]`}
                 >
                   <div className="h-[5.4rem] w-[4.25rem] overflow-hidden">
-                    <img
+                    <FallbackImage
                       src={imageSrc}
+                      fallbackSrc={productGalleryFallback}
                       alt={`${product.name || 'Product'} view ${index + 1}`}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     />
@@ -492,8 +494,9 @@ function ProductDetailsPage() {
             <div className="order-1 xl:order-2">
               <div className="image-shell rounded-[1rem] shadow-[0_20px_40px_rgba(138,129,124,0.16)]">
                 <div className="aspect-[0.78] overflow-hidden">
-                  <img
+                  <FallbackImage
                     src={selectedImage}
+                    fallbackSrc={productGalleryFallback}
                     alt={product?.name || 'Product'}
                     className="h-full w-full object-cover"
                   />
@@ -614,8 +617,9 @@ function ProductDetailsPage() {
                 <div className="flex items-center justify-between gap-4 border-t border-[var(--color-border-soft)] pt-5">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
-                      <img
+                      <FallbackImage
                         src={resolveMediaUrl(sellerStore?.logo_image_url || sellerStore?.logo_url) || artisanAvatarFallback}
+                        fallbackSrc={artisanAvatarFallback}
                         alt={sellerName}
                         className="h-full w-full object-cover"
                       />

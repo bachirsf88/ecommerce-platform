@@ -5,6 +5,7 @@ import marketplaceHero from '../assets/marketplace-hero.png';
 import productGalleryFallback from '../assets/product-gallery-fallback.jpg';
 import sellerWorkspaceCover from '../assets/seller-workspace-cover.jpg';
 import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
+import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { resolveProductPrimaryImage } from '../utils/media';
@@ -84,8 +85,9 @@ function ArrivalItem({ product }) {
     <Link to={product?.id ? `/products/${product.id}` : '/products'} className="group">
       <div className="image-shell rounded-[1.1rem]">
         <div className="flex aspect-[0.9] items-center justify-center p-4">
-          <img
+          <FallbackImage
             src={imageSrc}
+            fallbackSrc={fashionProductFallback}
             alt={product?.name || 'Product'}
             className="h-full w-full object-cover object-center"
           />
@@ -319,8 +321,9 @@ function HomePage() {
                     className="flex items-center gap-4"
                   >
                     <div className="h-11 w-11 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
-                      <img
+                      <FallbackImage
                         src={resolveProductPrimaryImage(product, fashionProductFallback)}
+                        fallbackSrc={fashionProductFallback}
                         alt={product?.name || 'Product'}
                         className="h-full w-full object-cover object-center"
                       />
