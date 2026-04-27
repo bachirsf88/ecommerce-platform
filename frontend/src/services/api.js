@@ -18,7 +18,7 @@ const resolveApiBaseUrl = () => {
     return `${stripApiSuffix(trimTrailingSlash(backendUrl))}/api`;
   }
 
-  return '/api';
+  return 'http://127.0.0.1:8000/api';
 };
 
 export const API_BASE_URL = resolveApiBaseUrl();

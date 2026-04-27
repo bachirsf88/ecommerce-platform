@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -95,24 +95,9 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('MONGODB_DSN', env('DB_URI')),
-            'database' => env('MONGODB_DATABASE', 'app'),
-            'options' => [
-                'database' => env('MONGODB_AUTH_DATABASE', 'admin'),
-            ],
-            'driver_options' => [
-                'serverApi' => env('MONGODB_SERVER_API_VERSION'),
-            ],
+            'dsn' => env('MONGODB_URI'),
+            'database' => env('MONGODB_DATABASE', 'gradshop'),
         ],
-'mongodb' => [
-    'driver' => 'mongodb',
-    'host' => env('MONGODB_HOST', '127.0.0.1'),
-    'port' => env('MONGODB_PORT', 27017),
-    'database' => env('MONGODB_DATABASE', 'ecommerce_mongo'),
-    'username' => env('MONGODB_USERNAME', ''),
-    'password' => env('MONGODB_PASSWORD', ''),
-    'options' => [],
-],
     ],
 
     /*

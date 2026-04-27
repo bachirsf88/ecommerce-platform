@@ -1,5 +1,10 @@
 <?php
 
+$frontendOrigins = array_values(array_filter(array_map(
+    static fn (string $origin) => trim($origin),
+    explode(',', (string) env('FRONTEND_URLS', '*'))
+)));
+
 return [
 
     /*
@@ -19,7 +24,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => $frontendOrigins !== [] ? $frontendOrigins : ['*'],
 
     'allowed_origins_patterns' => [],
 
