@@ -61,19 +61,29 @@ export function resolveMediaUrl(value) {
 
   const normalizedValue = value.trim();
 
+  // 1. إذا كان الرابط لا يصلح كـ Media، ارجعه كما هو
   if (!isRenderableMediaSrc(normalizedValue)) {
     return normalizedValue;
   }
 
+  // 2. معالجة روابط data و blob
   if (/^(data:|blob:)/i.test(normalizedValue)) {
     return normalizedValue;
   }
 
+  // 3. معالجة الروابط الكاملة (HTTP/HTTPS)
   if (/^https?:\/\//i.test(normalizedValue)) {
     try {
+      // إذا كان الرابط يحتوي على supabase، ارجعه فوراً ولا تلمسه!
+      if (normalizedValue.includes('supabase.co')) {
+        return normalizedValue;
+      }
+
       const parsedUrl = new URL(normalizedValue);
 
-      if (parsedUrl.pathname.startsWith('/storage/')) {
+      // فقط إذا كان الرابط يشير لـ /storage/ على سيرفرنا المحلي (Render)
+      // نقوم بإضافة API_ORIGIN
+      if (parsedUrl.pathname.startsWith('/storage/') && !normalizedValue.includes('supabase.co')) {
         return `${API_ORIGIN}${parsedUrl.pathname}${parsedUrl.search}`;
       }
 
@@ -83,11 +93,11 @@ export function resolveMediaUrl(value) {
     }
   }
 
+  // 4. معالجة الروابط النسبية (Relative Paths)
   if (normalizedValue.startsWith('/')) {
     if (normalizedValue.startsWith('/storage/')) {
       return `${API_ORIGIN}${normalizedValue}`;
     }
-
     return normalizedValue;
   }
 
@@ -97,6 +107,7 @@ export function resolveMediaUrl(value) {
 
   return `${API_ORIGIN}/storage/${normalizedValue}`;
 }
+
 
 export function resolveEntityImageUrl(...candidates) {
   const match = candidates.find((candidate) => isRenderableImageSrc(candidate));
