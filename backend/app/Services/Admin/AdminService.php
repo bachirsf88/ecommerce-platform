@@ -188,7 +188,12 @@ class AdminService
 
     public function rejectProduct(int|string $id): ?array
     {
-        return $this->updateProductStatus($id, ProductDocument::STATUS_REJECTED);
+        return $this->updateProductStatus($id, ProductDocument::STATUS_NEEDS_REVIEW);
+    }
+
+    public function flagProduct(int|string $id): ?array
+    {
+        return $this->updateProductStatus($id, ProductDocument::STATUS_NEEDS_REVIEW);
     }
 
     public function getOrders(array $filters = []): Collection

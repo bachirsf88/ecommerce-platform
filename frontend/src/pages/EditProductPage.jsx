@@ -147,7 +147,7 @@ function EditProductPage() {
       saving={saving}
       submitLabel="Save Changes"
       title="Edit Product"
-      description="Update stock, copy, price, category, and replace the product gallery when needed. Saving changes sends the product back for admin review."
+      description="Update stock, copy, price, category, and replace the product gallery when needed. Approved products stay live, and flagged products return to the live catalog after correction."
       moderationStatus={formData.status}
       onChange={handleChange}
       onFileChange={handleFileChange}

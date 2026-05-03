@@ -14,6 +14,34 @@ function buildCategoryGroups(categories = []) {
   }));
 }
 
+function resolveModerationSummary(status) {
+  if (status === 'needs_review' || status === 'rejected') {
+    return {
+      badge: 'Needs Correction',
+      helper: 'This product has an issue and needs correction. Save your edits to return it to the live catalog.',
+    };
+  }
+
+  if (status === 'approved') {
+    return {
+      badge: 'Live',
+      helper: 'This product is live on the marketplace unless an admin later flags it for correction.',
+    };
+  }
+
+  if (status === 'inactive') {
+    return {
+      badge: 'Inactive',
+      helper: 'This product is currently hidden from public browsing.',
+    };
+  }
+
+  return {
+    badge: status || 'Draft',
+    helper: 'Save changes to keep this listing up to date.',
+  };
+}
+
 function SellerProductForm({
   formData,
   categories = [],
@@ -35,6 +63,7 @@ function SellerProductForm({
     (category) => String(category.id) === String(formData.category_id || '')
   ) || null;
   const categoryGroups = buildCategoryGroups(categories);
+  const moderationSummary = resolveModerationSummary(moderationStatus);
   const previewImages = formData.image_previews?.length
     ? formData.image_previews
     : formData.image_urls?.length
@@ -53,10 +82,10 @@ function SellerProductForm({
           <p className="subtle-copy mt-3 text-sm">{description}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.86)] px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
-              Status: {moderationStatus || 'Pending'}
+              Status: {moderationSummary.badge}
             </span>
             <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-text-faint)]">
-              Seller edits submit the product for admin review before it becomes public.
+              {moderationSummary.helper}
             </p>
           </div>
         </div>

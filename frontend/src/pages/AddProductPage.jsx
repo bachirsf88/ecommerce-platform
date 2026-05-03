@@ -107,8 +107,8 @@ function AddProductPage() {
       saving={saving}
       submitLabel="Publish Product"
       title="Add Product"
-      description="Create a new listing with real product media, stock quantity, and clean catalog details."
-      moderationStatus="pending"
+      description="Create a new listing with real product media, stock quantity, and clean catalog details. New products go live immediately for approved sellers."
+      moderationStatus="approved"
       onChange={handleChange}
       onFileChange={handleFileChange}
       onSubmit={handleSubmit}

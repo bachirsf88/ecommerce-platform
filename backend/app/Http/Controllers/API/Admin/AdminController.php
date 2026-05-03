@@ -87,6 +87,7 @@ class AdminController extends Controller
             'status' => ['nullable', 'string', Rule::in([
                 ProductDocument::STATUS_PENDING,
                 ProductDocument::STATUS_APPROVED,
+                ProductDocument::STATUS_NEEDS_REVIEW,
                 ProductDocument::STATUS_REJECTED,
                 ProductDocument::STATUS_INACTIVE,
             ])],
@@ -103,6 +104,7 @@ class AdminController extends Controller
             'status' => ['required', 'string', Rule::in([
                 ProductDocument::STATUS_PENDING,
                 ProductDocument::STATUS_APPROVED,
+                ProductDocument::STATUS_NEEDS_REVIEW,
                 ProductDocument::STATUS_REJECTED,
                 ProductDocument::STATUS_INACTIVE,
             ])],
@@ -136,7 +138,18 @@ class AdminController extends Controller
             return $this->errorResponse('Product not found.', null, 404);
         }
 
-        return $this->successResponse('Product rejected successfully.', $product);
+        return $this->successResponse('Product flagged for correction successfully.', $product);
+    }
+
+    public function flagProduct(string $id): JsonResponse
+    {
+        $product = $this->adminService->flagProduct($id);
+
+        if (! $product) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
+        return $this->successResponse('Product flagged for correction successfully.', $product);
     }
 
     public function orders(Request $request): JsonResponse

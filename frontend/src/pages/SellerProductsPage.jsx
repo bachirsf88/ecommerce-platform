@@ -7,7 +7,15 @@ import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 
-const moderationStatuses = ['pending', 'approved', 'rejected', 'inactive'];
+const moderationStatuses = ['approved', 'needs_review', 'inactive', 'rejected', 'pending'];
+
+const moderationStatusLabels = {
+  approved: 'Approved',
+  needs_review: 'Needs Review',
+  inactive: 'Inactive',
+  rejected: 'Rejected',
+  pending: 'Pending',
+};
 
 function SellerProductsPage() {
   const { user } = useAuth();
@@ -130,7 +138,7 @@ function SellerProductsPage() {
               <option value="all">All statuses</option>
               {moderationStatuses.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {moderationStatusLabels[status] || status}
                 </option>
               ))}
             </select>
@@ -192,8 +200,14 @@ function SellerProductsPage() {
                         {product.name || 'Untitled product'}
                       </h2>
                     </div>
-                    <span className="status-pill">{product.status || 'pending'}</span>
+                    <span className="status-pill">{moderationStatusLabels[product.status] || product.status || 'Pending'}</span>
                   </div>
+
+                  {product.status === 'needs_review' || product.status === 'rejected' ? (
+                    <div className="status-message status-error mt-4">
+                      This product has an issue and needs correction.
+                    </div>
+                  ) : null}
 
                   <div className="mt-5 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2">
                     <p>Price: {formatCurrency(product.price)}</p>

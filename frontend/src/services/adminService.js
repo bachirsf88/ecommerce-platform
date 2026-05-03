@@ -52,6 +52,11 @@ const adminService = {
     return response.data.data ?? null;
   },
 
+  async flagProduct(id) {
+    const response = await api.patch(`/admin/products/${id}/flag`);
+    return response.data.data ?? null;
+  },
+
   async rejectProduct(id) {
     const response = await api.patch(`/admin/products/${id}/reject`);
     return response.data.data ?? null;

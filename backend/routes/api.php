@@ -131,6 +131,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::get('/products', [AdminController::class, 'products']);
     Route::put('/products/{id}/status', [AdminController::class, 'updateProductStatus']);
     Route::patch('/products/{id}/approve', [AdminController::class, 'approveProduct']);
+    Route::patch('/products/{id}/flag', [AdminController::class, 'flagProduct']);
     Route::patch('/products/{id}/reject', [AdminController::class, 'rejectProduct']);
     Route::get('/orders', [AdminController::class, 'orders']);
     Route::get('/reviews', [AdminController::class, 'reviews']);

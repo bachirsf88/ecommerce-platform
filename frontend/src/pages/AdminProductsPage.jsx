@@ -4,7 +4,25 @@ import { formatCurrency, formatDateTime } from '../utils/formatters';
 
 const initialFilters = {
   search: '',
-  status: 'pending',
+  status: '',
+};
+
+const productStatuses = ['approved', 'needs_review', 'inactive', 'rejected', 'pending'];
+
+const statusCopy = {
+  approved: 'Live on the marketplace',
+  needs_review: 'Hidden until the seller fixes the issue',
+  rejected: 'Legacy hidden status',
+  inactive: 'Not shown publicly',
+  pending: 'Legacy moderation status',
+};
+
+const statusLabels = {
+  approved: 'Approved',
+  needs_review: 'Needs Review',
+  rejected: 'Rejected',
+  inactive: 'Inactive',
+  pending: 'Pending',
 };
 
 function AdminProductsPage() {
@@ -34,10 +52,11 @@ function AdminProductsPage() {
   }, [filters]);
 
   const productCounts = useMemo(() => ({
-    pending: products.filter((product) => product.status === 'pending').length,
     approved: products.filter((product) => product.status === 'approved').length,
+    needs_review: products.filter((product) => product.status === 'needs_review').length,
     rejected: products.filter((product) => product.status === 'rejected').length,
     inactive: products.filter((product) => product.status === 'inactive').length,
+    pending: products.filter((product) => product.status === 'pending').length,
   }), [products]);
 
   const handleSubmit = (event) => {
@@ -57,8 +76,10 @@ function AdminProductsPage() {
     try {
       if (action === 'approve') {
         await adminService.approveProduct(productId);
+      } else if (action === 'flag') {
+        await adminService.flagProduct(productId);
       } else {
-        await adminService.rejectProduct(productId);
+        await adminService.updateProductStatus(productId, action);
       }
 
       const refreshedProducts = await adminService.getProducts(filters);
@@ -76,17 +97,17 @@ function AdminProductsPage() {
         <span className="section-label">Products</span>
         <h1 className="section-title mt-4">Products Management</h1>
         <p className="subtle-copy mt-3 max-w-3xl text-sm">
-          Review newly submitted listings, approve products that are ready for public visibility, and reject products that should stay hidden until corrected.
+          Products now publish by default for approved sellers. Use moderation here only when a listing needs correction or should be restored to the public catalog.
         </p>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="surface-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Pending In View</p>
-            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.pending}</p>
-          </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <div className="surface-card p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Approved In View</p>
             <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.approved}</p>
+          </div>
+          <div className="surface-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Needs Review</p>
+            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.needs_review}</p>
           </div>
           <div className="surface-card p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Rejected In View</p>
@@ -95,6 +116,10 @@ function AdminProductsPage() {
           <div className="surface-card p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Inactive In View</p>
             <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.inactive}</p>
+          </div>
+          <div className="surface-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Legacy Pending</p>
+            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.pending}</p>
           </div>
         </div>
       </section>
@@ -126,10 +151,11 @@ function AdminProductsPage() {
               className="text-input"
             >
               <option value="">All moderation statuses</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="inactive">Inactive</option>
+              {productStatuses.map((status) => (
+                <option key={status} value={status}>
+                  {statusLabels[status] || status}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -155,7 +181,7 @@ function AdminProductsPage() {
             {products.map((product) => {
               const isBusy = actionLoadingId === String(product.id);
               const canApprove = product.status !== 'approved';
-              const canReject = product.status !== 'rejected';
+              const canFlag = product.status === 'approved';
 
               return (
                 <article key={product.id} className="data-card">
@@ -166,7 +192,7 @@ function AdminProductsPage() {
                         Seller: {product.seller?.name || 'Unknown seller'}
                       </p>
                     </div>
-                    <span className="status-pill">{product.status || 'Unknown'}</span>
+                    <span className="status-pill">{statusLabels[product.status] || product.status || 'Unknown'}</span>
                   </div>
 
                   <div className="mt-4 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2 xl:grid-cols-4">
@@ -175,6 +201,10 @@ function AdminProductsPage() {
                     <p>Stock: {product.stock ?? 0}</p>
                     <p>Created: {formatDateTime(product.created_at)}</p>
                   </div>
+
+                  <p className="mt-3 text-sm text-[var(--color-text-faint)]">
+                    {statusCopy[product.status] || 'Moderation state not recognized.'}
+                  </p>
 
                   <p className="mt-4 text-sm leading-7 text-[var(--color-text-soft)]">
                     {product.description || 'No product description provided.'}
@@ -188,17 +218,17 @@ function AdminProductsPage() {
                         disabled={isBusy}
                         className="btn-base btn-primary"
                       >
-                        {isBusy ? 'Updating...' : 'Approve Product'}
+                        {isBusy ? 'Updating...' : 'Approve / Restore'}
                       </button>
                     ) : null}
-                    {canReject ? (
+                    {canFlag ? (
                       <button
                         type="button"
-                        onClick={() => handleModerationAction(product.id, 'reject')}
+                        onClick={() => handleModerationAction(product.id, 'flag')}
                         disabled={isBusy}
                         className="btn-base btn-outline"
                       >
-                        {isBusy ? 'Updating...' : 'Reject Product'}
+                        {isBusy ? 'Updating...' : 'Remove Approval'}
                       </button>
                     ) : null}
                   </div>

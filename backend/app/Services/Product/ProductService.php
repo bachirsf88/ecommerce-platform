@@ -104,7 +104,7 @@ class ProductService
             return null;
         }
 
-        $data = $this->prepareSellerProductPayload($data, $seller);
+        $data = $this->prepareSellerProductPayload($data, $seller, $product);
 
         $previousImages = $this->resolvePersistedProductImages($product);
         if ($imageFiles !== []) {
@@ -147,7 +147,7 @@ class ProductService
         return (string) $product->seller_id === (string) $seller->id;
     }
 
-    private function prepareSellerProductPayload(array $data, User $seller): array
+    private function prepareSellerProductPayload(array $data, User $seller, $existingProduct = null): array
     {
         $category = $this->resolveActiveCategoryOrFail($data['category_id'] ?? null);
 
@@ -167,9 +167,22 @@ class ProductService
         $data['seller_id'] = (string) $seller->id;
         $data['category_id'] = $category->id;
         $data['category'] = $category->name;
-        $data['status'] = ProductDocument::STATUS_PENDING;
+        $data['status'] = $this->resolveSellerManagedStatus($existingProduct);
 
         return $data;
+    }
+
+    private function resolveSellerManagedStatus($existingProduct = null): string
+    {
+        if (! $existingProduct) {
+            return ProductDocument::STATUS_APPROVED;
+        }
+
+        if (($existingProduct->status ?? null) === ProductDocument::STATUS_INACTIVE) {
+            return ProductDocument::STATUS_INACTIVE;
+        }
+
+        return ProductDocument::STATUS_APPROVED;
     }
 
     private function resolveActiveCategoryOrFail(mixed $categoryId): Category

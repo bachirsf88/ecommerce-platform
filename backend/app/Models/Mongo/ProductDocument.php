@@ -13,12 +13,14 @@ class ProductDocument extends Model
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';
+    public const STATUS_NEEDS_REVIEW = 'needs_review';
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_INACTIVE = 'inactive';
 
     public const STATUSES = [
         self::STATUS_PENDING,
         self::STATUS_APPROVED,
+        self::STATUS_NEEDS_REVIEW,
         self::STATUS_REJECTED,
         self::STATUS_INACTIVE,
     ];
@@ -28,7 +30,7 @@ class ProductDocument extends Model
     protected $appends = ['id', 'image_url', 'image_urls', 'video_url'];
     protected $hidden = ['_id'];
     protected $attributes = [
-        'status' => self::STATUS_PENDING,
+        'status' => self::STATUS_APPROVED,
     ];
 
     protected $fillable = [
