@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\API\Admin\AdminController;
+use App\Http\Controllers\API\Admin\AdminCategoryController;
 use App\Http\Controllers\API\Account\AccountController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Cart\CartController;
+use App\Http\Controllers\API\Category\CategoryController;
 use App\Http\Controllers\API\Favorite\FavoriteController;
 use App\Http\Controllers\API\Order\OrderController;
 use App\Http\Controllers\API\Product\ProductController;
@@ -48,15 +50,21 @@ Route::prefix('products')->group(function () {
     Route::get('/{id}/reviews', [ReviewController::class, 'indexByProduct']);
     Route::get('/{id}', [ProductController::class, 'show']);
 
-    Route::middleware(['auth:sanctum', 'role:seller'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:seller', 'seller.approved'])->group(function () {
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{product}', [ProductController::class, 'update']);
         Route::delete('/{product}', [ProductController::class, 'destroy']);
     });
 });
 
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::get('/{slug}', [CategoryController::class, 'show']);
+    Route::get('/{slug}/products', [CategoryController::class, 'products']);
+});
+
 Route::prefix('stores')->group(function () {
-    Route::middleware(['auth:sanctum', 'role:seller'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:seller', 'seller.approved'])->group(function () {
         Route::get('/me', [StoreController::class, 'showMine']);
         Route::post('/me', [StoreController::class, 'updateMine']);
     });
@@ -91,14 +99,16 @@ Route::prefix('account')->middleware(['auth:sanctum', 'role:buyer,seller'])->gro
     Route::put('/password', [AccountController::class, 'updatePassword']);
 });
 
-Route::prefix('seller/orders')->middleware(['auth:sanctum', 'role:seller'])->group(function () {
+Route::prefix('seller/orders')->middleware(['auth:sanctum', 'role:seller', 'seller.approved'])->group(function () {
     Route::get('/', [SellerOrderController::class, 'index']);
     Route::get('/{id}', [SellerOrderController::class, 'show']);
     Route::put('/{id}/status', [SellerOrderController::class, 'updateStatus']);
 });
 
-Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller'])->group(function () {
+Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller', 'seller.approved'])->group(function () {
     Route::get('/dashboard', [SellerDashboardController::class, 'show']);
+    Route::get('/products', [ProductController::class, 'sellerIndex']);
+    Route::get('/products/{id}', [ProductController::class, 'sellerShow']);
     Route::get('/finance', [SellerFinanceController::class, 'overview']);
     Route::post('/finance/withdrawals', [SellerFinanceController::class, 'storeWithdrawal']);
     Route::get('/settings', [SellerSettingsController::class, 'show']);
@@ -112,8 +122,16 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::get('/sellers', [AdminController::class, 'sellers']);
     Route::put('/sellers/{id}/approve', [AdminController::class, 'approveSeller']);
     Route::put('/sellers/{id}/reject', [AdminController::class, 'rejectSeller']);
+    Route::get('/categories', [AdminCategoryController::class, 'index']);
+    Route::post('/categories', [AdminCategoryController::class, 'store']);
+    Route::put('/categories/{id}', [AdminCategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy']);
+    Route::patch('/categories/{id}/activate', [AdminCategoryController::class, 'activate']);
+    Route::patch('/categories/{id}/deactivate', [AdminCategoryController::class, 'deactivate']);
     Route::get('/products', [AdminController::class, 'products']);
     Route::put('/products/{id}/status', [AdminController::class, 'updateProductStatus']);
+    Route::patch('/products/{id}/approve', [AdminController::class, 'approveProduct']);
+    Route::patch('/products/{id}/reject', [AdminController::class, 'rejectProduct']);
     Route::get('/orders', [AdminController::class, 'orders']);
     Route::get('/reviews', [AdminController::class, 'reviews']);
     Route::delete('/reviews/{id}', [AdminController::class, 'destroyReview']);

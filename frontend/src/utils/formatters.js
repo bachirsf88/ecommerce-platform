@@ -2,15 +2,16 @@ export function formatCurrency(value) {
   const amount = Number(value ?? 0);
 
   if (Number.isNaN(amount)) {
-    return '$0.00';
+    return '0 DA';
   }
 
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+  const hasFraction = !Number.isInteger(amount);
+  const formattedAmount = new Intl.NumberFormat('fr-DZ', {
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: hasFraction ? 2 : 2,
   }).format(amount);
+
+  return `${formattedAmount} DA`;
 }
 
 export function formatShortDate(value) {

@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Repositories\Eloquent\CartRepository;
+use App\Repositories\Eloquent\CategoryRepository;
 use App\Repositories\Eloquent\FavoriteRepository;
 use App\Repositories\Eloquent\OrderRepository;
 use App\Repositories\Eloquent\ReviewRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Interfaces\CartRepositoryInterface;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\FavoriteRepositoryInterface;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(FavoriteRepositoryInterface::class, FavoriteRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductMongoRepository::class);

@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $product = $this->productService->getProductById($id);
+        $product = $this->productService->getPublicProductById($id);
 
         if (! $product) {
             return $this->errorResponse('Product not found.', null, 404);
@@ -48,6 +48,8 @@ class ProductController extends Controller
     {
         $products = $this->productService->filterProducts($request->only([
             'category',
+            'category_id',
+            'category_slug',
             'seller_id',
             'status',
             'min_price',
@@ -55,6 +57,24 @@ class ProductController extends Controller
         ]));
 
         return $this->successResponse('Filtered products fetched successfully.', $products);
+    }
+
+    public function sellerIndex(Request $request): JsonResponse
+    {
+        $products = $this->productService->getSellerProducts($request->user());
+
+        return $this->successResponse('Seller products fetched successfully.', $products);
+    }
+
+    public function sellerShow(Request $request, string $id): JsonResponse
+    {
+        $product = $this->productService->getSellerProductById($id, $request->user());
+
+        if (! $product) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
+        return $this->successResponse('Seller product fetched successfully.', $product);
     }
 
     public function store(StoreProductRequest $request): JsonResponse

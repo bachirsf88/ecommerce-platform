@@ -6,6 +6,7 @@ import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
 import FallbackImage from '../components/common/FallbackImage';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
+import { formatCurrency } from '../utils/formatters';
 import { resolveMediaUrl, resolveProductPrimaryImage } from '../utils/media';
 
 const isRenderableImageSrc = (value) =>
@@ -13,23 +14,13 @@ const isRenderableImageSrc = (value) =>
 
 const priceRanges = [
   { id: 'all', label: 'All Prices', min: null, max: null },
-  { id: 'under-50', label: 'Under $50', min: null, max: 50 },
-  { id: '50-150', label: '$50 - $150', min: 50, max: 150 },
-  { id: '150-300', label: '$150 - $300', min: 150, max: 300 },
-  { id: '300-plus', label: '$300+', min: 300, max: null },
+  { id: 'under-50', label: 'Under 50 DA', min: null, max: 50 },
+  { id: '50-150', label: '50 DA - 150 DA', min: 50, max: 150 },
+  { id: '150-300', label: '150 DA - 300 DA', min: 150, max: 300 },
+  { id: '300-plus', label: '300 DA+', min: 300, max: null },
 ];
 
 const getProductRatingKey = (productId) => String(productId ?? '');
-
-function formatPrice(value) {
-  const numericValue = Number(value);
-
-  if (Number.isNaN(numericValue)) {
-    return 'N/A';
-  }
-
-  return numericValue.toFixed(2);
-}
 
 function resolveFallbackLocation(store) {
   const address = store?.store_address?.trim();
@@ -158,7 +149,7 @@ function ProductTile({ product, ratingSummary, ratingsLoading = false }) {
         </Link>
         <ProductRatingSummary summary={ratingSummary} loading={ratingsLoading} />
         <p className="mt-2 text-[0.92rem] text-[var(--color-text-soft)]">
-          ${formatPrice(product?.price)}
+          {formatCurrency(product?.price)}
         </p>
       </div>
     </article>
@@ -183,7 +174,7 @@ function StorefrontFooter() {
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <p className="font-display text-4xl leading-none text-white sm:text-5xl">
-              GradShop
+              FLORA
             </p>
             <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
               A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
@@ -526,14 +517,14 @@ function SellerStorefrontPage() {
             />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,2,2,0.5)_0%,rgba(2,2,2,0.18)_45%,rgba(2,2,2,0.28)_100%)]" />
             <div className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.24),transparent_72%)]" />
-            <div className="relative h-[300px] sm:h-[380px] lg:h-[440px]" />
+            <div className="relative h-[240px] sm:h-[380px] lg:h-[440px]" />
           </div>
         </div>
 
         <div className="relative z-10 mx-auto -mt-14 max-w-[1200px] px-4 sm:px-6 lg:-mt-16 lg:px-8">
           <div className="rounded-[0.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] px-5 py-6 shadow-[0_22px_45px_rgba(138,129,124,0.16)] sm:px-7 lg:px-8 lg:py-7">
             <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
-              <div className="h-22 w-18 overflow-hidden rounded-[0.15rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.92)] sm:h-24 sm:w-20">
+              <div className="h-20 w-16 overflow-hidden rounded-[0.15rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.92)] sm:h-24 sm:w-20">
                 <FallbackImage
                   src={resolveMediaUrl(avatarImage)}
                   fallbackSrc={artisanAvatarFallback}
@@ -544,7 +535,7 @@ function SellerStorefrontPage() {
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="font-display text-[2.2rem] leading-[0.95] text-[var(--color-text)] sm:text-[2.8rem]">
+                  <h1 className="font-display text-[2rem] leading-[0.95] text-[var(--color-text)] sm:text-[2.8rem]">
                     {storeName}
                   </h1>
                   {isVerifiedSeller && <VerifiedBadge />}
@@ -587,13 +578,13 @@ function SellerStorefrontPage() {
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
                 <button
                   type="button"
-                  className="rounded-[0.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]"
+                  className="rounded-[0.2rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)] sm:w-auto"
                 >
                   Message Seller
                 </button>
                 <button
                   type="button"
-                  className="rounded-[0.2rem] bg-[var(--color-brand)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]"
+                  className="rounded-[0.2rem] bg-[var(--color-brand)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-background)] sm:w-auto"
                 >
                   Follow Store
                 </button>
@@ -604,7 +595,7 @@ function SellerStorefrontPage() {
       </section>
 
       <div className="page-container max-w-[1200px] px-4 pt-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
+        <div className="grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="space-y-6">
               <div className="pb-2">
@@ -622,7 +613,7 @@ function SellerStorefrontPage() {
                     key={category}
                     type="button"
                     onClick={() => setSelectedCategory(category)}
-                    className={`flex w-full items-center justify-between text-left text-sm ${
+                    className={`flex w-full items-center justify-between rounded-[0.9rem] px-1 py-1 text-left text-sm ${
                       selectedCategory === category
                         ? 'text-[var(--color-text)]'
                         : 'text-[var(--color-text-faint)]'
@@ -644,7 +635,7 @@ function SellerStorefrontPage() {
                     key={range.id}
                     type="button"
                     onClick={() => setSelectedPriceRange(range.id)}
-                    className={`block w-full text-left text-sm ${
+                    className={`block w-full rounded-[0.9rem] px-1 py-1 text-left text-sm ${
                       selectedPriceRange === range.id
                         ? 'text-[var(--color-text)]'
                         : 'text-[var(--color-text-faint)]'
@@ -665,7 +656,7 @@ function SellerStorefrontPage() {
                     key={item.id}
                     type="button"
                     onClick={() => setSelectedAvailability(item.id)}
-                    className={`block w-full text-left text-sm ${
+                    className={`block w-full rounded-[0.9rem] px-1 py-1 text-left text-sm ${
                       selectedAvailability === item.id
                         ? 'text-[var(--color-text)]'
                         : 'text-[var(--color-text-faint)]'
@@ -692,7 +683,7 @@ function SellerStorefrontPage() {
 
           <main className="min-w-0">
             <div className="border-b border-[var(--color-border-soft)] pb-5">
-              <div className="flex flex-wrap items-end justify-between gap-5">
+              <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:flex-wrap sm:items-end">
                 <div>
                   <div className="flex flex-wrap gap-6 text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                     <span className="text-[var(--color-text)]">Products ({productCount})</span>
@@ -707,7 +698,7 @@ function SellerStorefrontPage() {
                   </p>
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                     Showing
                   </p>

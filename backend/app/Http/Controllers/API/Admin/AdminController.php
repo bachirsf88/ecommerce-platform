@@ -85,7 +85,9 @@ class AdminController extends Controller
         $products = $this->adminService->getProducts($request->validate([
             'search' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', Rule::in([
-                ProductDocument::STATUS_ACTIVE,
+                ProductDocument::STATUS_PENDING,
+                ProductDocument::STATUS_APPROVED,
+                ProductDocument::STATUS_REJECTED,
                 ProductDocument::STATUS_INACTIVE,
             ])],
             'category' => ['nullable', 'string', 'max:255'],
@@ -99,7 +101,9 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'string', Rule::in([
-                ProductDocument::STATUS_ACTIVE,
+                ProductDocument::STATUS_PENDING,
+                ProductDocument::STATUS_APPROVED,
+                ProductDocument::STATUS_REJECTED,
                 ProductDocument::STATUS_INACTIVE,
             ])],
         ]);
@@ -111,6 +115,28 @@ class AdminController extends Controller
         }
 
         return $this->successResponse('Product status updated successfully.', $product);
+    }
+
+    public function approveProduct(string $id): JsonResponse
+    {
+        $product = $this->adminService->approveProduct($id);
+
+        if (! $product) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
+        return $this->successResponse('Product approved successfully.', $product);
+    }
+
+    public function rejectProduct(string $id): JsonResponse
+    {
+        $product = $this->adminService->rejectProduct($id);
+
+        if (! $product) {
+            return $this->errorResponse('Product not found.', null, 404);
+        }
+
+        return $this->successResponse('Product rejected successfully.', $product);
     }
 
     public function orders(Request $request): JsonResponse

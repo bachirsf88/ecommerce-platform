@@ -7,7 +7,9 @@ import sellerWorkspaceCover from '../assets/seller-workspace-cover.jpg';
 import storefrontBannerFallback from '../assets/storefront-banner-fallback.jpg';
 import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
+import categoryService from '../services/categoryService';
 import productService from '../services/productService';
+import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
@@ -101,7 +103,7 @@ function ArrivalItem({ product }) {
           {product?.name || 'Unnamed product'}
         </h3>
         <p className="text-sm text-[var(--color-text-soft)]">
-          ${product?.price ?? 'N/A'}
+          {formatCurrency(product?.price)}
         </p>
       </div>
     </Link>
@@ -111,6 +113,7 @@ function ArrivalItem({ product }) {
 function HomePage() {
   const { user, isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -120,8 +123,12 @@ function HomePage() {
       setError('');
 
       try {
-        const data = await productService.getProducts();
-        setProducts(data);
+        const [productData, categoryData] = await Promise.all([
+          productService.getProducts(),
+          categoryService.getCategories(),
+        ]);
+        setProducts(productData);
+        setCategories(categoryData);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load home page products.');
       } finally {
@@ -132,16 +139,34 @@ function HomePage() {
     loadProducts();
   }, []);
 
-  const categories = useMemo(() => {
-    const dynamic = [...new Set(products.map((product) => product?.category).filter(Boolean))]
-      .slice(0, 4)
-      .map((category, index) => ({
-        ...fallbackCategories[index],
-        name: category,
-      }));
+  const featuredCategories = useMemo(() => {
+    const fallbackImages = [
+      marketplaceHero,
+      fashionProductFallback,
+      productGalleryFallback,
+      storefrontBannerFallback,
+    ];
+    const topLevelCategories = categories.filter((category) => !category.parent_id);
+    const sourceCategories = (topLevelCategories.length > 0 ? topLevelCategories : categories).slice(0, 4);
 
-    return dynamic.length > 0 ? dynamic : fallbackCategories;
-  }, [products]);
+    if (sourceCategories.length > 0) {
+      return sourceCategories.map((category, index) => ({
+        ...fallbackCategories[index],
+        name: category.name,
+        description: category.description || fallbackCategories[index]?.description,
+        imageSrc: category.image_url || fallbackImages[index] || marketplaceHero,
+        to: `/categories/${category.slug}`,
+        childrenCount: category.children_count || 0,
+      }));
+    }
+
+    return fallbackCategories.map((category, index) => ({
+      ...category,
+      imageSrc: fallbackImages[index] || marketplaceHero,
+      to: '/products',
+      childrenCount: 0,
+    }));
+  }, [categories]);
 
   const latestProducts = [...products].reverse().slice(0, 4);
   const editorialProducts = products.slice(0, 3);
@@ -173,12 +198,12 @@ function HomePage() {
             />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,243,238,0.96)_0%,rgba(244,243,238,0.88)_44%,rgba(244,243,238,0.2)_100%)]" />
             <div className="absolute inset-y-0 right-0 w-full bg-[radial-gradient(circle_at_right,rgba(122,75,46,0.18),transparent_34%)] lg:w-[55%]" />
-            <div className="relative z-10 min-h-[460px] px-7 py-8 sm:px-10 sm:py-10 lg:min-h-[560px] lg:px-14 lg:py-14">
+            <div className="relative z-10 min-h-[400px] px-6 py-7 sm:px-10 sm:py-10 lg:min-h-[560px] lg:px-14 lg:py-14">
               <div className="flex h-full max-w-[34rem] flex-col justify-end">
                 <p className="page-kicker text-[0.62rem]">
                   Curated Marketplace
                 </p>
-                <h1 className="font-display mt-4 text-5xl leading-[0.9] text-[var(--color-text)] sm:text-6xl lg:text-7xl">
+                <h1 className="font-display mt-4 text-[2.9rem] leading-[0.9] text-[var(--color-text)] sm:text-6xl lg:text-7xl">
                   The Art of the Handmade
                 </h1>
                 <p className="mt-4 max-w-[30rem] text-sm leading-7 text-[var(--color-text-soft)] sm:text-base">
@@ -221,26 +246,29 @@ function HomePage() {
           <div className="grid gap-4 lg:grid-cols-[1.45fr_0.82fr]">
             <div className="grid gap-4">
               <MediaTile
-                title={categories[0]?.name || 'Collection'}
-                subtitle={categories[0]?.subtitle || 'Featured Collection'}
-                description={categories[0]?.description}
-                imageSrc={marketplaceHero}
+                title={featuredCategories[0]?.name || 'Collection'}
+                subtitle={featuredCategories[0]?.subtitle || 'Featured Collection'}
+                description={featuredCategories[0]?.description}
+                to={featuredCategories[0]?.to}
+                imageSrc={featuredCategories[0]?.imageSrc || marketplaceHero}
                 imageClassName="object-[center_35%]"
                 className="min-h-[280px]"
               />
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <MediaTile
-                  title={categories[1]?.name || 'Collection'}
-                  subtitle={categories[1]?.subtitle || 'Featured'}
-                  imageSrc={fashionProductFallback}
+                  title={featuredCategories[1]?.name || 'Collection'}
+                  subtitle={featuredCategories[1]?.subtitle || 'Featured'}
+                  to={featuredCategories[1]?.to}
+                  imageSrc={featuredCategories[1]?.imageSrc || fashionProductFallback}
                   imageClassName="object-[center_70%]"
                   className="min-h-[220px]"
                 />
                 <MediaTile
-                  title={categories[2]?.name || 'Collection'}
-                  subtitle={categories[2]?.subtitle || 'Featured'}
-                  imageSrc={productGalleryFallback}
+                  title={featuredCategories[2]?.name || 'Collection'}
+                  subtitle={featuredCategories[2]?.subtitle || 'Featured'}
+                  to={featuredCategories[2]?.to}
+                  imageSrc={featuredCategories[2]?.imageSrc || productGalleryFallback}
                   imageClassName="object-[center_55%]"
                   className="min-h-[220px]"
                 />
@@ -248,18 +276,43 @@ function HomePage() {
             </div>
 
             <MediaTile
-              title={categories[3]?.name || 'Collection'}
-              subtitle={categories[3]?.subtitle || 'Featured'}
-              description={categories[3]?.description}
-              imageSrc={storefrontBannerFallback}
+              title={featuredCategories[3]?.name || 'Collection'}
+              subtitle={featuredCategories[3]?.subtitle || 'Featured'}
+              description={featuredCategories[3]?.description}
+              to={featuredCategories[3]?.to}
+              imageSrc={featuredCategories[3]?.imageSrc || storefrontBannerFallback}
               imageClassName="object-[center_55%]"
               className="min-h-[520px]"
             />
           </div>
+
+          {featuredCategories.length > 0 ? (
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {featuredCategories.map((category) => (
+                <Link
+                  key={category.to}
+                  to={category.to}
+                  className="flex items-center justify-between rounded-[1.1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.68)] px-4 py-4 transition hover:border-[var(--color-brand)]"
+                >
+                  <div>
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
+                      Collection
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[var(--color-text)]">
+                      {category.name}
+                    </p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                    {category.childrenCount} subcategories
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : null}
         </section>
 
         <section className="pt-20">
-          <div className="mb-8 flex items-end justify-between gap-4">
+          <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <p className="page-kicker">
                 Latest Products
@@ -333,7 +386,7 @@ function HomePage() {
                         {product?.name || `Curated item ${index + 1}`}
                       </p>
                       <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-brand)]">
-                        ${product?.price ?? 'N/A'} · {product?.category || 'Artisan'}
+                        {formatCurrency(product?.price)} · {product?.category || 'Artisan'}
                       </p>
                     </div>
                   </Link>
@@ -396,7 +449,7 @@ function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
               <p className="font-display text-4xl leading-none text-[var(--color-background)] sm:text-5xl">
-                GradShop
+                FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.

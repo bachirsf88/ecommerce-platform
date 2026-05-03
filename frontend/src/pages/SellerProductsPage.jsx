@@ -7,6 +7,8 @@ import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 
+const moderationStatuses = ['pending', 'approved', 'rejected', 'inactive'];
+
 function SellerProductsPage() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,7 +29,7 @@ function SellerProductsPage() {
     setError('');
 
     try {
-      const data = await productService.getSellerProducts(user.id);
+      const data = await productService.getMyProducts();
       setProducts(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load your products.');
@@ -126,8 +128,11 @@ function SellerProductsPage() {
             </label>
             <select id="status-filter" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="text-input">
               <option value="all">All statuses</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              {moderationStatuses.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -187,7 +192,7 @@ function SellerProductsPage() {
                         {product.name || 'Untitled product'}
                       </h2>
                     </div>
-                    <span className="status-pill">{product.status || 'active'}</span>
+                    <span className="status-pill">{product.status || 'pending'}</span>
                   </div>
 
                   <div className="mt-5 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2">

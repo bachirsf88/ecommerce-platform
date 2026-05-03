@@ -19,9 +19,7 @@ class SellerDashboardService
 
     public function getDashboard(User $seller): array
     {
-        $products = $this->productRepository->filter([
-            'seller_id' => $seller->id,
-        ]);
+        $products = $this->productRepository->getBySellerId((string) $seller->id);
 
         $orders = $this->orderRepository->getOrdersBySellerId($seller->id);
         $lowStockProducts = $products

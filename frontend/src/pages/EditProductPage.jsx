@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import SellerProductForm from '../components/seller/SellerProductForm';
 import { useAuth } from '../context/AuthContext';
+import { getApiErrorMessage } from '../services/api';
+import categoryService from '../services/categoryService';
 import productService from '../services/productService';
 
 function revokeBlobUrl(value) {
@@ -19,13 +21,16 @@ function EditProductPage() {
     description: '',
     price: '',
     stock: '',
+    category_id: '',
     category: '',
     image_url: '',
     image_urls: [],
     image_files: [],
     image_previews: [],
-    status: 'active',
+    status: 'pending',
   });
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -40,18 +45,19 @@ function EditProductPage() {
       setError('');
 
       try {
-        const product = await productService.getProductById(id);
+        const [product, categoryData] = await Promise.all([
+          productService.getMyProductById(id),
+          categoryService.getCategories(),
+        ]);
 
-        if (!product || String(product.seller_id) !== String(user?.id)) {
-          navigate('/seller/products', { replace: true });
-          return;
-        }
+        setCategories(categoryData);
 
         setFormData({
           name: product.name || '',
           description: product.description || '',
           price: product.price ?? '',
           stock: product.stock ?? '',
+          category_id: product.category_id ? String(product.category_id) : '',
           category: product.category || '',
           image_url: product.image_url || '',
           image_urls: Array.isArray(product.image_urls)
@@ -61,11 +67,17 @@ function EditProductPage() {
               : [],
           image_files: [],
           image_previews: [],
-          status: product.status || 'active',
+          status: product.status || 'pending',
         });
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load product.');
+        if (err.response?.status === 404) {
+          navigate('/seller/products', { replace: true });
+          return;
+        }
+
+        setError(getApiErrorMessage(err, 'Failed to load product.'));
       } finally {
+        setCategoriesLoading(false);
         setLoading(false);
       }
     };
@@ -116,7 +128,7 @@ function EditProductPage() {
       await productService.updateProduct(id, formData);
       navigate('/seller/products');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update product.');
+      setError(getApiErrorMessage(err, 'Failed to update product.'));
     } finally {
       setSaving(false);
     }
@@ -129,11 +141,14 @@ function EditProductPage() {
   return (
     <SellerProductForm
       formData={formData}
+      categories={categories}
+      categoriesLoading={categoriesLoading}
       error={error}
       saving={saving}
       submitLabel="Save Changes"
       title="Edit Product"
-      description="Update stock, copy, price, category, and replace the product image when needed."
+      description="Update stock, copy, price, category, and replace the product gallery when needed. Saving changes sends the product back for admin review."
+      moderationStatus={formData.status}
       onChange={handleChange}
       onFileChange={handleFileChange}
       onSubmit={handleSubmit}

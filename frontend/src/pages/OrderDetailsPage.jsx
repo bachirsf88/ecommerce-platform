@@ -4,16 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import orderService from '../services/orderService';
 import productService from '../services/productService';
 import reviewService from '../services/reviewService';
+import { formatCurrency } from '../utils/formatters';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 const REVIEW_ELIGIBLE_STATUSES = ['delivered'];
 
 const getReviewKey = (orderId, productId) => `${orderId}:${productId}`;
-
-const formatCurrency = (value) => {
-  const amount = Number(value ?? 0);
-  return amount.toFixed(2);
-};
 
 function RatingButton({ value, selected, onSelect }) {
   return (
@@ -357,8 +353,8 @@ function OrderDetailsPage() {
                           </h3>
                           <div className="mt-3 space-y-1 text-sm text-[var(--color-text-soft)]">
                             <p>Quantity: {item.quantity ?? 0}</p>
-                            <p>Unit Price: ${formatCurrency(item.unit_price)}</p>
-                            <p>Subtotal: ${formatCurrency(item.subtotal)}</p>
+                            <p>Unit Price: {formatCurrency(item.unit_price)}</p>
+                            <p>Subtotal: {formatCurrency(item.subtotal)}</p>
                           </div>
                         </div>
 
@@ -472,7 +468,7 @@ function OrderDetailsPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-base font-medium text-[var(--color-text-soft)]">Total</span>
                   <span className="text-2xl font-semibold text-[var(--color-text)]">
-                    ${formatCurrency(order.total)}
+                    {formatCurrency(order.total)}
                   </span>
                 </div>
               </div>

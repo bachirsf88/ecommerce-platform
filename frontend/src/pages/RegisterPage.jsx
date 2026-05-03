@@ -115,15 +115,15 @@ function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--gradient-page)] text-[var(--color-text)]">
-      <header className="px-6 pt-8 sm:px-8 lg:px-12 lg:pt-10">
-        <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6">
+      <header className="px-4 pt-6 sm:px-8 lg:px-12 lg:pt-10">
+        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 sm:gap-6">
           <Link to="/" className="inline-flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.8)] text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand)]">
               GS
             </span>
             <div>
               <p className="font-display text-3xl leading-none text-[var(--color-text)] sm:text-4xl">
-                GradShop
+                FLORA
               </p>
               <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
                 Thoughtful Marketplace
@@ -133,31 +133,31 @@ function RegisterPage() {
 
           <Link
             to="/login"
-            className="rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-5 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)]"
+            className="rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)] sm:px-5 sm:text-[0.72rem]"
           >
             Login
           </Link>
         </div>
       </header>
 
-      <main className="px-6 pb-16 pt-8 sm:px-8 lg:px-12 lg:pb-20 lg:pt-10">
-        <div className="mx-auto grid max-w-[1240px] gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+      <main className="px-4 pb-16 pt-6 sm:px-8 lg:px-12 lg:pb-20 lg:pt-10">
+        <div className="mx-auto grid max-w-[1240px] gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch lg:gap-10">
           <section className="relative overflow-hidden rounded-[2.2rem] border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-lifted)]">
             <img
               src={heroImage}
-              alt="GradShop artisan register"
+              alt="FLORA artisan register"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,2,2,0.08)_0%,rgba(2,2,2,0.68)_100%)]" />
 
             <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_70%)]" />
 
-            <div className="relative z-10 flex min-h-[480px] flex-col justify-between p-8 sm:p-10 lg:min-h-[780px] lg:p-12">
+            <div className="relative z-10 flex min-h-[360px] flex-col justify-between p-6 sm:p-10 lg:min-h-[780px] lg:p-12">
               <div className="max-w-[26rem]">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.26em] text-white/72">
                   Registration Experience
                 </p>
-                <h1 className="font-display mt-6 text-[3.2rem] leading-[0.9] text-white sm:text-[4rem] lg:text-[4.6rem]">
+                <h1 className="font-display mt-6 text-[2.7rem] leading-[0.92] text-white sm:text-[4rem] lg:text-[4.6rem]">
                   Build a place in the marketplace with more intention.
                 </h1>
                 <p className="mt-6 max-w-[23rem] text-[0.98rem] leading-8 text-white/80">
@@ -193,7 +193,7 @@ function RegisterPage() {
                 <p className={sectionEyebrowClass}>
                   Create Account
                 </p>
-                <h2 className="font-display mt-5 text-[3rem] leading-[0.92] text-[var(--color-text)] sm:text-[3.9rem]">
+                <h2 className="font-display mt-5 text-[2.6rem] leading-[0.92] text-[var(--color-text)] sm:text-[3.9rem]">
                   Register
                 </h2>
                 <p className={`mt-3 max-w-[24rem] ${sectionCopyClass}`}>
@@ -469,11 +469,11 @@ function RegisterPage() {
         </div>
       </main>
 
-      <footer className="border-t border-[var(--color-border-soft)] px-6 py-8 sm:px-8 lg:px-12">
+      <footer className="border-t border-[var(--color-border-soft)] px-4 py-8 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-4 text-sm text-[var(--color-text-faint)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-display text-xl leading-none text-[var(--color-text)]">
-              GradShop
+              FLORA
             </p>
             <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
               Crafted registration flow

@@ -98,6 +98,10 @@
     color: var(--color-text);
   }
 
+  .app-shell.has-public-navbar {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+
   .page-shell {
     min-height: calc(100vh - 88px);
     padding: 2rem 1rem 3rem;
@@ -631,6 +635,18 @@
   }
 
   @media (max-width: 1024px) {
+    .app-shell.has-public-navbar {
+      padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+    }
+
+    .page-shell {
+      padding: 1.35rem 1rem 3.5rem;
+    }
+
+    .site-footer {
+      padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    }
+
     .workspace-shell {
       grid-template-columns: 1fr;
     }
@@ -646,6 +662,16 @@
 
     .workspace-main {
       padding: 1rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .app-shell.has-public-navbar {
+      padding-bottom: 0;
+    }
+
+    .site-footer {
+      padding-bottom: initial;
     }
   }
 }

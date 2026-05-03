@@ -2,6 +2,7 @@
 
 namespace App\Services\Favorite;
 
+use App\Models\Mongo\ProductDocument;
 use App\Models\User;
 use App\Repositories\Interfaces\FavoriteRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
@@ -37,7 +38,7 @@ class FavoriteService
             return null;
         }
 
-        if (($product->status ?? null) !== 'active') {
+        if (($product->status ?? null) !== ProductDocument::STATUS_APPROVED) {
             return null;
         }
 

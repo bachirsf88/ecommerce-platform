@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FallbackImage from '../components/common/FallbackImage';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
+import categoryService from '../services/categoryService';
 import productService from '../services/productService';
+import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 
 const PAGE_SIZE = 6;
@@ -44,15 +46,40 @@ function ProductTile({ product }) {
         </div>
 
         <p className="whitespace-nowrap pt-1 text-[0.88rem] font-medium text-[var(--color-text-soft)]">
-          ${product?.price ?? 'N/A'}
+          {formatCurrency(product?.price)}
         </p>
       </div>
     </article>
   );
 }
 
+function countProductsForCategory(products, category, includeChildren = false) {
+  if (!category) {
+    return 0;
+  }
+
+  const categoryIds = [
+    String(category.id),
+    ...(includeChildren ? (category.children || []).map((child) => String(child.id)) : []),
+  ];
+
+  const categoryNames = [
+    category.name,
+    ...(includeChildren ? (category.children || []).map((child) => child.name) : []),
+  ].filter(Boolean);
+
+  return products.filter((product) => {
+    if (product?.category_id !== null && product?.category_id !== undefined) {
+      return categoryIds.includes(String(product.category_id));
+    }
+
+    return categoryNames.includes(product?.category);
+  }).length;
+}
+
 function ProductsPage() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,8 +97,12 @@ function ProductsPage() {
       setError('');
 
       try {
-        const data = await productService.getProducts();
-        setProducts(data);
+        const [productData, categoryData] = await Promise.all([
+          productService.getProducts(),
+          categoryService.getCategories(),
+        ]);
+        setProducts(productData);
+        setCategories(categoryData);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load products.');
       } finally {
@@ -82,9 +113,41 @@ function ProductsPage() {
     loadProducts();
   }, []);
 
-  const categories = useMemo(
-    () => [...new Set(products.map((product) => product?.category).filter(Boolean))],
-    [products]
+  const selectedCategoryRecord = useMemo(
+    () => categories.find((category) => category.slug === selectedCategory) || null,
+    [categories, selectedCategory]
+  );
+  const selectedCategoryWithChildren = useMemo(() => {
+    if (!selectedCategoryRecord) {
+      return null;
+    }
+
+    if (!selectedCategoryRecord.parent_id) {
+      return {
+        ...selectedCategoryRecord,
+        children: categories.filter((category) => String(category.parent_id) === String(selectedCategoryRecord.id)),
+      };
+    }
+
+    return {
+      ...selectedCategoryRecord,
+      children: [],
+    };
+  }, [categories, selectedCategoryRecord]);
+
+  const categoryTree = useMemo(() => {
+    const parents = categories.filter((category) => !category.parent_id);
+    const children = categories.filter((category) => category.parent_id);
+
+    return parents.map((parent) => ({
+      ...parent,
+      children: children.filter((child) => String(child.parent_id) === String(parent.id)),
+    }));
+  }, [categories]);
+
+  const standaloneChildCategories = useMemo(
+    () => categories.filter((category) => category.parent_id && !categories.some((parent) => String(parent.id) === String(category.parent_id))),
+    [categories]
   );
 
   const sellers = useMemo(
@@ -109,7 +172,28 @@ function ProductsPage() {
     }
 
     if (selectedCategory) {
-      result = result.filter((product) => product?.category === selectedCategory);
+      result = result.filter((product) => {
+        if (!selectedCategoryRecord) {
+          return false;
+        }
+
+        const descendantIds = [
+          String(selectedCategoryWithChildren?.id || selectedCategoryRecord.id),
+          ...((selectedCategoryWithChildren?.children || []).map((child) => String(child.id))),
+        ];
+        const descendantNames = [
+          selectedCategoryWithChildren?.name || selectedCategoryRecord.name,
+          ...((selectedCategoryWithChildren?.children || []).map((child) => child.name)),
+        ].filter(Boolean);
+
+        const matchesCategoryId =
+          product?.category_id !== null &&
+          product?.category_id !== undefined &&
+          descendantIds.includes(String(product.category_id));
+        const matchesLegacyCategory = descendantNames.includes(product?.category);
+
+        return matchesCategoryId || matchesLegacyCategory;
+      });
     }
 
     if (selectedSeller) {
@@ -155,6 +239,8 @@ function ProductsPage() {
     products,
     searchTerm,
     selectedCategory,
+    selectedCategoryRecord,
+    selectedCategoryWithChildren,
     selectedSeller,
     minPrice,
     maxPrice,
@@ -172,10 +258,11 @@ function ProductsPage() {
     currentPage * PAGE_SIZE
   );
 
-  const currentTitle = selectedCategory || 'Products & Collections';
-  const currentDescription = selectedCategory
-    ? `Explore a curated selection of ${selectedCategory.toLowerCase()} products from artisan sellers across the marketplace.`
+  const currentTitle = selectedCategoryRecord?.name || 'Products & Collections';
+  const currentDescription = selectedCategoryRecord
+    ? selectedCategoryRecord.description || `Explore a curated selection of ${selectedCategoryRecord.name.toLowerCase()} products from artisan sellers across the marketplace.`
     : 'Explore a curated selection of handmade pieces from women-led home businesses, designed for calm and refined browsing.';
+  const selectedCategoryParentName = selectedCategoryRecord?.parent?.name || '';
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -197,13 +284,13 @@ function ProductsPage() {
             <Link to="/">Home</Link>
             <span>/</span>
             <span className="text-[var(--color-brand)]">
-              {selectedCategory || 'Products'}
+              {selectedCategoryRecord?.name || 'Products'}
             </span>
           </div>
 
-          <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mt-8 flex flex-col gap-8 lg:mt-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-[42rem]">
-              <h1 className="font-display text-[3.5rem] leading-[0.94] text-[var(--color-text)] sm:text-[4.25rem]">
+              <h1 className="font-display text-[2.9rem] leading-[0.94] text-[var(--color-text)] sm:text-[4.25rem]">
                 {currentTitle}
               </h1>
               <p className="mt-6 max-w-[34rem] text-[0.98rem] leading-8 text-[var(--color-text-faint)]">
@@ -259,36 +346,112 @@ function ProductsPage() {
                 />
               </div>
 
-              <div className="space-y-4">
+              <div id="category-filter-panel" className="space-y-4 scroll-mt-28">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
                   Categories
                 </p>
-                <div className="grid gap-3">
+                <div className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
                   <button
                     type="button"
                     onClick={() => setSelectedCategory('')}
-                    className={`text-left text-[0.64rem] font-semibold uppercase tracking-[0.2em] ${
+                    className={`w-full rounded-full px-4 py-3 text-left text-[0.64rem] font-semibold uppercase tracking-[0.18em] transition ${
                       selectedCategory === ''
-                        ? 'text-[var(--color-text)]'
-                        : 'text-[var(--color-text-faint)]'
+                        ? 'bg-[var(--color-text)] text-white'
+                        : 'bg-[rgba(244,243,238,0.85)] text-[var(--color-text-faint)] hover:bg-[rgba(255,255,255,0.92)]'
                     }`}
                   >
-                    All Products
+                    <span className="flex items-center justify-between gap-3">
+                      <span>All Products</span>
+                      <span>{products.length}</span>
+                    </span>
                   </button>
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => setSelectedCategory(category)}
-                      className={`text-left text-[0.64rem] font-semibold uppercase tracking-[0.2em] ${
-                        selectedCategory === category
-                          ? 'text-[var(--color-text)]'
-                          : 'text-[var(--color-text-faint)]'
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
+
+                  <div className="mt-4 space-y-4">
+                    {categoryTree.map((category) => {
+                      const isSelected = selectedCategory === category.slug;
+                      const hasChildren = category.children?.length > 0;
+                      const productCount = countProductsForCategory(products, category, true);
+
+                      return (
+                        <div key={category.id} className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCategory(category.slug)}
+                            className={`flex w-full items-center justify-between rounded-[1rem] border px-4 py-3 text-left transition ${
+                              isSelected
+                                ? 'border-[var(--color-brand)] bg-[rgba(122,75,46,0.12)] text-[var(--color-text)]'
+                                : 'border-[var(--color-border)] bg-white/80 text-[var(--color-text-soft)] hover:border-[var(--color-brand)]'
+                            }`}
+                          >
+                            <span>
+                              <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em]">
+                                {category.parent?.name || 'Parent Category'}
+                              </span>
+                              <span className="mt-1 block text-sm font-semibold text-[var(--color-text)]">
+                                {category.name}
+                              </span>
+                            </span>
+                            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
+                              {productCount}
+                            </span>
+                          </button>
+
+                          {hasChildren ? (
+                            <div className="grid gap-2 pl-3">
+                              {category.children.map((child) => {
+                                const childSelected = selectedCategory === child.slug;
+
+                                return (
+                                  <button
+                                    key={child.id}
+                                    type="button"
+                                    onClick={() => setSelectedCategory(child.slug)}
+                                    className={`flex items-center justify-between rounded-[0.95rem] px-3 py-2 text-left text-sm transition ${
+                                      childSelected
+                                        ? 'bg-[rgba(122,75,46,0.12)] text-[var(--color-text)]'
+                                        : 'text-[var(--color-text-faint)] hover:bg-[rgba(255,255,255,0.74)] hover:text-[var(--color-text)]'
+                                    }`}
+                                  >
+                                    <span>{child.name}</span>
+                                    <span className="text-xs">
+                                      {countProductsForCategory(products, child)}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+
+                    {standaloneChildCategories.length > 0 ? (
+                      <div className="border-t border-[var(--color-border)] pt-4">
+                        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
+                          More Collections
+                        </p>
+                        <div className="mt-3 grid gap-2">
+                          {standaloneChildCategories.map((category) => (
+                            <button
+                              key={category.id}
+                              type="button"
+                              onClick={() => setSelectedCategory(category.slug)}
+                              className={`flex items-center justify-between rounded-[0.95rem] px-3 py-2 text-left text-sm transition ${
+                                selectedCategory === category.slug
+                                  ? 'bg-[rgba(122,75,46,0.12)] text-[var(--color-text)]'
+                                  : 'text-[var(--color-text-faint)] hover:bg-[rgba(255,255,255,0.74)] hover:text-[var(--color-text)]'
+                              }`}
+                            >
+                              <span>{category.name}</span>
+                              <span className="text-xs">
+                                {countProductsForCategory(products, category)}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
 
@@ -361,9 +524,17 @@ function ProductsPage() {
             <div>
               {!loading && !error && filteredProducts.length > 0 && (
                 <div className="mb-10 flex items-center justify-between gap-4">
-                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                    Showing {filteredProducts.length} products
-                  </p>
+                  <div>
+                    <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
+                      Showing {filteredProducts.length} products
+                    </p>
+                    {selectedCategoryRecord ? (
+                      <p className="mt-2 text-sm text-[var(--color-text-soft)]">
+                        {selectedCategoryParentName ? `${selectedCategoryParentName} / ` : ''}
+                        {selectedCategoryRecord.name}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               )}
 
@@ -435,7 +606,7 @@ function ProductsPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
               <p className="font-display text-4xl leading-none text-white sm:text-5xl">
-                GradShop
+                FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.

@@ -4,7 +4,7 @@ import { formatCurrency, formatDateTime } from '../utils/formatters';
 
 const initialFilters = {
   search: '',
-  status: '',
+  status: 'pending',
 };
 
 function AdminProductsPage() {
@@ -34,7 +34,9 @@ function AdminProductsPage() {
   }, [filters]);
 
   const productCounts = useMemo(() => ({
-    active: products.filter((product) => product.status === 'active').length,
+    pending: products.filter((product) => product.status === 'pending').length,
+    approved: products.filter((product) => product.status === 'approved').length,
+    rejected: products.filter((product) => product.status === 'rejected').length,
     inactive: products.filter((product) => product.status === 'inactive').length,
   }), [products]);
 
@@ -48,19 +50,21 @@ function AdminProductsPage() {
     setFilters(initialFilters);
   };
 
-  const handleStatusToggle = async (productId, nextStatus) => {
+  const handleModerationAction = async (productId, action) => {
     setActionLoadingId(String(productId));
     setError('');
 
     try {
-      const updatedProduct = await adminService.updateProductStatus(productId, nextStatus);
-      setProducts((previousProducts) =>
-        previousProducts.map((product) =>
-          String(product.id) === String(productId) ? updatedProduct : product
-        )
-      );
+      if (action === 'approve') {
+        await adminService.approveProduct(productId);
+      } else {
+        await adminService.rejectProduct(productId);
+      }
+
+      const refreshedProducts = await adminService.getProducts(filters);
+      setProducts(refreshedProducts);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update product status.');
+      setError(err.response?.data?.message || 'Failed to update product moderation status.');
     } finally {
       setActionLoadingId(null);
     }
@@ -72,16 +76,24 @@ function AdminProductsPage() {
         <span className="section-label">Products</span>
         <h1 className="section-title mt-4">Products Management</h1>
         <p className="subtle-copy mt-3 max-w-3xl text-sm">
-          Keep the admin catalog view centered on listing oversight, seller attribution, and activation decisions without touching seller workspace editing flows.
+          Review newly submitted listings, approve products that are ready for public visibility, and reject products that should stay hidden until corrected.
         </p>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="surface-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Active Products</p>
-            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.active}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Pending In View</p>
+            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.pending}</p>
           </div>
           <div className="surface-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Inactive Products</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Approved In View</p>
+            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.approved}</p>
+          </div>
+          <div className="surface-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Rejected In View</p>
+            <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.rejected}</p>
+          </div>
+          <div className="surface-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">Inactive In View</p>
             <p className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">{productCounts.inactive}</p>
           </div>
         </div>
@@ -113,8 +125,10 @@ function AdminProductsPage() {
               onChange={(event) => setDraftFilters((current) => ({ ...current, status: event.target.value }))}
               className="text-input"
             >
-              <option value="">All statuses</option>
-              <option value="active">Active</option>
+              <option value="">All moderation statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
@@ -140,7 +154,8 @@ function AdminProductsPage() {
           <div className="grid gap-3">
             {products.map((product) => {
               const isBusy = actionLoadingId === String(product.id);
-              const nextStatus = product.status === 'active' ? 'inactive' : 'active';
+              const canApprove = product.status !== 'approved';
+              const canReject = product.status !== 'rejected';
 
               return (
                 <article key={product.id} className="data-card">
@@ -166,14 +181,26 @@ function AdminProductsPage() {
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleStatusToggle(product.id, nextStatus)}
-                      disabled={isBusy}
-                      className={product.status === 'active' ? 'btn-base btn-outline' : 'btn-base btn-primary'}
-                    >
-                      {isBusy ? 'Updating...' : product.status === 'active' ? 'Mark Inactive' : 'Activate Product'}
-                    </button>
+                    {canApprove ? (
+                      <button
+                        type="button"
+                        onClick={() => handleModerationAction(product.id, 'approve')}
+                        disabled={isBusy}
+                        className="btn-base btn-primary"
+                      >
+                        {isBusy ? 'Updating...' : 'Approve Product'}
+                      </button>
+                    ) : null}
+                    {canReject ? (
+                      <button
+                        type="button"
+                        onClick={() => handleModerationAction(product.id, 'reject')}
+                        disabled={isBusy}
+                        className="btn-base btn-outline"
+                      >
+                        {isBusy ? 'Updating...' : 'Reject Product'}
+                      </button>
+                    ) : null}
                   </div>
                 </article>
               );

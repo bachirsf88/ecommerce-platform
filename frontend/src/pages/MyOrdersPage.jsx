@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import orderService from '../services/orderService';
+import { formatCurrency } from '../utils/formatters';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 function MyOrdersPage() {
@@ -101,7 +102,7 @@ function MyOrdersPage() {
                       Status: <span className="capitalize">{order.status || 'Unknown'}</span>
                     </p>
                     <p className="text-sm font-semibold text-[var(--color-primary)]">
-                      Total: ${order.total ?? '0.00'}
+                      Total: {formatCurrency(order.total)}
                     </p>
                   </div>
 

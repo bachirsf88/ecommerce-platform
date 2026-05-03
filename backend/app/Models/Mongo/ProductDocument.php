@@ -11,16 +11,29 @@ class ProductDocument extends Model
     use HasFactory;
     use HandlesPublicFiles;
 
-    public const STATUS_ACTIVE = 'active';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
     public const STATUS_INACTIVE = 'inactive';
+
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_APPROVED,
+        self::STATUS_REJECTED,
+        self::STATUS_INACTIVE,
+    ];
 
     protected $connection = 'mongodb';
     protected $table = 'products';
     protected $appends = ['id', 'image_url', 'image_urls', 'video_url'];
     protected $hidden = ['_id'];
+    protected $attributes = [
+        'status' => self::STATUS_PENDING,
+    ];
 
     protected $fillable = [
         'seller_id',
+        'category_id',
         'name',
         'description',
         'price',
@@ -33,6 +46,7 @@ class ProductDocument extends Model
     ];
 
     protected $casts = [
+        'category_id' => 'integer',
         'price' => 'decimal:2',
         'stock' => 'integer',
         'images' => 'array',

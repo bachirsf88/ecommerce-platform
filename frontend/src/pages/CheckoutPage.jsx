@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import orderService from '../services/orderService';
+import { formatCurrency } from '../utils/formatters';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 const steps = [
@@ -483,7 +484,7 @@ function CheckoutPage() {
                                     </p>
                                   </div>
                                   <div className="rounded-full border border-[var(--color-border-soft)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-text)]">
-                                    + {option.cost}
+                                    + {formatCurrency(option.cost)}
                                   </div>
                                 </div>
                               </button>
@@ -633,7 +634,7 @@ function CheckoutPage() {
                               Qty {item.quantity}
                             </p>
                           </div>
-                          <p className="text-sm text-[var(--color-text-soft)]">${item.subtotal}</p>
+                          <p className="text-sm text-[var(--color-text-soft)]">{formatCurrency(item.subtotal)}</p>
                         </div>
                       </div>
                     ))}
@@ -648,12 +649,12 @@ function CheckoutPage() {
                   <div className="rounded-[1.25rem] bg-[rgba(244,243,238,0.94)] p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--color-text-soft)]">
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="mt-3 flex items-center justify-between text-sm text-[var(--color-text-soft)]">
                       <span>Shipping</span>
                       <span>
-                        {selectedShipping ? `${estimatedShipping.toFixed(2)}` : 'Select delivery'}
+                        {selectedShipping ? formatCurrency(estimatedShipping) : 'Select delivery'}
                       </span>
                     </div>
                     <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border-soft)] pt-4">
@@ -661,7 +662,7 @@ function CheckoutPage() {
                         Estimated Total
                       </span>
                       <span className="font-display text-[2rem] leading-none text-[var(--color-text)]">
-                        ${estimatedTotal.toFixed(2)}
+                        {formatCurrency(estimatedTotal)}
                       </span>
                     </div>
                   </div>

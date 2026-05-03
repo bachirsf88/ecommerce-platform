@@ -2,19 +2,23 @@
 
 namespace App\Services\Product;
 
+use App\Models\Category;
 use App\Models\Mongo\ProductDocument;
 use App\Models\User;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Services\Concerns\HandlesPublicFiles;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 
 class ProductService
 {
     use HandlesPublicFiles;
 
     public function __construct(
-        private readonly ProductRepositoryInterface $productRepository
+        private readonly ProductRepositoryInterface $productRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository
     ) {
     }
 
@@ -23,9 +27,24 @@ class ProductService
         return $this->productRepository->getAll();
     }
 
+    public function getPublicProductById(int|string $id)
+    {
+        return $this->productRepository->findApprovedById($id);
+    }
+
     public function getProductById(int|string $id)
     {
         return $this->productRepository->findById($id);
+    }
+
+    public function getSellerProducts(User $seller): Collection
+    {
+        return $this->productRepository->getBySellerId((string) $seller->id);
+    }
+
+    public function getSellerProductById(int|string $id, User $seller)
+    {
+        return $this->productRepository->findBySellerId($id, (string) $seller->id);
     }
 
     public function searchProducts(?string $keyword): Collection
@@ -35,6 +54,14 @@ class ProductService
 
     public function filterProducts(array $filters): Collection
     {
+        $filters = $this->resolveCategoryFilters($filters);
+
+        if (($filters['category_filter_invalid'] ?? false) === true) {
+            return new Collection();
+        }
+
+        unset($filters['category_filter_invalid']);
+
         return $this->productRepository->filter($filters);
     }
 
@@ -52,19 +79,7 @@ class ProductService
         array $imageFiles = []
     )
     {
-        unset(
-            $data['image_file'],
-            $data['image_files'],
-            $data['image'],
-            $data['image_url'],
-            $data['image_urls'],
-            $data['video'],
-            $data['video_url'],
-            $data['video_file']
-        );
-
-        $data['seller_id'] = (string) $seller->id;
-        $data['status'] = $data['status'] ?? ProductDocument::STATUS_ACTIVE;
+        $data = $this->prepareSellerProductPayload($data, $seller);
         $storedImages = $this->storeProductImages($imageFiles);
 
         if ($storedImages !== []) {
@@ -89,16 +104,7 @@ class ProductService
             return null;
         }
 
-        unset(
-            $data['image_file'],
-            $data['image_files'],
-            $data['image'],
-            $data['image_url'],
-            $data['image_urls'],
-            $data['video'],
-            $data['video_url'],
-            $data['video_file']
-        );
+        $data = $this->prepareSellerProductPayload($data, $seller);
 
         $previousImages = $this->resolvePersistedProductImages($product);
         if ($imageFiles !== []) {
@@ -139,6 +145,86 @@ class ProductService
     private function ownsProduct($product, User $seller): bool
     {
         return (string) $product->seller_id === (string) $seller->id;
+    }
+
+    private function prepareSellerProductPayload(array $data, User $seller): array
+    {
+        $category = $this->resolveActiveCategoryOrFail($data['category_id'] ?? null);
+
+        unset(
+            $data['category'],
+            $data['image_file'],
+            $data['image_files'],
+            $data['image'],
+            $data['image_url'],
+            $data['image_urls'],
+            $data['video'],
+            $data['video_url'],
+            $data['video_file'],
+            $data['status']
+        );
+
+        $data['seller_id'] = (string) $seller->id;
+        $data['category_id'] = $category->id;
+        $data['category'] = $category->name;
+        $data['status'] = ProductDocument::STATUS_PENDING;
+
+        return $data;
+    }
+
+    private function resolveActiveCategoryOrFail(mixed $categoryId): Category
+    {
+        $normalizedCategoryId = is_numeric($categoryId) ? (int) $categoryId : null;
+        $category = $normalizedCategoryId !== null
+            ? $this->categoryRepository->findActiveById($normalizedCategoryId)
+            : null;
+
+        if (! $category) {
+            throw ValidationException::withMessages([
+                'category_id' => ['Selected category is invalid or inactive.'],
+            ]);
+        }
+
+        return $category;
+    }
+
+    private function resolveCategoryFilters(array $filters): array
+    {
+        if (($filters['category_slug'] ?? null) !== null) {
+            $category = $this->categoryRepository->findActiveBySlug((string) $filters['category_slug']);
+
+            if (! $category) {
+                return [
+                    ...$filters,
+                    'category_filter_invalid' => true,
+                ];
+            }
+
+            return [
+                ...$filters,
+                'category_id' => $category->id,
+                'legacy_category_name' => $category->name,
+            ];
+        }
+
+        if (($filters['category_id'] ?? null) !== null && $filters['category_id'] !== '') {
+            $category = $this->categoryRepository->findActiveById((int) $filters['category_id']);
+
+            if (! $category) {
+                return [
+                    ...$filters,
+                    'category_filter_invalid' => true,
+                ];
+            }
+
+            return [
+                ...$filters,
+                'category_id' => $category->id,
+                'legacy_category_name' => $category->name,
+            ];
+        }
+
+        return $filters;
     }
 
     /**

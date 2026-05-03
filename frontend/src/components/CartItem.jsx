@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatCurrency } from '../utils/formatters';
 
 function CartItem({ item, onUpdate, onRemove, loading }) {
   const [quantity, setQuantity] = useState(item.quantity);
@@ -34,9 +35,9 @@ function CartItem({ item, onUpdate, onRemove, loading }) {
           <p className="text-sm text-[var(--color-text-soft)]">
             Category: {item.product?.category || 'Uncategorized'}
           </p>
-          <p className="text-sm text-[var(--color-text-soft)]">Unit Price: ${item.unit_price}</p>
+          <p className="text-sm text-[var(--color-text-soft)]">Unit Price: {formatCurrency(item.unit_price)}</p>
           <p className="text-sm font-semibold text-[var(--color-text)]">
-            Subtotal: ${item.subtotal}
+            Subtotal: {formatCurrency(item.subtotal)}
           </p>
         </div>
 

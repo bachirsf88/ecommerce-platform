@@ -9,6 +9,7 @@ import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
+import { formatCurrency } from '../utils/formatters';
 import {
   resolveMediaUrl,
   resolveProductGalleryImages,
@@ -90,7 +91,7 @@ function RelatedProductTile({ product }) {
         </div>
 
         <p className="whitespace-nowrap text-[0.86rem] text-[var(--color-text-soft)]">
-          ${product?.price ?? 'N/A'}
+          {formatCurrency(product?.price)}
         </p>
       </div>
     </article>
@@ -183,11 +184,27 @@ function ProductDetailsPage() {
 
         setProduct(productData);
 
+        const currentCategoryId = productData?.category_id;
+        const currentCategorySlug = productData?.category_slug;
+        const currentCategoryName = productData?.category;
+
         const nextRelatedProducts = (productsData ?? [])
           .filter((item) => String(item?.id) !== String(id))
-          .filter((item) =>
-            productData?.category ? item?.category === productData.category : true
-          )
+          .filter((item) => {
+            if (currentCategoryId !== null && currentCategoryId !== undefined && item?.category_id !== null && item?.category_id !== undefined) {
+              return String(item.category_id) === String(currentCategoryId);
+            }
+
+            if (currentCategorySlug && item?.category_slug) {
+              return String(item.category_slug) === String(currentCategorySlug);
+            }
+
+            if (currentCategoryName) {
+              return String(item?.category || '') === String(currentCategoryName);
+            }
+
+            return false;
+          })
           .slice(0, 4);
 
         setRelatedProducts(nextRelatedProducts);
@@ -470,8 +487,8 @@ function ProductDetailsPage() {
         </section>
 
         <section className="pt-8">
-          <div className="grid gap-8 xl:grid-cols-[4.5rem_minmax(0,1.05fr)_0.92fr] xl:items-start">
-            <div className="order-2 flex gap-3 xl:order-1 xl:flex-col">
+          <div className="grid gap-6 xl:grid-cols-[4.5rem_minmax(0,1.05fr)_0.92fr] xl:items-start">
+            <div className="order-2 flex gap-3 overflow-x-auto pb-1 xl:order-1 xl:flex-col xl:overflow-visible xl:pb-0">
               {galleryImages.map((imageSrc, index) => (
                 <button
                   key={`${imageSrc}-${index}`}
@@ -517,15 +534,15 @@ function ProductDetailsPage() {
               ) : null}
             </div>
 
-            <div className="order-3 max-w-[24rem] xl:pt-6">
+            <div className="order-3 max-w-none xl:max-w-[24rem] xl:pt-6">
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                 {categoryName}
               </p>
-              <h1 className="font-display mt-4 text-[3.25rem] leading-[0.9] text-[var(--color-text)] sm:text-[4rem]">
+              <h1 className="font-display mt-4 text-[2.7rem] leading-[0.92] text-[var(--color-text)] sm:text-[4rem]">
                 {product.name || 'Unnamed product'}
               </h1>
               <p className="mt-4 text-[1.05rem] text-[var(--color-text-soft)]">
-                ${product.price ?? 'N/A'}
+                {formatCurrency(product.price)}
               </p>
 
               <div className="mt-8 space-y-6">
@@ -541,22 +558,24 @@ function ProductDetailsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-[5.3rem_repeat(3,minmax(0,1fr))] gap-2">
+                <div className="space-y-3">
                   <span className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                     Details
                   </span>
-                  <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
-                    {categoryName}
-                  </div>
-                  <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
-                    {statusLabel}
-                  </div>
-                  <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
-                    Handmade
+                  <div className="flex flex-wrap gap-2">
+                    <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
+                      {categoryName}
+                    </div>
+                    <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
+                      {statusLabel}
+                    </div>
+                    <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
+                      Handmade
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-[5.3rem_minmax(0,1fr)] items-center gap-3">
+                <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[5.3rem_minmax(0,1fr)] sm:items-center">
                   <span className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                     Quantity
                   </span>
@@ -614,7 +633,7 @@ function ProductDetailsPage() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between gap-4 border-t border-[var(--color-border-soft)] pt-5">
+                <div className="flex flex-col gap-4 border-t border-[var(--color-border-soft)] pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full bg-[var(--color-accent-soft)]">
                       <FallbackImage
@@ -709,6 +728,32 @@ function ProductDetailsPage() {
           </div>
         </section>
 
+        {relatedProducts.length > 0 ? (
+          <section className="pt-16">
+            <div className="border-t border-[var(--color-border-soft)] pt-10">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
+                    Related Products
+                  </p>
+                  <h2 className="font-display mt-4 text-[2.4rem] leading-[0.96] text-[var(--color-text)] sm:text-[3rem]">
+                    More from this category
+                  </h2>
+                </div>
+                <Link to="/products" className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]">
+                  View all products
+                </Link>
+              </div>
+
+              <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                {relatedProducts.map((item) => (
+                  <RelatedProductTile key={item.id} product={item} />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         <section className="pt-16">
           <div className="grid gap-10 border-t border-[var(--color-border-soft)] pt-10 lg:grid-cols-[0.38fr_0.62fr]">
             <div className="max-w-[18rem]">
@@ -768,7 +813,7 @@ function ProductDetailsPage() {
         </section>
 
         <section className="pt-20">
-          <div className="mb-8 flex items-end justify-between gap-4">
+          <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
                 Related Pieces
@@ -805,7 +850,7 @@ function ProductDetailsPage() {
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div>
               <p className="font-display text-4xl leading-none text-white sm:text-5xl">
-                GradShop
+                FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.

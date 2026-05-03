@@ -3,6 +3,7 @@
 namespace App\Services\Order;
 
 use App\Models\Cart;
+use App\Models\Mongo\ProductDocument;
 use App\Models\Order;
 use App\Models\User;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
@@ -40,7 +41,7 @@ class OrderService
                 return $this->failureResult('A product in your cart could not be found.', 404);
             }
 
-            if (($product->status ?? null) !== 'active') {
+            if (($product->status ?? null) !== ProductDocument::STATUS_APPROVED) {
                 return $this->failureResult(
                     sprintf('Product unavailable for checkout: %s', $product->name ?? 'Unknown product'),
                     422

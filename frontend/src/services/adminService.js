@@ -47,6 +47,16 @@ const adminService = {
     return response.data.data ?? null;
   },
 
+  async approveProduct(id) {
+    const response = await api.patch(`/admin/products/${id}/approve`);
+    return response.data.data ?? null;
+  },
+
+  async rejectProduct(id) {
+    const response = await api.patch(`/admin/products/${id}/reject`);
+    return response.data.data ?? null;
+  },
+
   async getOrders(params = {}) {
     const response = await api.get('/admin/orders', {
       params: compactParams(params),

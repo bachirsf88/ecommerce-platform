@@ -21,7 +21,7 @@ class ReviewService
 
     public function getProductReviews(int|string $productId): ?array
     {
-        $product = $this->productRepository->findById($productId);
+        $product = $this->productRepository->findApprovedById($productId);
 
         if (! $product) {
             return null;

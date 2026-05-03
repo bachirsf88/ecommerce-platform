@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SellerProductForm from '../components/seller/SellerProductForm';
+import { getApiErrorMessage } from '../services/api';
+import categoryService from '../services/categoryService';
 import productService from '../services/productService';
 
 function revokeBlobUrl(value) {
@@ -16,19 +18,38 @@ function AddProductPage() {
     description: '',
     price: '',
     stock: '',
+    category_id: '',
     category: '',
     image_url: '',
     image_urls: [],
     image_files: [],
     image_previews: [],
-    status: 'active',
   });
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => () => {
     formData.image_previews.forEach(revokeBlobUrl);
   }, [formData.image_previews]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      setCategoriesLoading(true);
+
+      try {
+        const data = await categoryService.getCategories();
+        setCategories(data);
+      } catch (err) {
+        setError(getApiErrorMessage(err, 'Failed to load categories.'));
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -71,7 +92,7 @@ function AddProductPage() {
       await productService.createProduct(formData);
       navigate('/seller/products');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add product.');
+      setError(getApiErrorMessage(err, 'Failed to add product.'));
     } finally {
       setSaving(false);
     }
@@ -80,11 +101,14 @@ function AddProductPage() {
   return (
     <SellerProductForm
       formData={formData}
+      categories={categories}
+      categoriesLoading={categoriesLoading}
       error={error}
       saving={saving}
       submitLabel="Publish Product"
       title="Add Product"
       description="Create a new listing with real product media, stock quantity, and clean catalog details."
+      moderationStatus="pending"
       onChange={handleChange}
       onFileChange={handleFileChange}
       onSubmit={handleSubmit}

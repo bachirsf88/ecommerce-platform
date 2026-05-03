@@ -2,6 +2,7 @@
 
 namespace App\Services\Cart;
 
+use App\Models\Mongo\ProductDocument;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\User;
@@ -32,7 +33,7 @@ class CartService
             return null;
         }
 
-        if (($product->status ?? null) !== 'active') {
+        if (($product->status ?? null) !== ProductDocument::STATUS_APPROVED) {
             return null;
         }
 

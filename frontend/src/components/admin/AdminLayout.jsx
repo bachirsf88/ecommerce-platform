@@ -5,6 +5,7 @@ import WorkspaceShell from '../workspace/WorkspaceShell';
 
 const adminLinks = [
   { to: '/admin', label: 'Dashboard', end: true },
+  { to: '/admin/categories', label: 'Categories' },
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/sellers', label: 'Sellers' },
   { to: '/admin/products', label: 'Products' },
@@ -18,6 +19,11 @@ const sectionDetails = {
     kicker: 'Administration',
     title: 'Dashboard',
     description: 'Track marketplace health, moderation queues, and recent operational signals from one business-focused control room.',
+  },
+  categories: {
+    kicker: 'Catalog Structure',
+    title: 'Categories Management',
+    description: 'Build the category tree, manage category media, and control which categories sellers can assign to product listings.',
   },
   users: {
     kicker: 'Administration',
@@ -56,6 +62,10 @@ function AdminLayout() {
   const { user, logout } = useAuth();
 
   const sectionKey = useMemo(() => {
+    if (location.pathname.startsWith('/admin/categories')) {
+      return 'categories';
+    }
+
     if (location.pathname.startsWith('/admin/users')) {
       return 'users';
     }

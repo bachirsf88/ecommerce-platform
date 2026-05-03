@@ -1,5 +1,10 @@
 import api from './api';
 
+const compactParams = (params = {}) =>
+  Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+  );
+
 const normalizeProductPayload = (payload) => {
   const formData = new FormData();
 
@@ -7,11 +12,7 @@ const normalizeProductPayload = (payload) => {
   formData.append('description', payload.description?.trim() || '');
   formData.append('price', Number(payload.price));
   formData.append('stock', Number(payload.stock));
-  formData.append('category', payload.category);
-
-  if (payload.status) {
-    formData.append('status', payload.status);
-  }
+  formData.append('category_id', payload.category_id ?? '');
 
   if (Array.isArray(payload.image_files)) {
     payload.image_files
@@ -28,8 +29,10 @@ const normalizeProductPayload = (payload) => {
 };
 
 const productService = {
-  async getProducts() {
-    const response = await api.get('/products');
+  async getProducts(params = {}) {
+    const response = await api.get('/products', {
+      params: compactParams(params),
+    });
     return response.data.data ?? [];
   },
 
@@ -45,6 +48,11 @@ const productService = {
     return response.data.data ?? [];
   },
 
+  async getMyProducts() {
+    const response = await api.get('/seller/products');
+    return response.data.data ?? [];
+  },
+
   async searchProducts(keyword) {
     const response = await api.get('/products/search', {
       params: { keyword },
@@ -53,9 +61,9 @@ const productService = {
     return response.data.data ?? [];
   },
 
-  async filterProducts(category) {
+  async filterProducts(params = {}) {
     const response = await api.get('/products/filter', {
-      params: { category },
+      params: compactParams(params),
     });
 
     return response.data.data ?? [];
@@ -63,6 +71,11 @@ const productService = {
 
   async getProductById(id) {
     const response = await api.get(`/products/${id}`);
+    return response.data.data ?? null;
+  },
+
+  async getMyProductById(id) {
+    const response = await api.get(`/seller/products/${id}`);
     return response.data.data ?? null;
   },
 

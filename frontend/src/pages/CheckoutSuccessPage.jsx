@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/formatters';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
 function CheckoutSuccessPage() {
@@ -67,7 +68,7 @@ function CheckoutSuccessPage() {
                   Total
                 </p>
                 <p className="font-display mt-4 text-[2.4rem] leading-none text-[var(--color-primary)]">
-                  ${Number(order.total ?? 0).toFixed(2)}
+                  {formatCurrency(order.total)}
                 </p>
               </div>
             </div>

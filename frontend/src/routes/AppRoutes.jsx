@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AddProductPage from '../pages/AddProductPage';
 import AccountPage from '../pages/AccountPage';
+import AdminCategoriesPage from '../pages/AdminCategoriesPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminOrdersPage from '../pages/AdminOrdersPage';
 import AdminProductsPage from '../pages/AdminProductsPage';
@@ -11,6 +12,7 @@ import AdminWithdrawalsPage from '../pages/AdminWithdrawalsPage';
 import CartPage from '../pages/CartPage';
 import CheckoutPage from '../pages/CheckoutPage';
 import CheckoutSuccessPage from '../pages/CheckoutSuccessPage';
+import CategoryDetailsPage from '../pages/CategoryDetailsPage';
 import EditProductPage from '../pages/EditProductPage';
 import FavoritesPage from '../pages/FavoritesPage';
 import HomePage from '../pages/HomePage';
@@ -46,6 +48,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/categories/:slug" element={<CategoryDetailsPage />} />
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/products/:id" element={<ProductDetailsPage />} />
       <Route path="/stores/:id" element={<SellerStorefrontPage />} />
@@ -66,7 +69,7 @@ function AppRoutes() {
         <Route path="/account" element={<AccountPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['seller']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['seller']} requireApprovedSeller />}>
         <Route path="/seller" element={<SellerLayout />}>
           <Route index element={<Navigate to="/seller/dashboard" replace />} />
           <Route path="dashboard" element={<SellerDashboardPage />} />
@@ -85,6 +88,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="sellers" element={<AdminSellersPage />} />
           <Route path="products" element={<AdminProductsPage />} />

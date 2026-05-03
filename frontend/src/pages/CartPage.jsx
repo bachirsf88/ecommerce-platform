@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
+import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
@@ -64,7 +65,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
             </div>
 
             <p className="whitespace-nowrap text-[1rem] text-[var(--color-text-soft)]">
-              ${item.unit_price}
+              {formatCurrency(item.unit_price)}
             </p>
           </div>
 
@@ -101,7 +102,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
             </div>
 
             <p className="text-sm text-[var(--color-text-faint)]">
-              Subtotal <span className="ml-2 text-[var(--color-primary)]">${item.subtotal}</span>
+              Subtotal <span className="ml-2 text-[var(--color-primary)]">{formatCurrency(item.subtotal)}</span>
             </p>
           </div>
         </div>
@@ -265,7 +266,7 @@ function CartPage() {
                   <div className="mt-8 space-y-4 text-sm text-[var(--color-text-faint)]">
                     <div className="flex items-center justify-between gap-4">
                       <span>Subtotal</span>
-                      <span className="text-[var(--color-primary)]">${cart.total}</span>
+                      <span className="text-[var(--color-primary)]">{formatCurrency(cart.total)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                       <span>Estimated Shipping</span>
@@ -281,7 +282,7 @@ function CartPage() {
                     <div className="flex items-end justify-between gap-4">
                       <span className="text-lg text-[var(--color-primary)]">Total</span>
                       <span className="font-display text-[2.2rem] leading-none text-[var(--color-primary)]">
-                        ${cart.total}
+                        {formatCurrency(cart.total)}
                       </span>
                     </div>
                   </div>
@@ -339,7 +340,7 @@ function CartPage() {
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div>
               <p className="font-display text-4xl leading-none text-white sm:text-5xl">
-                GradShop
+                FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
                 A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.

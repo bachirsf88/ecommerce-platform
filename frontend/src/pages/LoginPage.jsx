@@ -61,27 +61,27 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[var(--gradient-page)] text-[var(--color-text)]">
-      <header className="px-6 pt-8 sm:px-8 lg:px-12 lg:pt-10">
+      <header className="px-4 pt-6 sm:px-8 lg:px-12 lg:pt-10">
         <div className="mx-auto max-w-[1220px] text-center">
           <Link to="/" className="inline-block">
             <p className="font-display text-3xl leading-none text-[var(--color-text)] sm:text-4xl">
-              GradShop
+              FLORA
             </p>
           </Link>
         </div>
       </header>
 
-      <main className="px-6 pb-16 pt-8 sm:px-8 lg:px-12 lg:pb-20 lg:pt-10">
-        <div className="mx-auto grid max-w-[1220px] gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-stretch">
+      <main className="px-4 pb-16 pt-6 sm:px-8 lg:px-12 lg:pb-20 lg:pt-10">
+        <div className="mx-auto grid max-w-[1220px] gap-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-stretch lg:gap-10">
           <section className="relative overflow-hidden rounded-[1.9rem] border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-lifted)]">
             <img
               src={heroImage}
-              alt="GradShop artisan atmosphere"
+              alt="FLORA artisan atmosphere"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,2,2,0.08)_0%,rgba(2,2,2,0.56)_100%)]" />
 
-            <div className="relative z-10 flex min-h-[420px] flex-col justify-end p-8 sm:p-10 lg:min-h-[720px] lg:p-12">
+            <div className="relative z-10 flex min-h-[280px] flex-col justify-end p-6 sm:p-10 lg:min-h-[720px] lg:p-12">
               <div className="max-w-[22rem] rounded-[1.2rem] border border-[rgba(255,255,255,0.18)] bg-[rgba(255,250,246,0.12)] p-5 backdrop-blur-sm">
                 <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-white/72">
                   Quiet Commerce
@@ -98,7 +98,7 @@ function LoginPage() {
               <p className="page-kicker">
                 Welcome Back
               </p>
-              <h1 className="font-display mt-5 text-[3rem] leading-[0.94] text-[var(--color-text)] sm:text-[3.8rem]">
+              <h1 className="font-display mt-5 text-[2.5rem] leading-[0.94] text-[var(--color-text)] sm:text-[3.8rem]">
                 Sign in
               </h1>
               <p className="mt-4 max-w-[24rem] text-[0.98rem] leading-8 text-[var(--color-text-faint)]">
@@ -126,7 +126,7 @@ function LoginPage() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <label
                       htmlFor="password"
                       className="page-kicker text-[0.64rem]"
@@ -162,7 +162,7 @@ function LoginPage() {
 
               <div className="mt-10 border-t border-[var(--color-border-soft)] pt-6">
                 <p className="text-sm leading-7 text-[var(--color-text-faint)]">
-                  New to GradShop?{' '}
+                  New to FLORA?{' '}
                   <Link
                     to="/register"
                     className="font-semibold text-[var(--color-text)] underline decoration-[rgba(188,184,177,0.6)] underline-offset-4"
@@ -176,11 +176,11 @@ function LoginPage() {
         </div>
       </main>
 
-      <footer className="site-footer px-6 pb-10 pt-14 sm:px-8 lg:px-12">
+      <footer className="site-footer px-4 pb-10 pt-14 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-[1220px] gap-10 lg:grid-cols-[1.08fr_0.92fr]">
           <div>
             <p className="font-display text-4xl leading-none text-white sm:text-5xl">
-              GradShop
+              FLORA
             </p>
             <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
               A refined artisan marketplace for women-led home businesses, calm product discovery, and thoughtful everyday commerce.

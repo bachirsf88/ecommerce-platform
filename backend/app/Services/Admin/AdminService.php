@@ -134,20 +134,9 @@ class AdminService
 
     public function getProducts(array $filters = []): Collection
     {
-        $products = ProductDocument::query()
-            ->when($filters['status'] ?? null, function ($query, string $status) {
-                $query->where('status', $status);
-            })
-            ->when($filters['category'] ?? null, function ($query, string $category) {
-                $query->where('category', $category);
-            })
-            ->when($filters['seller_id'] ?? null, function ($query, string $sellerId) {
-                $query->where('seller_id', (string) $sellerId);
-            })
-            ->latest()
-            ->get();
-
-        $formattedProducts = $this->formatProducts($products);
+        $formattedProducts = $this->formatProducts(
+            $this->productRepository->filterAll($filters)
+        );
 
         if (! ($filters['search'] ?? null)) {
             return $formattedProducts;
@@ -190,6 +179,16 @@ class AdminService
         ]);
 
         return $this->formatProducts(collect([$updatedProduct]))->first();
+    }
+
+    public function approveProduct(int|string $id): ?array
+    {
+        return $this->updateProductStatus($id, ProductDocument::STATUS_APPROVED);
+    }
+
+    public function rejectProduct(int|string $id): ?array
+    {
+        return $this->updateProductStatus($id, ProductDocument::STATUS_REJECTED);
     }
 
     public function getOrders(array $filters = []): Collection

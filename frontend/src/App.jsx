@@ -11,7 +11,7 @@ function App() {
     !location.pathname.startsWith('/admin');
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${shouldShowNavbar ? 'has-public-navbar' : ''}`}>
       {shouldShowNavbar && <Navbar />}
       <AppRoutes />
     </div>

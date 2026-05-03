@@ -5,6 +5,7 @@ import FallbackImage from './common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
+import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
 
@@ -14,7 +15,7 @@ function ProductCard({ product, onFavoriteChange }) {
   const productId = product?.id;
   const productName = product?.name || 'Unnamed product';
   const productCategory = product?.category || 'Uncategorized';
-  const productPrice = product?.price ?? 'N/A';
+  const productPrice = formatCurrency(product?.price);
   const productStock = product?.stock ?? 'N/A';
   const productImageSrc = resolveProductPrimaryImage(product, fashionProductFallback);
   const buyerAccess = canAccessBuyerFeatures(user);
@@ -176,7 +177,7 @@ function ProductCard({ product, onFavoriteChange }) {
       <div className="mt-3 flex items-end justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-brand)]">Price</p>
-          <p className="mt-1 text-2xl font-extrabold text-[var(--color-text)]">${productPrice}</p>
+          <p className="mt-1 text-2xl font-extrabold text-[var(--color-text)]">{productPrice}</p>
         </div>
       </div>
 

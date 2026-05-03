@@ -1,19 +1,40 @@
 import fashionProductFallback from '../../assets/fashion-product-fallback.jpg';
 import productGalleryFallback from '../../assets/product-gallery-fallback.jpg';
 import FallbackImage from '../common/FallbackImage';
+import { formatCurrency } from '../../utils/formatters';
 import { resolveMediaUrl } from '../../utils/media';
+
+function buildCategoryGroups(categories = []) {
+  const topLevelCategories = categories.filter((category) => !category.parent_id);
+  const childCategories = categories.filter((category) => category.parent_id);
+
+  return topLevelCategories.map((parent) => ({
+    ...parent,
+    children: childCategories.filter((child) => String(child.parent_id) === String(parent.id)),
+  }));
+}
 
 function SellerProductForm({
   formData,
+  categories = [],
+  categoriesLoading = false,
   error = '',
   saving = false,
   submitLabel = 'Save Product',
   title,
   description,
+  moderationStatus = '',
   onChange,
   onFileChange,
   onSubmit,
 }) {
+  const selectedCategoryName = categories.find(
+    (category) => String(category.id) === String(formData.category_id || '')
+  )?.name || formData.category || '';
+  const selectedCategoryRecord = categories.find(
+    (category) => String(category.id) === String(formData.category_id || '')
+  ) || null;
+  const categoryGroups = buildCategoryGroups(categories);
   const previewImages = formData.image_previews?.length
     ? formData.image_previews
     : formData.image_urls?.length
@@ -30,6 +51,14 @@ function SellerProductForm({
           <span className="section-label">Product Editor</span>
           <h1 className="section-title mt-4">{title}</h1>
           <p className="subtle-copy mt-3 text-sm">{description}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.86)] px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+              Status: {moderationStatus || 'Pending'}
+            </span>
+            <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-text-faint)]">
+              Seller edits submit the product for admin review before it becomes public.
+            </p>
+          </div>
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-5">
@@ -63,22 +92,69 @@ function SellerProductForm({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="category" className="field-label">
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+            <div className="space-y-2">
+              <label htmlFor="category_id" className="field-label">
                 Category
               </label>
-              <input id="category" name="category" type="text" value={formData.category} onChange={onChange} required className="text-input" />
+              <select
+                id="category_id"
+                name="category_id"
+                value={formData.category_id || ''}
+                onChange={onChange}
+                required
+                disabled={categoriesLoading || categories.length === 0}
+                className="text-input"
+              >
+                <option value="">
+                  {categoriesLoading ? 'Loading categories...' : 'Select a category'}
+                </option>
+                {categoryGroups.map((category) => {
+                  if (!category.children?.length) {
+                    return (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    );
+                  }
+
+                  return (
+                    <optgroup key={category.id} label={category.name}>
+                      <option value={category.id}>{category.name}</option>
+                      {category.children.map((child) => (
+                        <option key={child.id} value={child.id}>
+                          {child.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
+              </select>
+              {categories.length === 0 && !categoriesLoading ? (
+                <p className="mt-2 text-xs uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
+                  No active categories are available yet. Ask an admin to create one before publishing products.
+                </p>
+              ) : null}
             </div>
 
-            <div>
-              <label htmlFor="status" className="field-label">
-                Status
-              </label>
-              <select id="status" name="status" value={formData.status} onChange={onChange} className="text-input">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+            <div className="rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.65)] px-4 py-3">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
+                Selected Category
+              </p>
+              <p className="mt-2 text-sm font-semibold text-[var(--color-text)]">
+                {selectedCategoryRecord?.parent?.name
+                  ? `${selectedCategoryRecord.parent.name} / ${selectedCategoryRecord.name}`
+                  : selectedCategoryName || 'Choose a category'}
+              </p>
+              {selectedCategoryRecord?.description ? (
+                <p className="mt-2 text-sm leading-6 text-[var(--color-text-soft)] line-clamp-3">
+                  {selectedCategoryRecord.description}
+                </p>
+              ) : (
+                <p className="mt-2 text-sm leading-6 text-[var(--color-text-soft)]">
+                  Use active admin-managed categories so products appear correctly in public browsing.
+                </p>
+              )}
             </div>
           </div>
 
@@ -170,7 +246,7 @@ function SellerProductForm({
           </div>
           <div className="p-5">
             <p className="page-kicker text-[0.62rem]">
-              {formData.category || 'Category'}
+              {selectedCategoryName || 'Category'}
             </p>
             <h2 className="font-display mt-3 text-[2rem] leading-none text-[var(--color-primary)]">
               {formData.name || 'New Product'}
@@ -180,7 +256,7 @@ function SellerProductForm({
             </p>
             <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-text-soft)]">
               <span>{formData.stock || 0} in stock</span>
-              <span>{formData.price ? `$${Number(formData.price).toFixed(2)}` : '$0.00'}</span>
+              <span>{formatCurrency(formData.price || 0)}</span>
             </div>
 
             {previewImages.length > 1 ? (

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
-use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,14 +20,17 @@ class UpdateProductRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
-            'category' => ['sometimes', 'required', 'string', 'max:255'],
+            'category' => ['prohibited'],
+            'category_id' => [
+                'sometimes',
+                'required',
+                'integer',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('status', Category::STATUS_ACTIVE)),
+            ],
             'image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
             'image_files' => ['nullable', 'array', 'max:5'],
             'image_files.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
-            'status' => ['sometimes', 'required', 'string', Rule::in([
-                Product::STATUS_ACTIVE,
-                Product::STATUS_INACTIVE,
-            ])],
+            'status' => ['prohibited'],
         ];
     }
 
