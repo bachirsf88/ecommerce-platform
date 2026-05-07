@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import FallbackImage from '../components/common/FallbackImage';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import categoryService from '../services/categoryService';
+import { useTranslation } from '../i18n';
 import productService from '../services/productService';
 import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
@@ -78,6 +79,7 @@ function countProductsForCategory(products, category, includeChildren = false) {
 }
 
 function ProductsPage() {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,14 +106,14 @@ function ProductsPage() {
         setProducts(productData);
         setCategories(categoryData);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load products.');
+        setError(err.response?.data?.message || t('productsPage.loading'));
       } finally {
         setLoading(false);
       }
     };
 
     loadProducts();
-  }, []);
+  }, [t]);
 
   const selectedCategoryRecord = useMemo(
     () => categories.find((category) => category.slug === selectedCategory) || null,
@@ -258,10 +260,10 @@ function ProductsPage() {
     currentPage * PAGE_SIZE
   );
 
-  const currentTitle = selectedCategoryRecord?.name || 'Products & Collections';
+  const currentTitle = selectedCategoryRecord?.name || t('productsPage.title');
   const currentDescription = selectedCategoryRecord
-    ? selectedCategoryRecord.description || `Explore a curated selection of ${selectedCategoryRecord.name.toLowerCase()} products from artisan sellers across the marketplace.`
-    : 'Explore a curated selection of handmade pieces from women-led home businesses, designed for calm and refined browsing.';
+    ? selectedCategoryRecord.description || t('productsPage.selectedCategoryDescription', { category: selectedCategoryRecord.name.toLowerCase() })
+    : t('productsPage.description');
   const selectedCategoryParentName = selectedCategoryRecord?.parent?.name || '';
 
   const clearFilters = () => {
@@ -281,10 +283,10 @@ function ProductsPage() {
       <div className="page-container max-w-[1180px]">
         <section className="pt-4">
           <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-            <Link to="/">Home</Link>
+            <Link to="/">{t('common.home')}</Link>
             <span>/</span>
             <span className="text-[var(--color-brand)]">
-              {selectedCategoryRecord?.name || 'Products'}
+              {selectedCategoryRecord?.name || t('productsPage.breadcrumbCurrent')}
             </span>
           </div>
 
@@ -303,7 +305,7 @@ function ProductsPage() {
                 htmlFor="sort-products"
                 className="page-kicker"
               >
-                Sort
+                {t('productsPage.sort')}
               </label>
               <select
                 id="sort-products"
@@ -311,11 +313,11 @@ function ProductsPage() {
                 onChange={(event) => setSortBy(event.target.value)}
                 className="line-input mt-3 w-full appearance-none text-sm"
               >
-                <option value="newest">New Arrivals</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="name">Name</option>
-                <option value="stock">Stock</option>
+                <option value="newest">{t('productsPage.newest')}</option>
+                <option value="price-asc">{t('productsPage.priceLowToHigh')}</option>
+                <option value="price-desc">{t('productsPage.priceHighToLow')}</option>
+                <option value="name">{t('productsPage.name')}</option>
+                <option value="stock">{t('productsPage.stock')}</option>
               </select>
             </div>
           </div>
@@ -326,29 +328,29 @@ function ProductsPage() {
             <aside className="space-y-10">
               <div>
                 <p className="page-kicker">
-                  Filters
+                  {t('productsPage.filters')}
                 </p>
                 <p className="mt-1 text-[0.6rem] uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                  Refine Collection
+                  {t('productsPage.refineCollection')}
                 </p>
               </div>
 
               <div className="space-y-4">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
-                  Search
+                  {t('common.search')}
                 </p>
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Search products"
+                  placeholder={t('productsPage.searchPlaceholder')}
                   className="line-input text-[0.9rem]"
                 />
               </div>
 
               <div id="category-filter-panel" className="space-y-4 scroll-mt-28">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
-                  Categories
+                  {t('common.categories')}
                 </p>
                 <div className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.62)] p-4">
                   <button
@@ -361,7 +363,7 @@ function ProductsPage() {
                     }`}
                   >
                     <span className="flex items-center justify-between gap-3">
-                      <span>All Products</span>
+                      <span>{t('productsPage.allProducts')}</span>
                       <span>{products.length}</span>
                     </span>
                   </button>
@@ -385,7 +387,7 @@ function ProductsPage() {
                           >
                             <span>
                               <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em]">
-                                {category.parent?.name || 'Parent Category'}
+                                {category.parent?.name || t('productsPage.parentCategory')}
                               </span>
                               <span className="mt-1 block text-sm font-semibold text-[var(--color-text)]">
                                 {category.name}
@@ -426,10 +428,10 @@ function ProductsPage() {
                     })}
 
                     {standaloneChildCategories.length > 0 ? (
-                      <div className="border-t border-[var(--color-border)] pt-4">
-                        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                          More Collections
-                        </p>
+                          <div className="border-t border-[var(--color-border)] pt-4">
+                            <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
+                              {t('productsPage.moreCollections')}
+                            </p>
                         <div className="mt-3 grid gap-2">
                           {standaloneChildCategories.map((category) => (
                             <button
@@ -457,21 +459,21 @@ function ProductsPage() {
 
               <div className="space-y-4">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
-                  Price Range
+                  {t('productsPage.priceRange')}
                 </p>
                 <div className="grid gap-3">
                   <input
                     type="number"
                     value={minPrice}
                     onChange={(event) => setMinPrice(event.target.value)}
-                    placeholder="Min"
+                    placeholder={t('productsPage.min')}
                     className="line-input text-[0.9rem]"
                   />
                   <input
                     type="number"
                     value={maxPrice}
                     onChange={(event) => setMaxPrice(event.target.value)}
-                    placeholder="Max"
+                    placeholder={t('productsPage.max')}
                     className="line-input text-[0.9rem]"
                   />
                 </div>
@@ -479,15 +481,15 @@ function ProductsPage() {
 
               {sellers.length > 0 && (
                 <div className="space-y-4">
-                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
-                    Seller
-                  </p>
+                    <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
+                      {t('common.seller')}
+                    </p>
                   <select
                     value={selectedSeller}
                     onChange={(event) => setSelectedSeller(event.target.value)}
                     className="line-input text-[0.9rem]"
                   >
-                    <option value="">All Sellers</option>
+                    <option value="">{t('productsPage.allSellers')}</option>
                     {sellers.map((seller) => (
                       <option key={seller} value={seller}>
                         {seller}
@@ -499,7 +501,7 @@ function ProductsPage() {
 
               <div className="space-y-4">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text)]">
-                  Availability
+                  {t('productsPage.availability')}
                 </p>
                 <label className="flex items-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
                   <input
@@ -508,7 +510,7 @@ function ProductsPage() {
                     onChange={(event) => setInStockOnly(event.target.checked)}
                     className="h-4 w-4 rounded border border-[var(--color-border-strong)] accent-[var(--color-brand)]"
                   />
-                  In Stock
+                  {t('productsPage.inStock')}
                 </label>
               </div>
 
@@ -517,7 +519,7 @@ function ProductsPage() {
                 onClick={clearFilters}
                 className="line-link text-[0.64rem] font-semibold uppercase tracking-[0.2em]"
               >
-                Clear Filters
+                {t('productsPage.clearFilters')}
               </button>
             </aside>
 
@@ -526,7 +528,7 @@ function ProductsPage() {
                 <div className="mb-10 flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                      Showing {filteredProducts.length} products
+                      {t('productsPage.showingCount', { count: filteredProducts.length })}
                     </p>
                     {selectedCategoryRecord ? (
                       <p className="mt-2 text-sm text-[var(--color-text-soft)]">
@@ -540,7 +542,7 @@ function ProductsPage() {
 
               {loading && (
                 <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">
-                  Loading products...
+                  {t('productsPage.loading')}
                 </div>
               )}
 
@@ -552,7 +554,7 @@ function ProductsPage() {
 
               {!loading && !error && filteredProducts.length === 0 && (
                 <div className="empty-state">
-                  No products found for the current selection.
+                  {t('productsPage.empty')}
                 </div>
               )}
 
@@ -609,30 +611,30 @@ function ProductsPage() {
                 FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
-                A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
+                {t('productsPage.footerDescription')}
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2">
               <div>
                 <p className="site-footer-label">
-                  Navigate
+                  {t('productsPage.navigate')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="site-footer-link text-sm">Home</Link>
-                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
-                  <Link to="/login" className="site-footer-link text-sm">Login</Link>
+                  <Link to="/" className="site-footer-link text-sm">{t('common.home')}</Link>
+                  <Link to="/products" className="site-footer-link text-sm">{t('common.products')}</Link>
+                  <Link to="/login" className="site-footer-link text-sm">{t('common.login')}</Link>
                 </div>
               </div>
 
               <div>
                 <p className="site-footer-label">
-                  Marketplace
+                  {t('productsPage.marketplace')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/register" className="site-footer-link text-sm">Register</Link>
-                  <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>
-                  <Link to="/cart" className="site-footer-link text-sm">Cart</Link>
+                  <Link to="/register" className="site-footer-link text-sm">{t('common.register')}</Link>
+                  <Link to="/favorites" className="site-footer-link text-sm">{t('common.favorites')}</Link>
+                  <Link to="/cart" className="site-footer-link text-sm">{t('common.cart')}</Link>
                 </div>
               </div>
             </div>

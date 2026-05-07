@@ -2,6 +2,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
 import cartService from '../services/cartService';
 import { formatCurrency } from '../utils/formatters';
 import { resolveProductPrimaryImage } from '../utils/media';
@@ -20,6 +21,8 @@ function CartProductImage({ item }) {
 }
 
 function CartRow({ item, loading, onUpdate, onRemove }) {
+  const { t } = useTranslation();
+
   const handleDecrease = () => {
     if (Number(item.quantity) <= 1) {
       return;
@@ -33,9 +36,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
   };
 
   const handleRemove = () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to remove this item from the cart?'
-    );
+    const confirmed = window.confirm(t('cart.removeConfirm'));
 
     if (!confirmed) {
       return;
@@ -57,10 +58,10 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-display text-[2rem] leading-[0.95] text-[var(--color-primary)]">
-                {item.product?.name || 'Unnamed product'}
+                {item.product?.name || t('cart.unnamedProduct')}
               </h2>
               <p className="mt-2 text-sm leading-7 text-[var(--color-text-faint)]">
-                {item.product?.category || 'Artisan collection'} · Handmade marketplace selection
+                {item.product?.category || t('cart.artisanCollection')} · {t('cart.handmadeSelection')}
               </p>
             </div>
 
@@ -76,7 +77,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
               disabled={loading}
               className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)] hover:text-[var(--color-primary)]"
             >
-              Remove Item
+              {t('cart.removeItem')}
             </button>
 
             <div className="grid grid-cols-[2.3rem_2.8rem_2.3rem] overflow-hidden rounded-full border border-[var(--color-border)]">
@@ -102,7 +103,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
             </div>
 
             <p className="text-sm text-[var(--color-text-faint)]">
-              Subtotal <span className="ml-2 text-[var(--color-primary)]">{formatCurrency(item.subtotal)}</span>
+              {t('cart.subtotalLabel')} <span className="ml-2 text-[var(--color-primary)]">{formatCurrency(item.subtotal)}</span>
             </p>
           </div>
         </div>
@@ -115,6 +116,7 @@ function CartRow({ item, loading, onUpdate, onRemove }) {
 
 function CartPage() {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -128,7 +130,7 @@ function CartPage() {
       const data = await cartService.getCart();
       setCart(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load cart.');
+      setError(err.response?.data?.message || t('cart.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -151,7 +153,7 @@ function CartPage() {
 
       setCart(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update cart item.');
+      setError(err.response?.data?.message || t('cart.updateFailed'));
     } finally {
       setActionLoading(false);
     }
@@ -165,7 +167,7 @@ function CartPage() {
       const data = await cartService.removeCartItem(itemId);
       setCart(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to remove cart item.');
+      setError(err.response?.data?.message || t('cart.removeFailed'));
     } finally {
       setActionLoading(false);
     }
@@ -176,7 +178,7 @@ function CartPage() {
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
           <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
-            Checking user...
+            {t('common.checkingUser')}
           </div>
         </div>
       </div>
@@ -194,21 +196,21 @@ function CartPage() {
       <div className="page-container max-w-[1180px]">
         <section className="pt-4">
           <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(188,184,177,0.88)]">
-            <Link to="/">Home</Link>
+            <Link to="/">{t('common.home')}</Link>
             <span>/</span>
-            <span className="text-[var(--color-secondary)]">Your Cart</span>
+            <span className="text-[var(--color-secondary)]">{t('cart.breadcrumbCurrent')}</span>
           </div>
 
           <div className="mt-7">
             <h1 className="font-display text-[3.4rem] leading-[0.94] text-[var(--color-primary)] sm:text-[4.4rem]">
-              Shopping Bag
+              {t('cart.title')}
             </h1>
           </div>
         </section>
 
         {loading && (
           <div className="surface-card mt-10 p-8 text-sm text-[var(--color-text-soft)]">
-            Loading cart...
+            {t('cart.loading')}
           </div>
         )}
 
@@ -220,12 +222,12 @@ function CartPage() {
 
         {!loading && !error && (!cart || itemCount === 0) && (
           <div className="soft-panel-muted mt-10 p-10">
-            <p className="text-lg text-[var(--color-text-soft)]">Your cart is empty.</p>
+            <p className="text-lg text-[var(--color-text-soft)]">{t('cart.empty')}</p>
             <Link
               to="/products"
               className="mt-6 inline-block text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)]"
             >
-              Continue Shopping
+              {t('common.continueShopping')}
             </Link>
           </div>
         )}
@@ -252,7 +254,7 @@ function CartPage() {
                     className="inline-flex items-center gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)] hover:text-[var(--color-primary)]"
                   >
                     <span className="text-base">←</span>
-                    Continue Shopping
+                    {t('common.continueShopping')}
                   </Link>
                 </div>
               </div>
@@ -260,27 +262,27 @@ function CartPage() {
               <div className="space-y-6">
                 <aside className="surface-card p-7">
                   <h2 className="font-display text-[2rem] leading-none text-[var(--color-primary)]">
-                    Order Summary
+                    {t('cart.orderSummary')}
                   </h2>
 
                   <div className="mt-8 space-y-4 text-sm text-[var(--color-text-faint)]">
                     <div className="flex items-center justify-between gap-4">
-                      <span>Subtotal</span>
+                      <span>{t('common.subtotal')}</span>
                       <span className="text-[var(--color-primary)]">{formatCurrency(cart.total)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <span>Estimated Shipping</span>
-                      <span className="text-[var(--color-text-faint)]">Calculated later</span>
+                      <span>{t('cart.estimatedShipping')}</span>
+                      <span className="text-[var(--color-text-faint)]">{t('cart.calculatedLater')}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <span>Tax</span>
-                      <span className="text-[var(--color-text-faint)]">At checkout</span>
+                      <span>{t('cart.tax')}</span>
+                      <span className="text-[var(--color-text-faint)]">{t('cart.atCheckout')}</span>
                     </div>
                   </div>
 
                   <div className="mt-8 border-t border-[var(--color-border-soft)] pt-6">
                     <div className="flex items-end justify-between gap-4">
-                      <span className="text-lg text-[var(--color-primary)]">Total</span>
+                      <span className="text-lg text-[var(--color-primary)]">{t('common.total')}</span>
                       <span className="font-display text-[2.2rem] leading-none text-[var(--color-primary)]">
                         {formatCurrency(cart.total)}
                       </span>
@@ -289,19 +291,19 @@ function CartPage() {
 
                   <div className="mt-8">
                     <p className="page-kicker text-[0.58rem]">
-                      Promotional Code
+                      {t('cart.promotionalCode')}
                     </p>
                     <div className="mt-4 grid grid-cols-[minmax(0,1fr)_5.5rem] gap-2">
                       <input
                         type="text"
-                        placeholder="Enter code"
+                        placeholder={t('cart.enterCode')}
                         className="rounded-[0.95rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 text-[0.82rem] uppercase tracking-[0.12em] text-[var(--color-primary)] outline-none placeholder:text-[var(--color-text-faint)]"
                       />
                       <button
                         type="button"
                         className="rounded-[0.95rem] border border-[var(--color-border)] bg-[rgba(244,243,238,0.96)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]"
                       >
-                        Apply
+                        {t('common.apply')}
                       </button>
                     </div>
                   </div>
@@ -310,23 +312,23 @@ function CartPage() {
                     to="/checkout"
                     className="btn-base btn-primary mt-8 w-full rounded-[0.35rem]"
                   >
-                    Proceed to Checkout
+                    {t('cart.proceedToCheckout')}
                   </Link>
 
                   <p className="mt-4 text-center text-[0.62rem] text-[var(--color-text-faint)]">
-                    Secure encrypted checkout
+                    {t('cart.secureCheckout')}
                   </p>
                 </aside>
 
                 <div className="soft-panel-muted p-6">
                   <p className="font-display text-[1.2rem] leading-7 text-[var(--color-text-soft)]">
-                    “Thoughtful pieces deserve a checkout experience that feels calm, secure, and carefully considered.”
+                    {t('cart.quote')}
                   </p>
                   <div className="mt-5 inline-flex items-center gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[var(--color-border)] text-[10px]">
                       ✓
                     </span>
-                    Trusted Handmade Marketplace
+                    {t('cart.trustedMarketplace')}
                   </div>
                 </div>
               </div>
@@ -343,40 +345,40 @@ function CartPage() {
                 FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
-                A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
+                {t('cart.footerDescription')}
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-3">
               <div>
                 <p className="site-footer-label">
-                  Discover
+                  {t('cart.discover')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="site-footer-link text-sm">Home</Link>
-                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
-                  <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>
+                  <Link to="/" className="site-footer-link text-sm">{t('common.home')}</Link>
+                  <Link to="/products" className="site-footer-link text-sm">{t('common.products')}</Link>
+                  <Link to="/favorites" className="site-footer-link text-sm">{t('common.favorites')}</Link>
                 </div>
               </div>
 
               <div>
                 <p className="site-footer-label">
-                  Client Care
+                  {t('cart.clientCare')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/cart" className="site-footer-link text-sm">Cart</Link>
-                  <Link to="/checkout" className="site-footer-link text-sm">Checkout</Link>
-                  <Link to="/orders" className="site-footer-link text-sm">Orders</Link>
+                  <Link to="/cart" className="site-footer-link text-sm">{t('common.cart')}</Link>
+                  <Link to="/checkout" className="site-footer-link text-sm">{t('common.checkout')}</Link>
+                  <Link to="/orders" className="site-footer-link text-sm">{t('common.orders')}</Link>
                 </div>
               </div>
 
               <div>
                 <p className="site-footer-label">
-                  Assurance
+                  {t('cart.assurance')}
                 </p>
                 <div className="mt-4 space-y-3">
                   <p className="site-footer-copy text-sm leading-6">
-                    Secure checkout and thoughtfully presented products from trusted marketplace sellers.
+                    {t('cart.assuranceCopy')}
                   </p>
                 </div>
               </div>

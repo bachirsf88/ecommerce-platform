@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.jpg';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
 import { canAccessBuyerFeatures, isSeller } from '../utils/roles';
 
 function HomeIcon() {
@@ -110,16 +112,20 @@ function MobileNavLink({ to, label, active, children }) {
   );
 }
 
-function IconActionLink({ to, label, children }) {
+function IconActionLink({ to, label, children, active = null }) {
   return (
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
-          isActive
-            ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
-            : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
-        }`
+        {
+          const resolvedActive = active ?? isActive;
+
+          return `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+            resolvedActive
+              ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
+              : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
+          }`;
+        }
       }
       aria-label={label}
       title={label}
@@ -132,6 +138,7 @@ function IconActionLink({ to, label, children }) {
 function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
+  const { t, isRTL } = useTranslation();
   const [accountOpen, setAccountOpen] = useState(false);
   const desktopAccountMenuRef = useRef(null);
   const mobileAccountMenuRef = useRef(null);
@@ -140,7 +147,7 @@ function Navbar() {
   const adminUser = user?.role === 'admin';
   const favoritesDestination = shoppingAccess ? '/favorites' : '/login';
   const accountDestination = isAuthenticated ? (adminUser ? '/admin' : '/account') : '/login';
-  const cartDestination = shoppingAccess ? '/cart' : '/login';
+  const cartDestination = '/cart';
 
   useEffect(() => {
     const handlePointerDown = (event) => {
@@ -203,39 +210,39 @@ function Navbar() {
 
   const desktopLinks = useMemo(() => {
     const items = [
-      { key: 'home', to: '/', label: 'Home' },
-      { key: 'products', to: '/products', label: 'Products' },
-      { key: 'categories', to: '/products#category-filter-panel', label: 'Categories' },
+      { key: 'home', to: '/', label: t('common.home') },
+      { key: 'products', to: '/products', label: t('common.products') },
+      { key: 'categories', to: '/products#category-filter-panel', label: t('common.categories') },
     ];
 
     if (sellerUser) {
-      items.push({ key: 'seller', to: '/seller/dashboard', label: 'Seller Panel' });
+      items.push({ key: 'seller', to: '/seller/dashboard', label: t('common.sellerPanel') });
     }
 
     if (adminUser) {
-      items.push({ key: 'admin', to: '/admin', label: 'Admin Panel' });
+      items.push({ key: 'admin', to: '/admin', label: t('common.adminPanel') });
     }
 
     return items;
-  }, [adminUser, sellerUser]);
+  }, [adminUser, sellerUser, t]);
 
   const mobileLinks = useMemo(() => {
     return [
-      { key: 'home', to: '/', label: 'Home', icon: <HomeIcon /> },
-      { key: 'products', to: '/products', label: 'Products', icon: <ProductsIcon /> },
-      { key: 'categories', to: '/products#category-filter-panel', label: 'Categories', icon: <CategoriesIcon /> },
-      { key: 'cart', to: cartDestination, label: 'Cart', icon: <CartIcon /> },
+      { key: 'home', to: '/', label: t('common.home'), icon: <HomeIcon /> },
+      { key: 'products', to: '/products', label: t('common.products'), icon: <ProductsIcon /> },
+      { key: 'categories', to: '/products#category-filter-panel', label: t('common.categories'), icon: <CategoriesIcon /> },
+      { key: 'cart', to: cartDestination, label: t('common.cart'), icon: <CartIcon /> },
     ];
-  }, [cartDestination]);
+  }, [cartDestination, t]);
 
   const renderAccountMenu = () => (
     <div className="rounded-[1.45rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] p-3 shadow-[0_24px_40px_rgba(138,129,124,0.16)]">
       <div className="border-b border-[var(--color-border-soft)] px-3 pb-3">
         <p className="text-sm font-semibold text-[var(--color-text)]">
-          {user?.name || 'Account'}
+          {user?.name || t('common.account')}
         </p>
         <p className="mt-1 text-xs text-[var(--color-text-faint)]">
-          {user?.email || 'No email'}
+          {user?.email || t('common.noEmail')}
         </p>
       </div>
 
@@ -247,14 +254,14 @@ function Navbar() {
               onClick={() => setAccountOpen(false)}
               className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
             >
-              Account / Profile
+              {t('common.accountProfile')}
             </Link>
             <Link
               to="/orders"
               onClick={() => setAccountOpen(false)}
               className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
             >
-              My Purchases
+              {t('common.myPurchases')}
             </Link>
           </>
         ) : null}
@@ -265,7 +272,7 @@ function Navbar() {
             onClick={() => setAccountOpen(false)}
             className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
           >
-            Seller Workspace
+            {t('common.sellerWorkspace')}
           </Link>
         ) : null}
 
@@ -275,7 +282,7 @@ function Navbar() {
             onClick={() => setAccountOpen(false)}
             className="rounded-[1rem] px-3 py-2 text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
           >
-            Admin Workspace
+            {t('common.adminWorkspace')}
           </Link>
         ) : null}
       </div>
@@ -286,7 +293,7 @@ function Navbar() {
           onClick={logout}
           className="w-full rounded-[1rem] px-3 py-2 text-left text-sm text-[var(--color-text-soft)] transition-colors hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]"
         >
-          Logout
+          {t('common.logout')}
         </button>
       </div>
     </div>
@@ -309,7 +316,7 @@ function Navbar() {
                     FLORA
                   </p>
                   <p className="mt-1 hidden text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand)] sm:block">
-                    Curated Marketplace
+                    {t('navbar.brandTagline')}
                   </p>
                 </div>
               </div>
@@ -329,20 +336,28 @@ function Navbar() {
 
               {!isAuthenticated ? (
                 <div className="flex items-center gap-2">
-                  <IconActionLink to={favoritesDestination} label="Favorites">
+                  <LanguageSwitcher />
+                  <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
                     <HeartIcon />
                   </IconActionLink>
-                  <Link to="/login" className="btn-base btn-outline">
-                    Login
-                  </Link>
+                  <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
+                    <CartIcon />
+                  </IconActionLink>
+                  <IconActionLink to={accountDestination} label={t('common.login')} active={isActive('login')}>
+                    <UserIcon />
+                  </IconActionLink>
                   <Link to="/register" className="btn-base btn-primary">
-                    Register
+                    {t('common.register')}
                   </Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <IconActionLink to={favoritesDestination} label="Favorites">
+                  <LanguageSwitcher />
+                  <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
                     <HeartIcon />
+                  </IconActionLink>
+                  <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
+                    <CartIcon />
                   </IconActionLink>
 
                   <div className="relative" ref={desktopAccountMenuRef}>
@@ -354,17 +369,17 @@ function Navbar() {
                           ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
                           : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)]'
                       }`}
-                      aria-label="Account menu"
+                      aria-label={t('navbar.accountMenu')}
                       aria-expanded={accountOpen}
                     >
                       <UserIcon />
                       <span className="max-w-[10rem] truncate text-[0.76rem] font-semibold uppercase tracking-[0.16em]">
-                        {user?.name || 'Account'}
+                        {user?.name || t('common.account')}
                       </span>
                     </button>
 
                     {accountOpen ? (
-                      <div className="absolute right-0 top-[calc(100%+0.75rem)] w-[18rem]">
+                      <div className={`absolute top-[calc(100%+0.75rem)] w-[18rem] ${isRTL ? 'left-0' : 'right-0'}`}>
                         {renderAccountMenu()}
                       </div>
                     ) : null}
@@ -374,8 +389,12 @@ function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
-              <IconActionLink to={favoritesDestination} label="Favorites">
+              <LanguageSwitcher compact />
+              <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
                 <HeartIcon />
+              </IconActionLink>
+              <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
+                <CartIcon />
               </IconActionLink>
 
               {isAuthenticated ? (
@@ -388,21 +407,21 @@ function Navbar() {
                         ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)]'
                         : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] text-[var(--color-brand)]'
                     }`}
-                    aria-label="Account menu"
+                    aria-label={t('navbar.accountMenu')}
                     aria-expanded={accountOpen}
-                    title="Account"
+                    title={t('common.account')}
                   >
                     <UserIcon />
                   </button>
 
                   {accountOpen ? (
-                    <div className="absolute right-0 top-[calc(100%+0.65rem)] w-[16.5rem]">
+                    <div className={`absolute top-[calc(100%+0.65rem)] w-[16.5rem] ${isRTL ? 'left-0' : 'right-0'}`}>
                       {renderAccountMenu()}
                     </div>
                   ) : null}
                 </div>
               ) : (
-                <IconActionLink to={accountDestination} label="Login">
+                <IconActionLink to={accountDestination} label={t('common.login')}>
                   <UserIcon />
                 </IconActionLink>
               )}

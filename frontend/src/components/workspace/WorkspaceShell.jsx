@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import LanguageSwitcher from '../LanguageSwitcher';
+import { useTranslation } from '../../i18n';
 
 function WorkspaceShell({
   workspaceLabel,
@@ -17,6 +19,8 @@ function WorkspaceShell({
   secondaryNav = null,
   children,
 }) {
+  const { t, isRTL } = useTranslation();
+
   return (
     <div className="workspace-shell">
       <aside className="workspace-sidebar">
@@ -34,7 +38,7 @@ function WorkspaceShell({
           <div className="workspace-sidebar-profile">
             <div>
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
-                Account
+                {t('workspace.accountLabel')}
               </p>
               <p className="mt-2 text-sm font-semibold text-[var(--color-text)]">
                 {accountName}
@@ -87,6 +91,9 @@ function WorkspaceShell({
 
           {footerContent ? (
             <div className="workspace-sidebar-footer">
+              <div className={`mb-4 flex ${isRTL ? 'justify-start' : 'justify-end'}`}>
+                <LanguageSwitcher compact />
+              </div>
               {footerContent}
             </div>
           ) : null}

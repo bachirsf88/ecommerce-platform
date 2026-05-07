@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n';
 import sellerDashboardService from '../services/sellerDashboardService';
 import { formatCurrency, formatShortDate } from '../utils/formatters';
 
-const metricCards = [
-  { key: 'total_products', label: 'Total Products' },
-  { key: 'total_orders', label: 'Total Orders' },
-  { key: 'low_stock_products', label: 'Low Stock Alerts' },
-  { key: 'delivered_orders', label: 'Delivered Orders' },
-  { key: 'pending_processing_orders', label: 'Pending / Processing' },
-];
-
 function SellerDashboardPage() {
+  const { t } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,14 +19,22 @@ function SellerDashboardPage() {
         const data = await sellerDashboardService.getDashboard();
         setDashboard(data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load seller dashboard.');
+        setError(err.response?.data?.message || t('sellerDashboard.loadFailed'));
       } finally {
         setLoading(false);
       }
     };
 
     loadDashboard();
-  }, []);
+  }, [t]);
+
+  const metricCards = [
+    { key: 'total_products', label: t('sellerDashboard.metrics.total_products') },
+    { key: 'total_orders', label: t('sellerDashboard.metrics.total_orders') },
+    { key: 'low_stock_products', label: t('sellerDashboard.metrics.low_stock_products') },
+    { key: 'delivered_orders', label: t('sellerDashboard.metrics.delivered_orders') },
+    { key: 'pending_processing_orders', label: t('sellerDashboard.metrics.pending_processing_orders') },
+  ];
 
   const overview = dashboard?.overview ?? {};
   const financialSummary = dashboard?.financial_summary ?? {};
@@ -42,28 +44,28 @@ function SellerDashboardPage() {
       <section className="hero-card p-6 sm:p-8">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <span className="section-label">Welcome</span>
+            <span className="section-label">{t('sellerDashboard.welcome')}</span>
             <h1 className="section-title mt-5">
-              {dashboard?.store_name || 'Your seller studio'}
+              {dashboard?.store_name || t('sellerDashboard.titleFallback')}
             </h1>
             <p className="subtle-copy mt-4 max-w-2xl text-sm">
-              A calmer dashboard with a clearer reading order: overview first, metrics second, then recent activity and the few actions you actually need.
+              {t('sellerDashboard.description')}
             </p>
           </div>
 
           <div className="surface-card p-5">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
-              Quick Actions
+              {t('common.quickActions')}
             </p>
             <div className="mt-5 grid gap-3">
               <Link to="/seller/products/add" className="btn-base btn-primary w-full">
-                Add Product
+                {t('common.addProduct')}
               </Link>
               <Link to="/seller/orders" className="btn-base btn-outline w-full">
-                Review Orders
+                {t('common.viewOrders')}
               </Link>
               <Link to="/seller/store" className="btn-base btn-outline w-full">
-                Update Store Identity
+                {t('sellerDashboard.updateStoreIdentity')}
               </Link>
             </div>
           </div>
@@ -71,7 +73,7 @@ function SellerDashboardPage() {
       </section>
 
       {error ? <div className="status-message status-error">{error}</div> : null}
-      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">Loading dashboard...</div> : null}
+      {loading ? <div className="surface-card p-6 text-sm text-[var(--color-text-soft)]">{t('sellerDashboard.loading')}</div> : null}
 
       {!loading && !error ? (
         <>
@@ -91,15 +93,15 @@ function SellerDashboardPage() {
           <section className="surface-card p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <span className="section-label">Overview</span>
+                <span className="section-label">{t('common.overview')}</span>
                 <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
-                  Financial summary
+                  {t('sellerDashboard.financialSummary')}
                 </h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="metric-tile min-w-[13rem]">
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                    Delivered Revenue
+                    {t('sellerDashboard.deliveredRevenue')}
                   </p>
                   <p className="mt-3 font-display text-4xl leading-none text-[var(--color-text)]">
                     {formatCurrency(financialSummary.delivered_revenue)}
@@ -107,7 +109,7 @@ function SellerDashboardPage() {
                 </div>
                 <div className="metric-tile min-w-[13rem]">
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                    Pending Revenue
+                    {t('sellerDashboard.pendingRevenue')}
                   </p>
                   <p className="mt-3 font-display text-4xl leading-none text-[var(--color-text)]">
                     {formatCurrency(financialSummary.pending_revenue)}
@@ -121,36 +123,36 @@ function SellerDashboardPage() {
             <div className="surface-card p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <span className="section-label">Recent Orders</span>
+                  <span className="section-label">{t('sellerDashboard.recentOrders')}</span>
                   <h2 className="font-display mt-4 text-[2.2rem] leading-none text-[var(--color-text)]">
-                    Latest activity
+                    {t('sellerDashboard.latestActivity')}
                   </h2>
                 </div>
                 <Link to="/seller/orders" className="btn-base btn-outline">
-                  View Orders
+                  {t('common.viewOrders')}
                 </Link>
               </div>
 
               <div className="mt-6 space-y-3">
                 {(dashboard?.recent_orders ?? []).length === 0 ? (
-                  <div className="empty-state">Recent orders will appear here once buyers start ordering your products.</div>
+                  <div className="empty-state">{t('sellerDashboard.recentOrdersEmpty')}</div>
                 ) : (
                   (dashboard?.recent_orders ?? []).map((order) => (
                     <article key={order.id} className="rounded-[1.35rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-[var(--color-text)]">
-                            Order #{order.id}
+                            {t('sellerDashboard.orderNumber', { id: order.id })}
                           </p>
                           <p className="mt-1 text-sm text-[var(--color-text-faint)]">
-                            {order.buyer_name || 'Unknown buyer'}
+                            {order.buyer_name || t('common.unknownBuyer')}
                           </p>
                         </div>
-                        <span className="status-pill">{order.status}</span>
+                        <span className="status-pill">{t(`common.status.${order.status}`)}</span>
                       </div>
                       <div className="mt-4 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-3">
-                        <p>Total: {formatCurrency(order.seller_total)}</p>
-                        <p>Items: {order.item_count ?? 0}</p>
+                        <p>{t('sellerDashboard.totalLabel', { value: formatCurrency(order.seller_total) })}</p>
+                        <p>{t('sellerDashboard.itemsLabel', { count: order.item_count ?? 0 })}</p>
                         <p>{formatShortDate(order.created_at)}</p>
                       </div>
                     </article>
@@ -163,26 +165,26 @@ function SellerDashboardPage() {
               <section className="surface-card p-6">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <span className="section-label">Inventory Alerts</span>
+                    <span className="section-label">{t('sellerDashboard.inventoryAlerts')}</span>
                     <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
-                      Low stock
+                      {t('sellerDashboard.lowStock')}
                     </h2>
                   </div>
                   <Link to="/seller/products" className="btn-base btn-outline">
-                    Manage
+                    {t('common.manage')}
                   </Link>
                 </div>
 
                 <div className="mt-6 space-y-3">
                   {(dashboard?.low_stock_alerts ?? []).length === 0 ? (
-                    <div className="empty-state">No low-stock products need attention right now.</div>
+                    <div className="empty-state">{t('sellerDashboard.lowStockEmpty')}</div>
                   ) : (
                     (dashboard?.low_stock_alerts ?? []).map((product) => (
                       <article key={product.id} className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-4">
                         <p className="text-sm font-semibold text-[var(--color-text)]">{product.name}</p>
                         <div className="mt-2 flex items-center justify-between gap-3 text-sm text-[var(--color-text-soft)]">
-                          <span>{product.stock} left</span>
-                          <span>{product.status}</span>
+                          <span>{t('sellerDashboard.leftCount', { count: product.stock })}</span>
+                          <span>{t(`common.status.${product.status}`)}</span>
                         </div>
                       </article>
                     ))
@@ -191,9 +193,9 @@ function SellerDashboardPage() {
               </section>
 
               <section className="surface-card p-6">
-                <span className="section-label">Insights</span>
+                <span className="section-label">{t('sellerDashboard.insights')}</span>
                 <h2 className="font-display mt-4 text-[2rem] leading-none text-[var(--color-text)]">
-                  Small updates
+                  {t('sellerDashboard.smallUpdates')}
                 </h2>
                 <div className="mt-5 space-y-3">
                   {(dashboard?.insights ?? []).map((insight) => (

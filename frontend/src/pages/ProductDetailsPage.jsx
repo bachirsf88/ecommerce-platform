@@ -5,11 +5,12 @@ import fashionProductFallback from '../assets/fashion-product-fallback.jpg';
 import productGalleryFallback from '../assets/product-gallery-fallback.jpg';
 import FallbackImage from '../components/common/FallbackImage';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
 import cartService from '../services/cartService';
 import favoriteService from '../services/favoriteService';
 import productService from '../services/productService';
 import storeService from '../services/storeService';
-import { formatCurrency } from '../utils/formatters';
+import { formatCurrency, formatShortDate } from '../utils/formatters';
 import {
   resolveMediaUrl,
   resolveProductGalleryImages,
@@ -17,24 +18,6 @@ import {
   resolveProductVideoUrl,
 } from '../utils/media';
 import { canAccessBuyerFeatures } from '../utils/roles';
-
-const formatReviewDate = (value) => {
-  if (!value) {
-    return 'Recently';
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return 'Recently';
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
-};
 
 function RatingMarks({ rating, muted = false }) {
   const safeRating = Math.max(0, Math.min(5, Number(rating) || 0));
@@ -99,16 +82,19 @@ function RelatedProductTile({ product }) {
 }
 
 function VerifiedBadge() {
+  const { t } = useTranslation();
+
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
       <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-      Verified
+      {t('productDetails.verified')}
     </span>
   );
 }
 
 function ReviewItem({ review }) {
-  const buyerName = review?.buyer?.name || 'Verified Buyer';
+  const { t } = useTranslation();
+  const buyerName = review?.buyer?.name || t('productDetails.verifiedBuyer');
   const comment = review?.comment?.trim();
 
   return (
@@ -117,7 +103,7 @@ function ReviewItem({ review }) {
         <div>
           <p className="text-sm font-semibold text-[var(--color-primary)]">{buyerName}</p>
           <p className="page-kicker mt-1 text-[0.62rem]">
-            {formatReviewDate(review?.created_at)}
+            {formatShortDate(review?.created_at)}
           </p>
         </div>
 
@@ -135,7 +121,7 @@ function ReviewItem({ review }) {
         </p>
       ) : (
         <p className="mt-4 text-sm italic text-[var(--color-text-faint)]">
-          Shared a rating without written feedback.
+          {t('productDetails.noWrittenFeedback')}
         </p>
       )}
     </article>
@@ -146,6 +132,7 @@ function ProductDetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -232,7 +219,7 @@ function ProductDetailsPage() {
           return;
         }
 
-        setError(err.response?.data?.message || 'Failed to load product.');
+        setError(err.response?.data?.message || t('productDetails.notFound'));
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -310,7 +297,7 @@ function ProductDetailsPage() {
             reviews: [],
           });
         } else {
-          setReviewsError(err.response?.data?.message || 'Unable to load reviews right now.');
+          setReviewsError(err.response?.data?.message || t('productDetails.reviewsLoadFailed'));
         }
       } finally {
         if (isMounted) {
@@ -328,7 +315,7 @@ function ProductDetailsPage() {
 
   const handleAddToCart = async () => {
     if (!product?.id) {
-      setCartError('Product is unavailable.');
+      setCartError(t('productDetails.unavailable'));
       setCartMessage('');
       return;
     }
@@ -343,7 +330,7 @@ function ProductDetailsPage() {
     }
 
     if (!canAccessBuyerFeatures(user)) {
-      setCartError('This account cannot use personal shopping actions.');
+      setCartError(t('productDetails.shoppingRestricted'));
       setCartMessage('');
       return;
     }
@@ -358,9 +345,9 @@ function ProductDetailsPage() {
         quantity,
       });
 
-      setCartMessage('Product added to cart successfully.');
+      setCartMessage(t('productDetails.addedToCart'));
     } catch (err) {
-      setCartError(err.response?.data?.message || 'Failed to add product to cart.');
+      setCartError(err.response?.data?.message || t('productDetails.addToCartFailed'));
     } finally {
       setCartLoading(false);
     }
@@ -368,7 +355,7 @@ function ProductDetailsPage() {
 
   const handleFavoriteToggle = async () => {
     if (!product?.id) {
-      setFavoriteError('Product is unavailable.');
+      setFavoriteError(t('productDetails.unavailable'));
       setFavoriteMessage('');
       return;
     }
@@ -383,7 +370,7 @@ function ProductDetailsPage() {
     }
 
     if (!canAccessBuyerFeatures(user)) {
-      setFavoriteError('This account cannot use personal shopping actions.');
+      setFavoriteError(t('productDetails.shoppingRestricted'));
       setFavoriteMessage('');
       return;
     }
@@ -396,26 +383,26 @@ function ProductDetailsPage() {
       if (isFavorite) {
         await favoriteService.removeFavorite(product.id);
         setIsFavorite(false);
-        setFavoriteMessage('Product removed from favorites.');
+        setFavoriteMessage(t('productDetails.removedFavorite'));
       } else {
         await favoriteService.addFavorite(product.id);
         setIsFavorite(true);
-        setFavoriteMessage('Product added to favorites.');
+        setFavoriteMessage(t('productDetails.addedFavorite'));
       }
     } catch (err) {
       setFavoriteError(
-        err.response?.data?.message || 'Failed to update favorites.'
+        err.response?.data?.message || t('productDetails.favoriteUpdateFailed')
       );
     } finally {
       setFavoriteLoading(false);
     }
   };
 
-  const sellerName = product?.seller?.name || product?.seller_name || 'Marketplace Seller';
+  const sellerName = product?.seller?.name || product?.seller_name || t('common.marketSeller');
   const isVerifiedSeller = sellerStore?.seller?.status === 'approved';
-  const categoryName = product?.category || 'Artisan';
+  const categoryName = product?.category || t('common.artisan');
   const stockCount = Number(product?.stock ?? 0);
-  const statusLabel = stockCount > 0 ? 'In Stock' : 'Out of Stock';
+  const statusLabel = stockCount > 0 ? t('common.status.inStock') : t('common.status.outOfStock');
   const averageRating = Number(reviewsData?.average_rating ?? 0);
   const reviewCount = Number(reviewsData?.review_count ?? 0);
   const reviews = reviewsData?.reviews ?? [];
@@ -436,7 +423,7 @@ function ProductDetailsPage() {
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
           <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
-            Loading product details...
+            {t('productDetails.loading')}
           </div>
         </div>
       </div>
@@ -450,7 +437,7 @@ function ProductDetailsPage() {
           <div className="surface-card p-8">
             <p className="status-message status-error mb-4">{error}</p>
             <Link to="/products" className="topbar-link">
-              Back to Products
+              {t('productDetails.backToProducts')}
             </Link>
           </div>
         </div>
@@ -463,9 +450,9 @@ function ProductDetailsPage() {
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
           <div className="surface-card p-8">
-            <p className="mb-4 text-sm text-[var(--color-text-soft)]">Product not found.</p>
+            <p className="mb-4 text-sm text-[var(--color-text-soft)]">{t('productDetails.notFound')}</p>
             <Link to="/products" className="topbar-link">
-              Back to Products
+              {t('productDetails.backToProducts')}
             </Link>
           </div>
         </div>
@@ -478,9 +465,9 @@ function ProductDetailsPage() {
       <div className="page-container max-w-[1180px]">
         <section className="pt-4">
           <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[rgba(188,184,177,0.88)]">
-            <Link to="/">Home</Link>
+            <Link to="/">{t('common.home')}</Link>
             <span>/</span>
-            <Link to="/products">Products</Link>
+            <Link to="/products">{t('common.products')}</Link>
             <span>/</span>
             <span className="text-[var(--color-secondary)]">{categoryName}</span>
           </div>
@@ -523,7 +510,7 @@ function ProductDetailsPage() {
               {productVideoUrl ? (
                 <div className="mt-5 overflow-hidden rounded-[1rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] p-3 shadow-[0_18px_34px_rgba(138,129,124,0.1)]">
                   <p className="px-1 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
-                    Product Video
+                    {t('productDetails.productVideo')}
                   </p>
                   <video
                     src={productVideoUrl}
@@ -548,19 +535,19 @@ function ProductDetailsPage() {
               <div className="mt-8 space-y-6">
                 <div>
                   <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                    Stock Status
+                    {t('productDetails.stockStatus')}
                   </p>
                   <div className="mt-3 flex items-center gap-3">
                     <span className="h-3 w-3 rounded-full bg-[var(--color-secondary)]" />
                     <p className="text-sm text-[var(--color-text-soft)]">
-                      {statusLabel} {stockCount > 0 ? `· ${stockCount} available` : ''}
+                      {statusLabel} {stockCount > 0 ? `· ${t('productDetails.availableCount', { count: stockCount })}` : ''}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <span className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                    Details
+                    {t('productDetails.details')}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
@@ -570,14 +557,14 @@ function ProductDetailsPage() {
                       {statusLabel}
                     </div>
                     <div className="rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2 text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
-                      Handmade
+                      {t('productDetails.handmade')}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[5.3rem_minmax(0,1fr)] sm:items-center">
                   <span className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                    Quantity
+                    {t('productDetails.quantity')}
                   </span>
                   <div className="grid grid-cols-[2.6rem_minmax(0,1fr)_2.6rem] overflow-hidden rounded-[0.2rem] border border-[var(--color-border)]">
                     <button
@@ -607,7 +594,7 @@ function ProductDetailsPage() {
                     disabled={cartLoading || stockCount <= 0}
                     className="btn-base btn-primary w-full rounded-[0.3rem]"
                   >
-                    {cartLoading ? 'Adding...' : 'Add to Cart'}
+                    {cartLoading ? t('productDetails.adding') : t('productDetails.addToCart')}
                   </button>
 
                   <button
@@ -617,10 +604,10 @@ function ProductDetailsPage() {
                     className="btn-base btn-outline w-full rounded-[0.3rem] border-[var(--color-border-strong)] bg-transparent"
                   >
                     {favoriteLoading
-                      ? 'Saving...'
+                      ? t('productDetails.saving')
                       : isFavorite
-                        ? 'Remove Favorite'
-                        : 'Add to Favorites'}
+                        ? t('productDetails.removeFavorite')
+                        : t('productDetails.addToFavorites')}
                   </button>
                 </div>
 
@@ -649,7 +636,7 @@ function ProductDetailsPage() {
                         {isVerifiedSeller && <VerifiedBadge />}
                       </div>
                       <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                        Seller Studio
+                        {t('productDetails.sellerStudio')}
                       </p>
                     </div>
                   </div>
@@ -659,20 +646,20 @@ function ProductDetailsPage() {
                       to={`/stores/${sellerStore.id}`}
                       className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]"
                     >
-                      Visit Store
+                      {t('common.visitStore')}
                     </Link>
                   ) : (
                     <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                      Storefront Soon
+                      {t('common.storefrontSoon')}
                     </span>
                   )}
                 </div>
 
                 {isAuthenticated && canAccessBuyerFeatures(user) && (
                   <div className="flex flex-wrap gap-4 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]">
-                    <Link to="/cart">View Cart</Link>
-                    <Link to="/favorites">Favorites</Link>
-                    <Link to="/orders">Orders</Link>
+                    <Link to="/cart">{t('productDetails.viewCart')}</Link>
+                    <Link to="/favorites">{t('common.favorites')}</Link>
+                    <Link to="/orders">{t('common.orders')}</Link>
                   </div>
                 )}
               </div>
@@ -684,44 +671,44 @@ function ProductDetailsPage() {
           <div className="grid gap-10 border-t border-[var(--color-border-soft)] pt-10 lg:grid-cols-3">
             <div className="max-w-[18rem]">
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                The Narrative
+                {t('productDetails.narrative')}
               </p>
               <p className="font-display mt-5 text-[2rem] leading-[1.05] text-[var(--color-text)]">
-                “Each piece carries the quiet presence of careful making and a calm domestic rhythm.”
+                {t('productDetails.narrativeQuote')}
               </p>
             </div>
 
             <div>
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                Description
+                {t('productDetails.description')}
               </p>
               <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-text-soft)]">
                 <p>
-                  {product.description || 'This piece is presented as part of a curated artisan marketplace collection, balancing practical use with a softer editorial tone.'}
+                  {product.description || t('productDetails.descriptionFallback')}
                 </p>
                 <p>
-                  Designed for refined discovery, the page keeps the product at the center while preserving the quiet, image-led feeling of a premium handmade collection.
+                  {t('productDetails.descriptionSupport')}
                 </p>
               </div>
             </div>
 
             <div>
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                Material & Care
+                {t('productDetails.materialCare')}
               </p>
               <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--color-text-soft)]">
                 <p>
-                  <span className="font-medium text-[var(--color-text)]">Category:</span> {categoryName}
+                  <span className="font-medium text-[var(--color-text)]">{t('productDetails.categoryLabel')}</span> {categoryName}
                 </p>
                 <p>
-                  <span className="font-medium text-[var(--color-text)]">Availability:</span> {statusLabel}
-                  {stockCount > 0 ? ` (${stockCount} in stock)` : ''}
+                  <span className="font-medium text-[var(--color-text)]">{t('productDetails.availabilityLabel')}</span> {statusLabel}
+                  {stockCount > 0 ? ` (${t('productDetails.availableCount', { count: stockCount })})` : ''}
                 </p>
                 <p>
-                  <span className="font-medium text-[var(--color-text)]">Seller:</span> {sellerName}
+                  <span className="font-medium text-[var(--color-text)]">{t('productDetails.sellerLabel')}</span> {sellerName}
                 </p>
                 <p>
-                  <span className="font-medium text-[var(--color-text)]">Marketplace note:</span> Handmade products may feature subtle variations that make each piece feel individual.
+                  <span className="font-medium text-[var(--color-text)]">{t('productDetails.marketplaceNote')}</span> {t('productDetails.marketplaceNoteCopy')}
                 </p>
               </div>
             </div>
@@ -734,14 +721,14 @@ function ProductDetailsPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                    Related Products
+                    {t('productDetails.relatedProducts')}
                   </p>
                   <h2 className="font-display mt-4 text-[2.4rem] leading-[0.96] text-[var(--color-text)] sm:text-[3rem]">
-                    More from this category
+                    {t('productDetails.moreFromCategory')}
                   </h2>
                 </div>
                 <Link to="/products" className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]">
-                  View all products
+                  {t('common.viewAllProducts')}
                 </Link>
               </div>
 
@@ -758,10 +745,10 @@ function ProductDetailsPage() {
           <div className="grid gap-10 border-t border-[var(--color-border-soft)] pt-10 lg:grid-cols-[0.38fr_0.62fr]">
             <div className="max-w-[18rem]">
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                Reviews
+                {t('productDetails.reviews')}
               </p>
               <h2 className="font-display mt-5 text-[2.1rem] leading-[1.02] text-[var(--color-text)]">
-                Collected impressions from recent buyers.
+                {t('productDetails.reviewsTitle')}
               </h2>
 
               <div className="mt-6 flex items-end gap-4">
@@ -770,14 +757,14 @@ function ProductDetailsPage() {
                     {reviewsLoading ? '...' : reviewCount > 0 ? averageRating.toFixed(1) : '0.0'}
                   </p>
                   <p className="mt-2 text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                    Average Rating
+                    {t('productDetails.averageRating')}
                   </p>
                 </div>
 
                 <div className="pb-1">
                   <RatingMarks rating={Math.round(averageRating)} />
                   <p className="mt-3 text-sm text-[var(--color-text-soft)]">
-                    {reviewsLoading ? 'Loading reviews...' : `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`}
+                    {reviewsLoading ? t('productDetails.loadingReviews') : t('productDetails.ratingCount', { count: reviewCount, label: reviewCount === 1 ? t('common.review') : t('common.reviews') })}
                   </p>
                 </div>
               </div>
@@ -786,7 +773,7 @@ function ProductDetailsPage() {
             <div>
               {reviewsLoading ? (
                 <div className="soft-panel px-6 py-7 text-sm text-[var(--color-text-faint)]">
-                  Loading buyer impressions...
+                  {t('productDetails.loadingImpressions')}
                 </div>
               ) : reviewsError ? (
                 <div className="soft-panel px-6 py-7 text-sm text-[var(--color-text-faint)]">
@@ -795,10 +782,10 @@ function ProductDetailsPage() {
               ) : reviews.length === 0 ? (
                 <div className="soft-panel px-6 py-7">
                   <p className="font-display text-[1.85rem] leading-none text-[var(--color-text)]">
-                    No reviews yet.
+                    {t('productDetails.noReviewsTitle')}
                   </p>
                   <p className="mt-4 max-w-[32rem] text-sm leading-7 text-[var(--color-text-faint)]">
-                    Be the first to share feedback after purchase.
+                    {t('productDetails.noReviewsDescription')}
                   </p>
                 </div>
               ) : (
@@ -816,10 +803,10 @@ function ProductDetailsPage() {
           <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <p className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-text-faint)]">
-                Related Pieces
+                {t('productDetails.relatedPieces')}
               </p>
               <h2 className="font-display mt-3 text-[2.2rem] leading-none text-[var(--color-text)]">
-                From the Collection
+                {t('productDetails.fromCollection')}
               </h2>
             </div>
 
@@ -827,13 +814,13 @@ function ProductDetailsPage() {
               to="/products"
               className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)]"
             >
-              View All Products
+              {t('common.viewAllProducts')}
             </Link>
           </div>
 
           {relatedProducts.length === 0 ? (
             <div className="soft-panel p-6 text-sm text-[var(--color-text-soft)]">
-              More products from the marketplace will appear here soon.
+              {t('productDetails.relatedFallback')}
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -853,43 +840,43 @@ function ProductDetailsPage() {
                 FLORA
               </p>
               <p className="site-footer-copy mt-5 max-w-xl text-sm leading-7">
-                A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.
+                {t('productDetails.footerDescription')}
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-3">
               <div>
                 <p className="site-footer-label">
-                  Discover
+                  {t('productDetails.discover')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/" className="site-footer-link text-sm">Home</Link>
-                  <Link to="/products" className="site-footer-link text-sm">Products</Link>
-                  <Link to="/register" className="site-footer-link text-sm">Register</Link>
+                  <Link to="/" className="site-footer-link text-sm">{t('common.home')}</Link>
+                  <Link to="/products" className="site-footer-link text-sm">{t('common.products')}</Link>
+                  <Link to="/register" className="site-footer-link text-sm">{t('common.register')}</Link>
                 </div>
               </div>
 
               <div>
                 <p className="site-footer-label">
-                  Client Care
+                  {t('productDetails.clientCare')}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Link to="/login" className="site-footer-link text-sm">Login</Link>
-                  <Link to="/cart" className="site-footer-link text-sm">Cart</Link>
-                  <Link to="/favorites" className="site-footer-link text-sm">Favorites</Link>
+                  <Link to="/login" className="site-footer-link text-sm">{t('common.login')}</Link>
+                  <Link to="/cart" className="site-footer-link text-sm">{t('common.cart')}</Link>
+                  <Link to="/favorites" className="site-footer-link text-sm">{t('common.favorites')}</Link>
                 </div>
               </div>
 
               <div>
                 <p className="site-footer-label">
-                  Newsletter
+                  {t('productDetails.newsletter')}
                 </p>
                 <div className="mt-4 space-y-3">
                   <p className="site-footer-copy text-sm leading-6">
-                    Join for artisan updates and thoughtful new arrivals.
+                    {t('productDetails.newsletterCopy')}
                   </p>
                   <div className="border-b border-[rgba(244,243,238,0.18)] pb-3 text-[0.68rem] uppercase tracking-[0.18em] text-[rgba(244,243,238,0.56)]">
-                    Email Address
+                    {t('common.standaloneNewsletterEmail')}
                   </div>
                 </div>
               </div>

@@ -1,44 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
 import cartService from '../services/cartService';
 import orderService from '../services/orderService';
 import { formatCurrency } from '../utils/formatters';
 import { canAccessBuyerFeatures } from '../utils/roles';
-
-const steps = [
-  { id: 1, title: 'Shipping', caption: 'Address details' },
-  { id: 2, title: 'Delivery', caption: 'Method and timing' },
-  { id: 3, title: 'Payment', caption: 'Finish checkout' },
-];
-
-const shippingOptions = [
-  {
-    value: 'home_delivery',
-    label: 'Home Delivery',
-    description: 'Delivered to your address with a calm, direct doorstep handoff.',
-    cost: 300,
-  },
-  {
-    value: 'office_pickup',
-    label: 'Office Pickup',
-    description: 'Collect your order from the pickup office at a lighter delivery cost.',
-    cost: 150,
-  },
-];
-
-const paymentOptions = [
-  {
-    value: 'cash_on_delivery',
-    label: 'Cash on Delivery',
-    description: 'Pay when your order arrives. Simple, familiar, and flexible.',
-  },
-  {
-    value: 'card',
-    label: 'Card',
-    description: 'Use a card for a faster confirmation flow. Card details stay frontend-only for now.',
-  },
-];
 
 const initialFormData = {
   full_name: '',
@@ -60,6 +27,7 @@ const initialFormData = {
 function CheckoutPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [cart, setCart] = useState(null);
   const [cartLoading, setCartLoading] = useState(true);
@@ -67,6 +35,38 @@ function CheckoutPage() {
   const [error, setError] = useState('');
   const [stepError, setStepError] = useState('');
   const [formData, setFormData] = useState(initialFormData);
+
+  const steps = [
+    { id: 1, title: t('checkout.steps.shipping.title'), caption: t('checkout.steps.shipping.caption') },
+    { id: 2, title: t('checkout.steps.delivery.title'), caption: t('checkout.steps.delivery.caption') },
+    { id: 3, title: t('checkout.steps.payment.title'), caption: t('checkout.steps.payment.caption') },
+  ];
+  const shippingOptions = [
+    {
+      value: 'home_delivery',
+      label: t('checkout.shippingOptions.home_delivery.label'),
+      description: t('checkout.shippingOptions.home_delivery.description'),
+      cost: 300,
+    },
+    {
+      value: 'office_pickup',
+      label: t('checkout.shippingOptions.office_pickup.label'),
+      description: t('checkout.shippingOptions.office_pickup.description'),
+      cost: 150,
+    },
+  ];
+  const paymentOptions = [
+    {
+      value: 'cash_on_delivery',
+      label: t('checkout.paymentOptions.cash_on_delivery.label'),
+      description: t('checkout.paymentOptions.cash_on_delivery.description'),
+    },
+    {
+      value: 'card',
+      label: t('checkout.paymentOptions.card.label'),
+      description: t('checkout.paymentOptions.card.description'),
+    },
+  ];
 
   useEffect(() => {
     const loadCart = async () => {
@@ -77,7 +77,7 @@ function CheckoutPage() {
         const data = await cartService.getCart();
         setCart(data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load checkout details.');
+        setError(err.response?.data?.message || t('checkout.loadFailed'));
       } finally {
         setCartLoading(false);
       }
@@ -86,7 +86,7 @@ function CheckoutPage() {
     if (!authLoading && canAccessBuyerFeatures(user)) {
       loadCart();
     }
-  }, [authLoading, user]);
+  }, [authLoading, t, user]);
 
   const selectedShipping = useMemo(
     () => shippingOptions.find((option) => option.value === formData.shipping_method) ?? null,
@@ -132,13 +132,13 @@ function CheckoutPage() {
   const validateStep = () => {
     if (step === 1) {
       const requiredFields = [
-        ['full_name', 'Full name'],
-        ['phone', 'Phone'],
-        ['country', 'Country'],
-        ['state', 'State'],
-        ['municipality', 'Municipality'],
-        ['neighborhood', 'Neighborhood'],
-        ['street_address', 'Street address'],
+        ['full_name', t('checkout.fullName')],
+        ['phone', t('checkout.phone')],
+        ['country', t('checkout.country')],
+        ['state', t('checkout.state')],
+        ['municipality', t('checkout.municipality')],
+        ['neighborhood', t('checkout.neighborhood')],
+        ['street_address', t('checkout.streetAddress')],
       ];
 
       const missingField = requiredFields.find(
@@ -146,24 +146,24 @@ function CheckoutPage() {
       );
 
       if (missingField) {
-        return `${missingField[1]} is required before continuing.`;
+        return t('checkout.requiredBeforeContinuing', { field: missingField[1] });
       }
     }
 
     if (step === 2 && !formData.shipping_method) {
-      return 'Select a delivery method to continue.';
+      return t('checkout.selectMethod');
     }
 
     if (step === 3) {
       if (!formData.payment_method) {
-        return 'Select a payment method to place the order.';
+        return t('checkout.selectPayment');
       }
 
       if (formData.payment_method === 'card') {
         const cardFields = [
-          ['cardholder_name', 'Cardholder name'],
-          ['card_number', 'Card number'],
-          ['expiry_date', 'Expiry date'],
+          ['cardholder_name', t('checkout.cardholderName')],
+          ['card_number', t('checkout.cardNumber')],
+          ['expiry_date', t('checkout.expiryDate')],
           ['cvv', 'CVV'],
         ];
 
@@ -172,7 +172,7 @@ function CheckoutPage() {
         );
 
         if (missingField) {
-          return `${missingField[1]} is required for card payments.`;
+          return t('checkout.requiredForCard', { field: missingField[1] });
         }
       }
     }
@@ -208,7 +208,7 @@ function CheckoutPage() {
     }
 
     if (!cart || itemCount === 0) {
-      setError('Your cart is empty.');
+      setError(t('checkout.cartEmpty'));
       return;
     }
 
@@ -237,7 +237,7 @@ function CheckoutPage() {
         },
       });
     } catch (err) {
-      setError(err.response?.data?.message || 'Checkout failed.');
+      setError(err.response?.data?.message || t('checkout.checkoutFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -248,7 +248,7 @@ function CheckoutPage() {
       <div className="page-shell">
         <div className="page-container max-w-[1180px]">
           <div className="surface-card p-8 text-sm text-[var(--color-text-soft)]">
-            Checking user...
+            {t('common.checkingUser')}
           </div>
         </div>
       </div>
@@ -265,19 +265,19 @@ function CheckoutPage() {
         <section className="pt-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-              <Link to="/">Home</Link>
+              <Link to="/">{t('common.home')}</Link>
               <span>/</span>
-              <Link to="/cart">Cart</Link>
+              <Link to="/cart">{t('common.cart')}</Link>
               <span>/</span>
-              <span className="text-[var(--color-brand)]">Checkout</span>
+              <span className="text-[var(--color-brand)]">{t('checkout.title')}</span>
             </div>
 
             <div className="flex flex-wrap gap-2">
               <Link to="/cart" className="btn-base btn-outline">
-                Back to Cart
+                {t('checkout.backToCart')}
               </Link>
               <Link to="/orders" className="btn-base btn-outline">
-                My Orders
+                {t('common.myOrders')}
               </Link>
             </div>
           </div>
@@ -285,13 +285,12 @@ function CheckoutPage() {
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_22rem] lg:items-start">
             <div className="space-y-6">
               <div className="hero-card overflow-hidden px-6 py-8 sm:px-8">
-                <span className="section-label">Checkout Journey</span>
+                <span className="section-label">{t('checkout.journey')}</span>
                 <h1 className="editorial-title mt-5 max-w-3xl">
-                  A slower, clearer path to finishing your order beautifully.
+                  {t('checkout.journeyTitle')}
                 </h1>
                 <p className="subtle-copy mt-4 max-w-2xl text-sm">
-                  Move through shipping, delivery, and payment one step at a time.
-                  Your details stay in place as you go, and only the final backend payload is sent when you confirm.
+                  {t('checkout.journeyDescription')}
                 </p>
               </div>
 
@@ -304,7 +303,7 @@ function CheckoutPage() {
                     return (
                       <div
                         key={item.id}
-                        className={`rounded-[1.4rem] border p-4 ${
+                          className={`rounded-[1.4rem] border p-4 ${
                           isActive
                             ? 'border-[var(--color-accent)] bg-[rgba(255,255,255,0.92)]'
                             : isComplete
@@ -314,7 +313,7 @@ function CheckoutPage() {
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                            Step {item.id}
+                            {t('checkout.stepLabel', { step: item.id })}
                           </span>
                           <span
                             className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold ${
@@ -352,19 +351,19 @@ function CheckoutPage() {
                 )}
 
                 {cartLoading ? (
-                  <div className="mt-8 rounded-[1.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] p-6 text-sm text-[var(--color-text-soft)]">
-                    Loading checkout details...
-                  </div>
+                    <div className="mt-8 rounded-[1.4rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.76)] p-6 text-sm text-[var(--color-text-soft)]">
+                      {t('checkout.loading')}
+                    </div>
                 ) : !error && (!cart || itemCount === 0) ? (
                   <div className="mt-8 rounded-[1.4rem] border border-dashed border-[var(--color-border-strong)] bg-[rgba(255,255,255,0.76)] p-10 text-center">
                     <p className="font-display text-4xl leading-none text-[var(--color-text)]">
-                      Your cart is empty.
+                      {t('checkout.emptyTitle')}
                     </p>
                     <p className="subtle-copy mt-4 text-sm">
-                      Add a few products before moving through checkout.
+                      {t('checkout.emptyDescription')}
                     </p>
                     <Link to="/products" className="btn-base btn-primary mt-6">
-                      Continue Shopping
+                      {t('common.continueShopping')}
                     </Link>
                   </div>
                 ) : (
@@ -372,47 +371,47 @@ function CheckoutPage() {
                     {step === 1 && (
                       <div className="space-y-6">
                         <div>
-                          <span className="section-label">Step 1</span>
-                          <h2 className="section-title mt-4">Shipping Address</h2>
+                          <span className="section-label">{t('checkout.stepLabel', { step: 1 })}</span>
+                          <h2 className="section-title mt-4">{t('checkout.shippingAddress')}</h2>
                           <p className="subtle-copy mt-3 text-sm">
-                            Tell us exactly where the order should arrive, with enough detail for a calm final delivery.
+                            {t('checkout.shippingAddressDescription')}
                           </p>
                         </div>
 
                         <div className="grid gap-5 md:grid-cols-2">
                           <div>
                             <label htmlFor="full_name" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              Full Name
+                              {t('checkout.fullName')}
                             </label>
                             <input id="full_name" name="full_name" value={formData.full_name} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
                             <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              Phone
+                              {t('checkout.phone')}
                             </label>
                             <input id="phone" name="phone" value={formData.phone} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
                             <label htmlFor="country" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              Country
+                              {t('checkout.country')}
                             </label>
                             <input id="country" name="country" value={formData.country} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
                             <label htmlFor="state" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              State
+                              {t('checkout.state')}
                             </label>
                             <input id="state" name="state" value={formData.state} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
                             <label htmlFor="municipality" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              Municipality
+                              {t('checkout.municipality')}
                             </label>
                             <input id="municipality" name="municipality" value={formData.municipality} onChange={handleFieldChange} className="text-input" />
                           </div>
                           <div>
                             <label htmlFor="neighborhood" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                              Neighborhood
+                              {t('checkout.neighborhood')}
                             </label>
                             <input id="neighborhood" name="neighborhood" value={formData.neighborhood} onChange={handleFieldChange} className="text-input" />
                           </div>
@@ -420,7 +419,7 @@ function CheckoutPage() {
 
                         <div>
                           <label htmlFor="street_address" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                            Street Address
+                            {t('checkout.streetAddress')}
                           </label>
                           <textarea
                             id="street_address"
@@ -434,7 +433,7 @@ function CheckoutPage() {
 
                         <div>
                           <label htmlFor="notes" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                            Notes <span className="text-[var(--color-text-faint)]">(Optional)</span>
+                            {t('checkout.notes')} <span className="text-[var(--color-text-faint)]">({t('checkout.optional')})</span>
                           </label>
                           <textarea
                             id="notes"
@@ -443,7 +442,7 @@ function CheckoutPage() {
                             value={formData.notes}
                             onChange={handleFieldChange}
                             className="text-input"
-                            placeholder="Entrance notes, landmark hints, or delivery preferences."
+                            placeholder={t('checkout.notesPlaceholder')}
                           />
                         </div>
                       </div>
@@ -452,10 +451,10 @@ function CheckoutPage() {
                     {step === 2 && (
                       <div className="space-y-6">
                         <div>
-                          <span className="section-label">Step 2</span>
-                          <h2 className="section-title mt-4">Delivery Method</h2>
+                          <span className="section-label">{t('checkout.stepLabel', { step: 2 })}</span>
+                          <h2 className="section-title mt-4">{t('checkout.deliveryMethod')}</h2>
                           <p className="subtle-copy mt-3 text-sm">
-                            Choose the pace and handoff style that feels best for this order.
+                            {t('checkout.deliveryDescription')}
                           </p>
                         </div>
 
@@ -497,10 +496,10 @@ function CheckoutPage() {
                     {step === 3 && (
                       <div className="space-y-6">
                         <div>
-                          <span className="section-label">Step 3</span>
-                          <h2 className="section-title mt-4">Payment Method</h2>
+                          <span className="section-label">{t('checkout.stepLabel', { step: 3 })}</span>
+                          <h2 className="section-title mt-4">{t('checkout.paymentMethod')}</h2>
                           <p className="subtle-copy mt-3 text-sm">
-                            Choose how you want to complete payment. Card details are checked only in the browser and are never sent to the backend.
+                            {t('checkout.paymentDescription')}
                           </p>
                         </div>
 
@@ -534,29 +533,29 @@ function CheckoutPage() {
                           <div className="rounded-[1.5rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] p-5">
                             <div className="mb-5">
                               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                                Frontend-only card validation
+                                {t('checkout.frontendOnlyValidation')}
                               </p>
                               <p className="mt-2 text-sm text-[var(--color-text-soft)]">
-                                These fields help complete the flow visually, but they are not included in the backend payload.
+                                {t('checkout.frontendOnlyValidationCopy')}
                               </p>
                             </div>
 
                             <div className="grid gap-5 md:grid-cols-2">
                               <div className="md:col-span-2">
                                 <label htmlFor="cardholder_name" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                                  Cardholder Name
+                                  {t('checkout.cardholderName')}
                                 </label>
                                 <input id="cardholder_name" name="cardholder_name" value={formData.cardholder_name} onChange={handleFieldChange} className="text-input" />
                               </div>
                               <div className="md:col-span-2">
                                 <label htmlFor="card_number" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                                  Card Number
+                                  {t('checkout.cardNumber')}
                                 </label>
                                 <input id="card_number" name="card_number" value={formData.card_number} onChange={handleFieldChange} className="text-input" inputMode="numeric" />
                               </div>
                               <div>
                                 <label htmlFor="expiry_date" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-                                  Expiry Date
+                                  {t('checkout.expiryDate')}
                                 </label>
                                 <input id="expiry_date" name="expiry_date" value={formData.expiry_date} onChange={handleFieldChange} className="text-input" placeholder="MM/YY" />
                               </div>
@@ -579,7 +578,7 @@ function CheckoutPage() {
                         className="btn-base btn-outline"
                         disabled={step === 1 || submitting}
                       >
-                        Back
+                        {t('common.back')}
                       </button>
 
                       {step < 3 ? (
@@ -588,7 +587,7 @@ function CheckoutPage() {
                           onClick={handleNext}
                           className="btn-base btn-primary"
                         >
-                          Next Step
+                          {t('common.nextStep')}
                         </button>
                       ) : (
                         <button
@@ -596,7 +595,7 @@ function CheckoutPage() {
                           disabled={submitting}
                           className="btn-base btn-primary"
                         >
-                          {submitting ? 'Placing Order...' : 'Place Order'}
+                          {submitting ? t('checkout.placingOrder') : t('checkout.placeOrder')}
                         </button>
                       )}
                     </div>
@@ -609,16 +608,16 @@ function CheckoutPage() {
               <div className="surface-card p-6">
                 <div className="border-b border-[var(--color-border-soft)] pb-5">
                   <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-faint)]">
-                    Order Summary
+                    {t('cart.orderSummary')}
                   </p>
                   <p className="font-display mt-3 text-[2.4rem] leading-none text-[var(--color-text)]">
-                    Review
+                    {t('checkout.reviewTitle')}
                   </p>
                 </div>
 
                 <div className="mt-5 space-y-4">
                   <div className="flex items-center justify-between text-sm text-[var(--color-text-soft)]">
-                    <span>Items</span>
+                    <span>{t('common.items')}</span>
                     <span>{itemCount}</span>
                   </div>
 
@@ -628,10 +627,10 @@ function CheckoutPage() {
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <p className="text-sm font-semibold text-[var(--color-text)]">
-                              {item.product?.name || 'Unnamed product'}
+                              {item.product?.name || t('cart.unnamedProduct')}
                             </p>
                             <p className="mt-1 text-xs text-[var(--color-text-faint)]">
-                              Qty {item.quantity}
+                              {t('checkout.qty', { count: item.quantity })}
                             </p>
                           </div>
                           <p className="text-sm text-[var(--color-text-soft)]">{formatCurrency(item.subtotal)}</p>
@@ -641,25 +640,25 @@ function CheckoutPage() {
 
                     {itemCount > 3 && (
                       <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                        + {itemCount - 3} more item{itemCount - 3 > 1 ? 's' : ''}
+                        {t('checkout.moreItems', { count: itemCount - 3, suffix: itemCount - 3 > 1 ? 's' : '' })}
                       </p>
                     )}
                   </div>
 
                   <div className="rounded-[1.25rem] bg-[rgba(244,243,238,0.94)] p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--color-text-soft)]">
-                      <span>Subtotal</span>
+                      <span>{t('common.subtotal')}</span>
                       <span>{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="mt-3 flex items-center justify-between text-sm text-[var(--color-text-soft)]">
-                      <span>Shipping</span>
+                      <span>{t('common.shipping')}</span>
                       <span>
-                        {selectedShipping ? formatCurrency(estimatedShipping) : 'Select delivery'}
+                        {selectedShipping ? formatCurrency(estimatedShipping) : t('checkout.selectDelivery')}
                       </span>
                     </div>
                     <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border-soft)] pt-4">
                       <span className="text-sm font-semibold text-[var(--color-text)]">
-                        Estimated Total
+                        {t('checkout.estimatedTotal')}
                       </span>
                       <span className="font-display text-[2rem] leading-none text-[var(--color-text)]">
                         {formatCurrency(estimatedTotal)}
@@ -669,13 +668,13 @@ function CheckoutPage() {
 
                   <div className="rounded-[1.25rem] border border-[var(--color-border)] bg-[rgba(255,255,255,0.82)] p-4">
                     <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                      Current Selection
+                      {t('checkout.currentSelection')}
                     </p>
                     <p className="mt-3 text-sm text-[var(--color-text-soft)]">
-                      Delivery: {selectedShipping?.label || 'Not selected yet'}
+                      {t('checkout.deliverySelection', { value: selectedShipping?.label || t('common.notSelectedYet') })}
                     </p>
                     <p className="mt-2 text-sm text-[var(--color-text-soft)]">
-                      Payment: {paymentOptions.find((option) => option.value === formData.payment_method)?.label || 'Not selected yet'}
+                      {t('checkout.paymentSelection', { value: paymentOptions.find((option) => option.value === formData.payment_method)?.label || t('common.notSelectedYet') })}
                     </p>
                   </div>
                 </div>

@@ -558,6 +558,25 @@
     padding-top: 1rem;
   }
 
+  html[dir='rtl'] body {
+    text-align: right;
+  }
+
+  html[dir='rtl'] input,
+  html[dir='rtl'] textarea,
+  html[dir='rtl'] select {
+    text-align: right;
+  }
+
+  html[dir='rtl'] .workspace-topbar-actions {
+    justify-content: flex-start;
+  }
+
+  html[dir='rtl'] .workspace-secondary-nav,
+  html[dir='rtl'] .workspace-sidebar-nav {
+    justify-content: flex-start;
+  }
+
   .workspace-secondary-link {
     display: inline-flex;
     align-items: center;

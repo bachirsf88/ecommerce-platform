@@ -1,49 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../i18n';
 import WorkspaceShell from '../workspace/WorkspaceShell';
-
-const sellerLinks = [
-  { to: '/seller/dashboard', label: 'Dashboard' },
-  { to: '/seller/store', label: 'Store Management' },
-  { to: '/seller/products', label: 'Products' },
-  { to: '/seller/orders', label: 'Orders' },
-  { to: '/seller/finance', label: 'Finance' },
-  { to: '/seller/settings', label: 'Settings' },
-];
-
-const sectionDetails = {
-  dashboard: {
-    kicker: 'Seller Panel',
-    title: 'Dashboard',
-    description: 'A cleaner overview of performance, fulfillment, inventory health, and your next actions.',
-  },
-  store: {
-    kicker: 'Store Management',
-    title: 'Store Identity',
-    description: 'Keep store information, media, and contact details grouped under one focused workspace section.',
-  },
-  products: {
-    kicker: 'Products',
-    title: 'Catalog Management',
-    description: 'Stay inside product-only navigation while you browse listings, add new products, or edit an existing item.',
-  },
-  orders: {
-    kicker: 'Orders',
-    title: 'Order Management',
-    description: 'Track fulfillment and status changes without mixing catalog or finance controls into the same navigation bar.',
-  },
-  finance: {
-    kicker: 'Finance',
-    title: 'Finance',
-    description: 'Review balances and withdrawal requests through finance-specific navigation only.',
-  },
-  settings: {
-    kicker: 'Settings',
-    title: 'Account Settings',
-    description: 'Profile, password, and preferences now live in their own dedicated context.',
-  },
-};
 
 function WorkspaceSecondaryLink({ item, pathname, hash }) {
   if (item.type === 'anchor') {
@@ -80,6 +39,7 @@ function SellerLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const [workspaceSearch, setWorkspaceSearch] = useState('');
 
   const sectionKey = useMemo(() => {
@@ -106,10 +66,22 @@ function SellerLayout() {
     return 'dashboard';
   }, [location.pathname]);
 
-  const detail = sectionDetails[sectionKey];
+  const detail = {
+    kicker: t(`sellerLayout.sections.${sectionKey}.kicker`),
+    title: t(`sellerLayout.sections.${sectionKey}.title`),
+    description: t(`sellerLayout.sections.${sectionKey}.description`),
+  };
   const approvalLabel = user?.seller_status
-    ? `${user.seller_status.charAt(0).toUpperCase()}${user.seller_status.slice(1)}`
-    : 'Seller';
+    ? t(`common.status.${user.seller_status}`)
+    : t('common.roles.seller');
+  const sellerLinks = [
+    { to: '/seller/dashboard', label: t('sellerLayout.primaryLinks.dashboard') },
+    { to: '/seller/store', label: t('sellerLayout.primaryLinks.store') },
+    { to: '/seller/products', label: t('sellerLayout.primaryLinks.products') },
+    { to: '/seller/orders', label: t('sellerLayout.primaryLinks.orders') },
+    { to: '/seller/finance', label: t('sellerLayout.primaryLinks.finance') },
+    { to: '/seller/settings', label: t('sellerLayout.primaryLinks.settings') },
+  ];
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -121,12 +93,12 @@ function SellerLayout() {
   const secondaryItems = useMemo(() => {
     if (sectionKey === 'products') {
       const items = [
-        { label: 'Manage Products', to: '/seller/products', end: true },
-        { label: 'Add Product', to: '/seller/products/add' },
+        { label: t('sellerLayout.secondaryLinks.manageProducts'), to: '/seller/products', end: true },
+        { label: t('sellerLayout.secondaryLinks.addProduct'), to: '/seller/products/add' },
       ];
 
       if (/^\/seller\/products\/[^/]+\/edit$/.test(location.pathname)) {
-        items.push({ label: 'Edit Product', to: location.pathname });
+        items.push({ label: t('sellerLayout.secondaryLinks.editProduct'), to: location.pathname });
       }
 
       return items;
@@ -134,11 +106,11 @@ function SellerLayout() {
 
     if (sectionKey === 'orders') {
       const items = [
-        { label: 'Orders Management', to: '/seller/orders', end: true },
+        { label: t('sellerLayout.secondaryLinks.ordersManagement'), to: '/seller/orders', end: true },
       ];
 
       if (/^\/seller\/orders\/[^/]+$/.test(location.pathname)) {
-        items.push({ label: 'Order Details', to: location.pathname });
+        items.push({ label: t('sellerLayout.secondaryLinks.orderDetails'), to: location.pathname });
       }
 
       return items;
@@ -146,29 +118,29 @@ function SellerLayout() {
 
     if (sectionKey === 'finance') {
       return [
-        { label: 'Finance Overview', to: '/seller/finance', end: true },
-        { label: 'Withdraw Funds', to: '/seller/finance/withdraw' },
+        { label: t('sellerLayout.secondaryLinks.financeOverview'), to: '/seller/finance', end: true },
+        { label: t('sellerLayout.secondaryLinks.withdrawFunds'), to: '/seller/finance/withdraw' },
       ];
     }
 
     if (sectionKey === 'store') {
       return [
-        { label: 'General Info', to: '/seller/store#general', type: 'anchor', defaultWhenHashMissing: true },
-        { label: 'Media', to: '/seller/store#media', type: 'anchor' },
-        { label: 'Contact Details', to: '/seller/store#contact', type: 'anchor' },
+        { label: t('sellerLayout.secondaryLinks.generalInfo'), to: '/seller/store#general', type: 'anchor', defaultWhenHashMissing: true },
+        { label: t('sellerLayout.secondaryLinks.media'), to: '/seller/store#media', type: 'anchor' },
+        { label: t('sellerLayout.secondaryLinks.contactDetails'), to: '/seller/store#contact', type: 'anchor' },
       ];
     }
 
     if (sectionKey === 'settings') {
       return [
-        { label: 'Profile', to: '/seller/settings#profile', type: 'anchor', defaultWhenHashMissing: true },
-        { label: 'Password', to: '/seller/settings#password', type: 'anchor' },
-        { label: 'Preferences', to: '/seller/settings#preferences', type: 'anchor' },
+        { label: t('sellerLayout.secondaryLinks.profile'), to: '/seller/settings#profile', type: 'anchor', defaultWhenHashMissing: true },
+        { label: t('sellerLayout.secondaryLinks.password'), to: '/seller/settings#password', type: 'anchor' },
+        { label: t('sellerLayout.secondaryLinks.preferences'), to: '/seller/settings#preferences', type: 'anchor' },
       ];
     }
 
     return [];
-  }, [location.pathname, sectionKey]);
+  }, [location.pathname, sectionKey, t]);
 
   const topbarActions = (
     <>
@@ -179,7 +151,7 @@ function SellerLayout() {
               type="search"
               value={workspaceSearch}
               onChange={(event) => setWorkspaceSearch(event.target.value)}
-              placeholder="Search products"
+              placeholder={t('sellerLayout.searchPlaceholder')}
               className="text-input"
             />
           </form>
@@ -189,7 +161,7 @@ function SellerLayout() {
             onClick={() => navigate('/seller/products/add')}
             className="btn-base btn-primary"
           >
-            Add Product
+            {t('common.addProduct')}
           </button>
         </>
       ) : null}
@@ -200,7 +172,7 @@ function SellerLayout() {
           onClick={() => navigate('/seller/finance/withdraw')}
           className="btn-base btn-primary"
         >
-          Withdraw Funds
+          {t('sellerLayout.withdrawFunds')}
         </button>
       ) : null}
 
@@ -210,7 +182,7 @@ function SellerLayout() {
           onClick={() => navigate(`/stores/${user.store.id}`)}
           className="btn-base btn-outline"
         >
-          View Storefront
+          {t('sellerLayout.viewStorefront')}
         </button>
       ) : null}
 
@@ -221,14 +193,14 @@ function SellerLayout() {
             onClick={() => navigate('/seller/products/add')}
             className="btn-base btn-primary"
           >
-            Add Product
+            {t('common.addProduct')}
           </button>
           <button
             type="button"
             onClick={() => navigate('/seller/orders')}
             className="btn-base btn-outline"
           >
-            View Orders
+            {t('common.viewOrders')}
           </button>
         </>
       ) : null}
@@ -237,11 +209,11 @@ function SellerLayout() {
 
   return (
     <WorkspaceShell
-      workspaceLabel="Seller Workspace"
-      workspaceTitle={user?.store?.store_name || 'Your Studio'}
-      workspaceDescription="A real seller panel with stable primary navigation on the left and context-specific controls only inside the active section."
-      accountName={user?.name || 'Seller'}
-      accountEmail={user?.email || 'No email'}
+      workspaceLabel={t('common.sellerWorkspace')}
+      workspaceTitle={user?.store?.store_name || t('sellerLayout.workspaceTitleFallback')}
+      workspaceDescription={t('sellerLayout.workspaceDescription')}
+      accountName={user?.name || t('common.roles.seller')}
+      accountEmail={user?.email || t('common.noEmail')}
       accountStatus={approvalLabel}
       primaryLinks={sellerLinks}
       footerContent={(
@@ -252,7 +224,7 @@ function SellerLayout() {
               onClick={() => navigate(`/stores/${user.store.id}`)}
               className="btn-base btn-outline w-full"
             >
-              View Storefront
+              {t('sellerLayout.viewStorefront')}
             </button>
           ) : null}
           <button
@@ -260,7 +232,7 @@ function SellerLayout() {
             onClick={logout}
             className="btn-base btn-secondary w-full"
           >
-            Logout
+            {t('common.logout')}
           </button>
         </>
       )}

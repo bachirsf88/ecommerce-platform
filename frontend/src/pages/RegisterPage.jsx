@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import heroImage from '../assets/marketplace-hero.png';
+import heroImage from '../assets/login-page.jpg';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
 import { getApiErrorMessage } from '../services/api';
 
 function RegisterPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { register, isAuthenticated, user, loading: authLoading } = useAuth();
+  const { t, isRTL } = useTranslation();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -79,7 +82,7 @@ function RegisterPage() {
         !formData.store_address.trim() ||
         !formData.postal_code.trim())
     ) {
-      setError('Store name, store address, and postal code are required for seller registration.');
+      setError(t('register.sellerFieldsRequired'));
       return;
     }
 
@@ -116,7 +119,7 @@ function RegisterPage() {
   return (
     <div className="min-h-screen bg-[var(--gradient-page)] text-[var(--color-text)]">
       <header className="px-4 pt-6 sm:px-8 lg:px-12 lg:pt-10">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 sm:gap-6">
+        <div className={`mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 sm:gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <Link to="/" className="inline-flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[rgba(255,255,255,0.8)] text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand)]">
               GS
@@ -126,17 +129,20 @@ function RegisterPage() {
                 FLORA
               </p>
               <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
-                Thoughtful Marketplace
+                {t('register.brandTagline')}
               </p>
             </div>
           </Link>
 
-          <Link
-            to="/login"
-            className="rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)] sm:px-5 sm:text-[0.72rem]"
-          >
-            Login
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher compact />
+            <Link
+              to="/login"
+              className="rounded-full border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)] sm:px-5 sm:text-[0.72rem]"
+            >
+              {t('common.login')}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -145,7 +151,7 @@ function RegisterPage() {
           <section className="relative overflow-hidden rounded-[2.2rem] border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-lifted)]">
             <img
               src={heroImage}
-              alt="FLORA artisan register"
+              alt={t('register.imageAlt')}
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,2,2,0.08)_0%,rgba(2,2,2,0.68)_100%)]" />
@@ -155,32 +161,32 @@ function RegisterPage() {
             <div className="relative z-10 flex min-h-[360px] flex-col justify-between p-6 sm:p-10 lg:min-h-[780px] lg:p-12">
               <div className="max-w-[26rem]">
                 <p className="text-[0.64rem] font-semibold uppercase tracking-[0.26em] text-white/72">
-                  Registration Experience
+                  {t('register.heroKicker')}
                 </p>
                 <h1 className="font-display mt-6 text-[2.7rem] leading-[0.92] text-white sm:text-[4rem] lg:text-[4.6rem]">
-                  Build a place in the marketplace with more intention.
+                  {t('register.heroTitle')}
                 </h1>
                 <p className="mt-6 max-w-[23rem] text-[0.98rem] leading-8 text-white/80">
-                  Buyers join to discover carefully presented pieces. Sellers join to begin shaping a storefront that feels considered, warm, and ready for approval.
+                  {t('register.heroDescription')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.3rem] border border-[rgba(255,255,255,0.18)] bg-[rgba(255,250,246,0.12)] p-5 backdrop-blur-sm">
                   <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/70">
-                    Buyer Path
+                    {t('register.buyerPath')}
                   </p>
                   <p className="mt-4 text-sm leading-7 text-white/82">
-                    Start with a lighter registration flow for browsing, favorites, cart, and checkout.
+                    {t('register.buyerPathDescription')}
                   </p>
                 </div>
 
                 <div className="rounded-[1.3rem] border border-[rgba(255,255,255,0.18)] bg-[rgba(255,250,246,0.12)] p-5 backdrop-blur-sm">
                   <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/70">
-                    Seller Path
+                    {t('register.sellerPath')}
                   </p>
                   <p className="mt-4 text-sm leading-7 text-white/82">
-                    Add essential store details so the backend can create your seller account and linked store record together.
+                    {t('register.sellerPathDescription')}
                   </p>
                 </div>
               </div>
@@ -191,13 +197,13 @@ function RegisterPage() {
             <div className="w-full max-w-[31rem] lg:ml-auto">
               <div className="rounded-[2rem] border border-[var(--color-border)] bg-[var(--gradient-soft-surface)] p-7 shadow-[var(--shadow-card)] sm:p-8">
                 <p className={sectionEyebrowClass}>
-                  Create Account
+                  {t('register.createAccount')}
                 </p>
                 <h2 className="font-display mt-5 text-[2.6rem] leading-[0.92] text-[var(--color-text)] sm:text-[3.9rem]">
-                  Register
+                  {t('register.title')}
                 </h2>
                 <p className={`mt-3 max-w-[24rem] ${sectionCopyClass}`}>
-                  Choose your path and complete registration through the live marketplace flow.
+                  {t('register.description')}
                 </p>
 
                 <div className="mt-7 rounded-[1.25rem] border border-[var(--color-border-soft)] bg-[rgba(255,255,255,0.7)] p-2">
@@ -212,10 +218,10 @@ function RegisterPage() {
                       }`}
                     >
                       <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em]">
-                        Buyer
+                        {t('register.buyerTitle')}
                       </span>
                       <span className="mt-2 block text-sm font-medium">
-                        Shorter, lighter account setup
+                        {t('register.buyerDescription')}
                       </span>
                     </button>
 
@@ -229,10 +235,10 @@ function RegisterPage() {
                       }`}
                     >
                       <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em]">
-                        Seller
+                        {t('register.sellerTitle')}
                       </span>
                       <span className="mt-2 block text-sm font-medium">
-                        Includes store creation details
+                        {t('register.sellerDescription')}
                       </span>
                     </button>
                   </div>
@@ -245,7 +251,7 @@ function RegisterPage() {
                         htmlFor="name"
                         className={fieldLabelClass}
                       >
-                        {isSellerMode ? 'Seller Name' : 'Full Name'}
+                        {isSellerMode ? t('register.sellerName') : t('register.fullName')}
                       </label>
                       <input
                         id="name"
@@ -253,7 +259,7 @@ function RegisterPage() {
                         type="text"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder={isSellerMode ? 'Enter your seller name' : 'Enter your name'}
+                        placeholder={isSellerMode ? t('register.sellerNamePlaceholder') : t('register.fullNamePlaceholder')}
                         required
                         className={fieldInputClass}
                       />
@@ -264,7 +270,7 @@ function RegisterPage() {
                         htmlFor="email"
                         className={fieldLabelClass}
                       >
-                        Email
+                        {t('common.email')}
                       </label>
                       <input
                         id="email"
@@ -272,7 +278,7 @@ function RegisterPage() {
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="Enter your email"
+                        placeholder={t('register.emailPlaceholder')}
                         required
                         className={fieldInputClass}
                       />
@@ -282,17 +288,17 @@ function RegisterPage() {
                       <div>
                         <label
                           htmlFor="password"
-                          className={fieldLabelClass}
-                        >
-                          Password
-                        </label>
+                        className={fieldLabelClass}
+                      >
+                        {t('common.password')}
+                      </label>
                         <input
                           id="password"
                           name="password"
                           type="password"
                           value={formData.password}
                           onChange={handleChange}
-                          placeholder="Create password"
+                          placeholder={t('register.passwordPlaceholder')}
                           required
                           className={fieldInputClass}
                         />
@@ -301,17 +307,17 @@ function RegisterPage() {
                       <div>
                         <label
                           htmlFor="password_confirmation"
-                          className={fieldLabelClass}
-                        >
-                          Confirm Password
-                        </label>
+                        className={fieldLabelClass}
+                      >
+                        {t('register.confirmPassword')}
+                      </label>
                         <input
                           id="password_confirmation"
                           name="password_confirmation"
                           type="password"
                           value={formData.password_confirmation}
                           onChange={handleChange}
-                          placeholder="Confirm password"
+                          placeholder={t('register.confirmPasswordPlaceholder')}
                           required
                           className={fieldInputClass}
                         />
@@ -324,14 +330,14 @@ function RegisterPage() {
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <div>
                           <p className={sectionEyebrowClass}>
-                            Store Information
+                            {t('register.storeInformation')}
                           </p>
                           <p className={`mt-1.5 max-w-[22rem] ${helperTextClass}`}>
-                            Required to create your linked seller store.
+                            {t('register.storeInformationHelp')}
                           </p>
                         </div>
                         <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-                          Seller Only
+                          {t('register.sellerOnly')}
                         </span>
                       </div>
 
@@ -341,7 +347,7 @@ function RegisterPage() {
                             htmlFor="store_name"
                             className={fieldLabelClass}
                           >
-                            Store Name
+                            {t('register.storeName')}
                           </label>
                           <input
                             id="store_name"
@@ -349,7 +355,7 @@ function RegisterPage() {
                             type="text"
                             value={formData.store_name}
                             onChange={handleChange}
-                            placeholder="Enter your store name"
+                            placeholder={t('register.storeNamePlaceholder')}
                             required={isSellerMode}
                             className={fieldInputClass}
                           />
@@ -360,7 +366,7 @@ function RegisterPage() {
                             htmlFor="postal_code"
                             className={fieldLabelClass}
                           >
-                            Postal Code
+                            {t('register.postalCode')}
                           </label>
                           <input
                             id="postal_code"
@@ -368,7 +374,7 @@ function RegisterPage() {
                             type="text"
                             value={formData.postal_code}
                             onChange={handleChange}
-                            placeholder="Enter postal code"
+                            placeholder={t('register.postalCodePlaceholder')}
                             required={isSellerMode}
                             className={fieldInputClass}
                           />
@@ -379,20 +385,20 @@ function RegisterPage() {
                             htmlFor="store_address"
                             className={fieldLabelClass}
                           >
-                            Store Address
+                            {t('register.storeAddress')}
                           </label>
                           <textarea
                             id="store_address"
                             name="store_address"
                             value={formData.store_address}
                             onChange={handleChange}
-                            placeholder="Enter your store address"
+                            placeholder={t('register.storeAddressPlaceholder')}
                             required={isSellerMode}
                             rows="2"
                             className={fieldInputClass}
                           />
                           <p className={`mt-2 ${helperTextClass}`}>
-                            Use the address your store should appear under.
+                            {t('register.storeAddressHelp')}
                           </p>
                         </div>
                       </div>
@@ -401,12 +407,12 @@ function RegisterPage() {
 
                   <div className="border-t border-[var(--color-border-soft)] pt-4">
                     <p className={sectionEyebrowClass}>
-                      Registration Mode
+                      {t('register.registrationMode')}
                     </p>
                     <p className="mt-1.5 text-sm leading-7 text-[var(--color-text-soft)]">
                       {isSellerMode
-                        ? 'Seller registration creates your seller account and the linked store record required by the backend approval flow.'
-                        : 'Buyer registration stays intentionally lighter for browsing, favorites, cart, and ordering.'}
+                        ? t('register.sellerModeDescription')
+                        : t('register.buyerModeDescription')}
                     </p>
                   </div>
 
@@ -422,17 +428,17 @@ function RegisterPage() {
                     className="btn-base btn-primary w-full rounded-[1rem] px-6 py-4 text-[0.94rem]"
                   >
                     {loading
-                      ? 'Creating account...'
+                      ? t('register.submitting')
                       : isSellerMode
-                        ? 'Create Seller Account'
-                        : 'Create Buyer Account'}
+                        ? t('register.createSellerAccount')
+                        : t('register.createBuyerAccount')}
                   </button>
                 </form>
 
                 <div className="mt-8 flex items-center gap-4">
                   <div className="h-px flex-1 bg-[var(--color-border-soft)]" />
                   <span className={sectionEyebrowClass}>
-                    Or continue with
+                    {t('register.orContinueWith')}
                   </span>
                   <div className="h-px flex-1 bg-[var(--color-border-soft)]" />
                 </div>
@@ -454,12 +460,12 @@ function RegisterPage() {
 
                 <div className="mt-8 border-t border-[var(--color-border-soft)] pt-6">
                   <p className="text-sm leading-7 text-[var(--color-text-soft)]">
-                    Already have an account?{' '}
+                    {t('register.alreadyHaveAccount')}{' '}
                     <Link
                       to="/login"
                       className="font-semibold text-[var(--color-text)] underline decoration-[rgba(188,184,177,0.6)] underline-offset-4"
                     >
-                      Sign in
+                      {t('register.signIn')}
                     </Link>
                   </p>
                 </div>
@@ -476,14 +482,14 @@ function RegisterPage() {
               FLORA
             </p>
             <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[var(--color-text-faint)]">
-              Crafted registration flow
+              {t('register.footerTagline')}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-5">
-            <Link to="/" className="hover:text-[var(--color-text)]">Home</Link>
-            <Link to="/products" className="hover:text-[var(--color-text)]">Products</Link>
-            <Link to="/login" className="hover:text-[var(--color-text)]">Login</Link>
+            <Link to="/" className="hover:text-[var(--color-text)]">{t('common.home')}</Link>
+            <Link to="/products" className="hover:text-[var(--color-text)]">{t('common.products')}</Link>
+            <Link to="/login" className="hover:text-[var(--color-text)]">{t('common.login')}</Link>
           </div>
         </div>
       </footer>
