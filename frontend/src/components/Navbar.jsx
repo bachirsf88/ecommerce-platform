@@ -116,17 +116,15 @@ function IconActionLink({ to, label, children, active = null }) {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) =>
-        {
-          const resolvedActive = active ?? isActive;
+      className={({ isActive }) => {
+        const resolvedActive = active ?? isActive;
 
-          return `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
-            resolvedActive
-              ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
-              : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
-          }`;
-        }
-      }
+        return `flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+          resolvedActive
+            ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-[var(--color-background)] shadow-[0_10px_22px_rgba(122,75,46,0.18)]'
+            : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.78)] text-[var(--color-brand)] hover:border-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.08)] hover:text-[var(--color-brand)]'
+        }`;
+      }}
       aria-label={label}
       title={label}
     >
@@ -337,7 +335,7 @@ function Navbar() {
               {!isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   <LanguageSwitcher />
-                  <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
+                  <IconActionLink to={favoritesDestination} label={t('common.favorites')} active={isActive('favorites')}>
                     <HeartIcon />
                   </IconActionLink>
                   <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
@@ -353,7 +351,7 @@ function Navbar() {
               ) : (
                 <div className="flex items-center gap-2">
                   <LanguageSwitcher />
-                  <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
+                  <IconActionLink to={favoritesDestination} label={t('common.favorites')} active={isActive('favorites')}>
                     <HeartIcon />
                   </IconActionLink>
                   <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
@@ -390,7 +388,7 @@ function Navbar() {
 
             <div className="flex items-center gap-2 lg:hidden">
               <LanguageSwitcher compact />
-              <IconActionLink to={favoritesDestination} label={t('common.favorites')}>
+              <IconActionLink to={favoritesDestination} label={t('common.favorites')} active={isActive('favorites')}>
                 <HeartIcon />
               </IconActionLink>
               <IconActionLink to={cartDestination} label={t('common.cart')} active={isActive('cart')}>
@@ -421,7 +419,7 @@ function Navbar() {
                   ) : null}
                 </div>
               ) : (
-                <IconActionLink to={accountDestination} label={t('common.login')}>
+                <IconActionLink to={accountDestination} label={t('common.login')} active={isActive('login')}>
                   <UserIcon />
                 </IconActionLink>
               )}

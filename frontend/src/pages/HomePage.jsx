@@ -113,7 +113,8 @@ function ArrivalItem({ product }) {
 
 function HomePage() {
   const { user, isAuthenticated } = useAuth();
-  const { t, isRTL } = useTranslation();
+  const { t, dir } = useTranslation();
+  const isRTL = dir === 'rtl';
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -191,66 +192,51 @@ function HomePage() {
   return (
     <div className="page-shell pb-0">
       <div className="page-container max-w-[1180px]">
-        <section className="pt-2">
-          <div className="relative overflow-hidden rounded-[1.9rem] border border-[var(--color-border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(244,243,238,0.98),rgba(122,75,46,0.18))] shadow-[var(--shadow-lifted)]">
+        <section className="pt-2" dir={dir}>
+          <div className={`home-hero ${isRTL ? 'home-hero--rtl' : 'home-hero--ltr'} relative overflow-hidden rounded-[1.9rem] border border-[var(--color-border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(244,243,238,0.98),rgba(122,75,46,0.18))] shadow-[var(--shadow-lifted)]`}>
             <img
               src={marketplaceHero}
               alt="Artisan marketplace hero"
-              className={`absolute inset-y-0 right-0 h-full w-full object-cover opacity-65 lg:w-[56%] ${
-                isRTL ? 'object-[72%_center] lg:object-right' : 'object-center'
-              }`}
+              className="home-hero__media"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,243,238,0.96)_0%,rgba(244,243,238,0.88)_44%,rgba(244,243,238,0.2)_100%)]" />
-            <div className="absolute inset-y-0 right-0 w-full bg-[radial-gradient(circle_at_right,rgba(122,75,46,0.18),transparent_34%)] lg:w-[55%]" />
-            <div className="relative z-10 min-h-[400px] px-6 py-7 sm:px-10 sm:py-10 lg:min-h-[560px] lg:px-14 lg:py-14">
-              <div dir="ltr" className="flex h-full items-end">
-                <div
-                  dir={isRTL ? 'rtl' : 'ltr'}
-                  className={`flex w-full max-w-[34rem] flex-col justify-end ${
-                    isRTL ? 'items-end text-right lg:max-w-[36rem]' : 'items-start text-left'
-                  }`}
-                >
-                <p className="w-full page-kicker text-[0.62rem]">
-                  {t('home.heroKicker')}
-                </p>
-                <h1 className={`mt-4 w-full font-display text-[var(--color-text)] ${
-                  isRTL
-                    ? 'text-[2.65rem] leading-[1.02] sm:text-[4.5rem] lg:text-[5.35rem]'
-                    : 'text-[2.9rem] leading-[0.9] sm:text-6xl lg:text-7xl'
-                }`}>
-                  {t('home.heroTitle')}
-                </h1>
-                <p className={`mt-4 w-full text-sm leading-7 text-[var(--color-text-soft)] sm:text-base ${
-                  isRTL ? 'max-w-[31rem]' : 'max-w-[30rem]'
-                }`}>
-                  {t('home.heroDescription')}
-                </p>
-                <div className={`mt-7 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap ${
-                  isRTL ? 'sm:justify-end' : ''
-                }`}>
-                  <Link to="/products" className="btn-base btn-primary justify-center border-[var(--color-brand)] bg-[var(--color-brand)] px-7 shadow-[0_14px_30px_rgba(122,75,46,0.24)]">
-                    {t('home.exploreProducts')}
-                  </Link>
-                  <Link
-                    to={sellerCtaLink}
-                    className="btn-base justify-center border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-7 text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)]"
-                  >
-                    {sellerCtaLabel}
-                  </Link>
-                </div>
+            <div className="home-hero__overlay" />
+            <div className="home-hero__accent" />
+            <div className="home-hero__inner">
+              <div className="home-hero__stage">
+                <div className="home-hero__content">
+                  <p className="home-hero__kicker page-kicker text-[0.62rem]">
+                    {t('home.heroKicker')}
+                  </p>
+                  <h1 className="home-hero__title font-display text-[var(--color-text)]">
+                    {t('home.heroTitle')}
+                  </h1>
+                  <p className="home-hero__description text-sm leading-7 text-[var(--color-text-soft)] sm:text-base">
+                    {t('home.heroDescription')}
+                  </p>
+                  <div className="home-hero__actions flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    <Link to="/products" className="btn-base btn-primary justify-center border-[var(--color-brand)] bg-[var(--color-brand)] px-7 shadow-[0_14px_30px_rgba(122,75,46,0.24)]">
+                      {t('home.exploreProducts')}
+                    </Link>
+                    <Link
+                      to={sellerCtaLink}
+                      className="btn-base justify-center border border-[var(--color-brand)] bg-[rgba(122,75,46,0.08)] px-7 text-[var(--color-brand)] hover:bg-[rgba(122,75,46,0.14)]"
+                    >
+                      {sellerCtaLabel}
+                    </Link>
+                  </div>
 
-                {/* <div className="mt-8 grid max-w-[28rem] gap-3 sm:grid-cols-3">
-                  {[
-                    ['Palette', '#F4F3EE'],
-                    ['Borders', '#BCB8B1'],
-                    ['Actions', '#7A4B2E'],
-                  ].map(([label, value]) => (
-                    <div key={label} className={`rounded-[1.15rem] border px-4 py-4 backdrop-blur-sm ${label === 'Actions' ? 'border-[var(--color-brand)] bg-[rgba(122,75,46,0.12)] shadow-[0_12px_26px_rgba(122,75,46,0.14)]' : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.74)]'}`}>
-                      <p className="page-kicker text-[0.56rem]">{label}</p>
-                      <p className={`mt-2 text-sm font-semibold ${label === 'Actions' ? 'text-[var(--color-brand)]' : 'text-[var(--color-text)]'}`}>{value}</p>
-                    </div>
-                  ))}
-                </div> */}
+                  {/* <div className="mt-8 grid max-w-[28rem] gap-3 sm:grid-cols-3">
+                    {[
+                      ['Palette', '#F4F3EE'],
+                      ['Borders', '#BCB8B1'],
+                      ['Actions', '#7A4B2E'],
+                    ].map(([label, value]) => (
+                      <div key={label} className={`rounded-[1.15rem] border px-4 py-4 backdrop-blur-sm ${label === 'Actions' ? 'border-[var(--color-brand)] bg-[rgba(122,75,46,0.12)] shadow-[0_12px_26px_rgba(122,75,46,0.14)]' : 'border-[var(--color-border)] bg-[rgba(255,255,255,0.74)]'}`}>
+                        <p className="page-kicker text-[0.56rem]">{label}</p>
+                        <p className={`mt-2 text-sm font-semibold ${label === 'Actions' ? 'text-[var(--color-brand)]' : 'text-[var(--color-text)]'}`}>{value}</p>
+                      </div>
+                    ))}
+                  </div> */}
                 </div>
               </div>
             </div>
