@@ -108,23 +108,29 @@ const en = {
     heroTitle: 'The Art of the Handmade',
     heroDescription:
       'Discover artisan products from women-led home businesses through a calm, editorial shopping experience.',
+    heroAlt: 'Artisan marketplace hero',
     exploreProducts: 'Explore Products',
     becomeSeller: 'Become a Seller',
     openSellerSpace: 'Open Seller Space',
     openAdminArea: 'Open Admin Area',
     featuredCollections: 'Featured Collections',
+    featuredCollectionFallback: 'Featured Collection',
+    featuredFallback: 'Featured',
     collectionLabel: 'Collection',
     subcategoriesCount: '{count} subcategories',
     latestProducts: 'Latest Products',
     newArrivals: 'New Arrivals',
     shopAllProducts: 'Shop All Products',
     loadingArrivals: 'Loading new arrivals...',
+    loadFailed: 'Failed to load home page products.',
     emptyArrivals: 'New arrivals will appear here once products are available.',
+    unnamedProduct: 'Unnamed product',
     editorialSelection: 'Editorial Selection',
     curatedWorkspace: 'The Curated Workspace',
     editorialDescription:
       'A calmer way to browse handmade products with texture, balance, and warmth at the center of the experience.',
     curatedItemFallback: 'Curated item {index}',
+    editorialImageAlt: 'Editorial artisan composition',
     curatedNote: 'Curated Note',
     curatedNoteCopy:
       'Thoughtful presentation helps handmade work feel elevated without losing usability.',
@@ -138,6 +144,28 @@ const en = {
       'A refined artisan marketplace for women-led home businesses, thoughtful product discovery, and handmade pieces presented with warmth and restraint.',
     navigate: 'Navigate',
     account: 'Account',
+    fallbackCategories: {
+      ceramics: {
+        name: 'Ceramics',
+        subtitle: 'Featured Collection',
+        description: 'Soft forms and calm decorative pieces for thoughtful interiors.',
+      },
+      jewelry: {
+        name: 'Jewelry',
+        subtitle: 'Small Details',
+        description: 'Refined handmade accents with a personal, expressive character.',
+      },
+      woodwork: {
+        name: 'Woodwork',
+        subtitle: 'Crafted Utility',
+        description: 'Warm artisan workmanship shaped into elegant everyday objects.',
+      },
+      textiles: {
+        name: 'Textiles',
+        subtitle: 'Layered Texture',
+        description: 'Textural pieces that bring warmth, softness, and comfort to daily life.',
+      },
+    },
   },
   login: {
     imageAlt: 'FLORA artisan atmosphere',

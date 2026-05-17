@@ -1,0 +1,20 @@
+[33m6cc1900[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m change some words
+[33mc385ccd[m adding arabic and adding cart icon
+[33m823aad1[m changing products logic
+[33m0f173c6[m[33m ([m[1;32mfeature/local-setup[m[33m)[m final version before deployment
+[33m3e6a720[m[33m ([m[1;31morigin/feature/supabase-media-storage[m[33m, [m[1;32mfeature/supabase-media-storage[m[33m)[m Fix: prevent resolveMediaUrl from prefixing Supabase URLs with API_ORIGIN
+[33m6eaaf6a[m Move production image uploads to Supabase storage
+[33m71ec0e0[m[33m ([m[1;31morigin/deploy-render-db[m[33m, [m[1;32mdeploy-render-db[m[33m)[m Add production admin seeder
+[33m4c01840[m Debug and fix Laravel routing on Render
+[33m4734665[m Prepare project for Render and Vercel deployment
+[33m8fb132a[m Add Docker setup for Laravel backend deployment
+[33mb5f2263[m the saller can uplode multi pic also can uplode video
+[33m615167b[m Update README.md
+[33m72582c9[m siraj changes
+[33m7d3fc52[m fix product/store media handling and clean seller workspace navigation
+[33me4ba50e[m fix product/store media handling and clean seller workspace navigation
+[33mcc2d704[m Complete seller panel MVP with media uploads and seller workspace
+[33m484b8fc[m adding guid
+[33m93dcc8d[m Finalize hybrid architecture (MongoDB + MySQL) with cart, favorites, orders, and admin integration
+[33m4d15f0a[m[33m ([m[1;33mtag: v1.0-mvp[m[33m)[m feat: complete MVP version of e-commerce platform
+[33m656c274[m initial project structure with backend and frontend folders
