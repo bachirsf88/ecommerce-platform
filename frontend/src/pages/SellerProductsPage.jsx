@@ -10,14 +10,6 @@ import { resolveProductPrimaryImage } from '../utils/media';
 
 const moderationStatuses = ['approved', 'needs_review', 'inactive', 'rejected', 'pending'];
 
-const moderationStatusLabels = {
-  approved: 'Approved',
-  needs_review: 'Needs Review',
-  inactive: 'Inactive',
-  rejected: 'Rejected',
-  pending: 'Pending',
-};
-
 function SellerProductsPage() {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -29,6 +21,22 @@ function SellerProductsPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [stockFilter, setStockFilter] = useState('all');
   const searchQuery = searchParams.get('query') ?? '';
+  const safeProducts = Array.isArray(products) ? products : [];
+
+  const getCategoryName = (product) =>
+    product?.category?.name ||
+    product?.category_name ||
+    (typeof product?.category === 'string' ? product.category : '') ||
+    '';
+
+  const getProductName = (product) =>
+    typeof product?.name === 'string' ? product.name : '';
+
+  const getProductDescription = (product) =>
+    typeof product?.description === 'string' ? product.description : '';
+
+  const getProductStatus = (product) =>
+    typeof product?.status === 'string' ? product.status : 'pending';
 
   const loadSellerProducts = useCallback(async () => {
     if (!user?.id) {
@@ -40,7 +48,7 @@ function SellerProductsPage() {
 
     try {
       const data = await productService.getMyProducts();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.response?.data?.message || t('sellerProducts.loadFailed'));
     } finally {
@@ -53,22 +61,26 @@ function SellerProductsPage() {
   }, [loadSellerProducts]);
 
   const categories = useMemo(
-    () => Array.from(new Set(products.map((product) => product.category).filter(Boolean))),
-    [products]
+    () => Array.from(new Set(safeProducts.map((product) => getCategoryName(product)).filter(Boolean))),
+    [safeProducts]
   );
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
 
-    return products.filter((product) => {
+    return safeProducts.filter((product) => {
+      const productName = getProductName(product);
+      const productDescription = getProductDescription(product);
+      const productStatus = getProductStatus(product);
+      const productCategory = getCategoryName(product);
       const matchesQuery =
         !normalizedQuery ||
-        product.name?.toLowerCase().includes(normalizedQuery) ||
-        product.description?.toLowerCase().includes(normalizedQuery);
+        productName.toLowerCase().includes(normalizedQuery) ||
+        productDescription.toLowerCase().includes(normalizedQuery);
 
-      const matchesStatus = statusFilter === 'all' || product.status === statusFilter;
-      const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
-      const stock = Number(product.stock ?? 0);
+      const matchesStatus = statusFilter === 'all' || productStatus === statusFilter;
+      const matchesCategory = categoryFilter === 'all' || productCategory === categoryFilter;
+      const stock = Number(product?.stock ?? 0);
       const matchesStock =
         stockFilter === 'all' ||
         (stockFilter === 'low' && stock > 0 && stock <= 5) ||
@@ -77,9 +89,13 @@ function SellerProductsPage() {
 
       return matchesQuery && matchesStatus && matchesCategory && matchesStock;
     });
-  }, [categoryFilter, products, searchQuery, statusFilter, stockFilter]);
+  }, [categoryFilter, safeProducts, searchQuery, statusFilter, stockFilter]);
 
   const handleDelete = async (productId) => {
+    if (!productId) {
+      return;
+    }
+
     const confirmed = window.confirm(t('sellerProducts.deleteConfirm'));
 
     if (!confirmed) {
@@ -134,7 +150,7 @@ function SellerProductsPage() {
 
           <div>
             <label htmlFor="status-filter" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-              {t('common.status')}
+              {t('common.statusLabel')}
             </label>
             <select id="status-filter" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="text-input">
               <option value="all">{t('sellerProducts.allStatuses')}</option>
@@ -148,7 +164,7 @@ function SellerProductsPage() {
 
           <div>
             <label htmlFor="category-filter" className="mb-2 block text-sm font-semibold text-[var(--color-text-soft)]">
-              {t('common.category')}
+              {t('common.categoryLabel')}
             </label>
             <select id="category-filter" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="text-input">
               <option value="all">{t('sellerProducts.allCategories')}</option>
@@ -182,51 +198,58 @@ function SellerProductsPage() {
           <div className="empty-state">{t('sellerProducts.empty')}</div>
         ) : (
           <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-            {filteredProducts.map((product) => (
-              <article key={product.id} className="surface-card overflow-hidden">
-                <div className="aspect-[1.08] bg-[rgba(244,243,238,0.86)]">
-                  <FallbackImage
-                    src={resolveProductPrimaryImage(product, fashionProductFallback)}
-                    fallbackSrc={fashionProductFallback}
-                    alt={product.name || 'Product'}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
-                        {product.category || t('sellerProducts.uncategorized')}
-                      </p>
-                      <h2 className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">
-                        {product.name || t('sellerProducts.untitledProduct')}
-                      </h2>
+            {filteredProducts.map((product) => {
+              const productId = product?.id;
+              const productName = getProductName(product);
+              const productStatus = getProductStatus(product);
+              const categoryName = getCategoryName(product);
+
+              return (
+                <article key={productId ?? `product-${productName || 'unknown'}`} className="surface-card overflow-hidden">
+                  <div className="aspect-[1.08] bg-[rgba(244,243,238,0.86)]">
+                    <FallbackImage
+                      src={resolveProductPrimaryImage(product, fashionProductFallback)}
+                      fallbackSrc={fashionProductFallback}
+                      alt={productName || 'Product'}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-faint)]">
+                          {categoryName || t('sellerProducts.uncategorized')}
+                        </p>
+                        <h2 className="font-display mt-3 text-[2rem] leading-none text-[var(--color-text)]">
+                          {productName || t('sellerProducts.untitledProduct')}
+                        </h2>
+                      </div>
+                      <span className="status-pill">{t(`common.status.${productStatus}`)}</span>
                     </div>
-                    <span className="status-pill">{t(`common.status.${product.status || 'pending'}`)}</span>
-                  </div>
 
-                  {product.status === 'needs_review' || product.status === 'rejected' ? (
-                    <div className="status-message status-error mt-4">
-                      {t('sellerProducts.issueNeedsCorrection')}
+                    {productStatus === 'needs_review' || productStatus === 'rejected' ? (
+                      <div className="status-message status-error mt-4">
+                        {t('sellerProducts.issueNeedsCorrection')}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-5 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2">
+                      <p>{t('sellerProducts.priceLabel', { value: formatCurrency(product?.price ?? 0) })}</p>
+                      <p>{t('sellerProducts.stockLabel', { value: product?.stock ?? 0 })}</p>
                     </div>
-                  ) : null}
 
-                  <div className="mt-5 grid gap-2 text-sm text-[var(--color-text-soft)] sm:grid-cols-2">
-                    <p>{t('sellerProducts.priceLabel', { value: formatCurrency(product.price) })}</p>
-                    <p>{t('sellerProducts.stockLabel', { value: product.stock ?? 0 })}</p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Link to={`/seller/products/${productId ?? ''}/edit`} className="btn-base btn-outline">
+                        {t('common.edit')}
+                      </Link>
+                      <button type="button" onClick={() => handleDelete(productId)} className="btn-base btn-danger" disabled={!productId}>
+                        {t('common.delete')}
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    <Link to={`/seller/products/${product.id}/edit`} className="btn-base btn-outline">
-                      {t('common.edit')}
-                    </Link>
-                    <button type="button" onClick={() => handleDelete(product.id)} className="btn-base btn-danger">
-                      {t('common.delete')}
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </section>
         )
       ) : null}
